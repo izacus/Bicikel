@@ -49,6 +49,11 @@ public class Station
 		return distance;
 	}
 	
+	public Location getLocation()
+	{
+		return location;
+	}
+	
 	public int getId()
 	{
 		return id;
