@@ -1,12 +1,18 @@
 package si.virag.bicikel;
 
+import si.virag.bicikel.data.Station;
 import si.virag.bicikel.data.StationInfo;
+import si.virag.bicikel.map.MapActivity;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ViewFlipper;
 
@@ -59,6 +65,21 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		StationListAdapter adapter = new StationListAdapter(this, R.layout.station_list_item, stationInfo.getStations());
 		stationList.setAdapter(adapter);
 		viewFlipper.showNext();
+		
+		stationList.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			{
+				Station station = stationInfo.getStations().get(position);
+				
+				Intent newActivity = new Intent(MainActivity.this, MapActivity.class);
+				newActivity.putExtra("lng", station.getLocation().getLongitude());
+				newActivity.putExtra("lat", station.getLocation().getLatitude());
+				
+				startActivity(newActivity);
+			}
+		});
 	}
 	
 	@Override
