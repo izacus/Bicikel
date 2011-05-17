@@ -1,5 +1,8 @@
 package si.virag.bicikel.data;
 
+import android.location.Location;
+import android.util.Log;
+
 public class Station
 {
 	private int id;
@@ -7,14 +10,17 @@ public class Station
 	// Location
 	private String address;
 	private String fullAddress;
-	private double latitude;
-	private double longtitude;
+	private Location location;
+	
 	// Is it open?
 	private boolean open;
 	// Current status
 	private int totalSpaces;
 	private int freeSpaces;
 	private int availableBikes;
+	
+	// Current distance
+	private Float distance = null;
 
 	public Station(int id, String name, String address, String fullAddress,
 			double latitude, double longtitude, boolean open)
@@ -24,11 +30,25 @@ public class Station
 		this.name = name;
 		this.address = address;
 		this.fullAddress = fullAddress;
-		this.latitude = latitude;
-		this.longtitude = longtitude;
+		
+		location = new Location("");
+		location.setLatitude(latitude);
+		location.setLongitude(longtitude);
+		
 		this.open = open;
 	}
+	
+	public void setDistance(Location currentLocation)
+	{
+		distance = location.distanceTo(currentLocation);
+		Log.d(this.toString(), "Distance " + distance);
+	}
 
+	public Float getDistance()
+	{
+		return distance;
+	}
+	
 	public int getId()
 	{
 		return id;
@@ -47,16 +67,6 @@ public class Station
 	public String getFullAddress()
 	{
 		return fullAddress;
-	}
-
-	public double getLatitude()
-	{
-		return latitude;
-	}
-
-	public double getLongtitude()
-	{
-		return longtitude;
 	}
 
 	public boolean isOpen()
@@ -104,7 +114,7 @@ public class Station
 	@Override
 	public int hashCode()
 	{
-		return (int) (latitude + longtitude + name.hashCode());
+		return (int) (location.hashCode() + name.hashCode());
 	}
 	
 	

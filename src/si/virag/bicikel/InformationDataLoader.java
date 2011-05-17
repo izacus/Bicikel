@@ -53,27 +53,23 @@ public class InformationDataLoader extends AsyncLoader<StationInfo>
 			{
 				Element stationElement = (Element)nodes.item(i);
 				String name = stationElement.getAttribute("name");
-				name = name.replace("-", " - ");
+				name = name.replace("-", "\n");
 				
 				int id = Integer.valueOf(stationElement.getAttribute("number"));
 				
 				// Load individual station details
 				Log.i(this.toString(), "Loading details for " + name);
 				
-				Station station = new Station(Integer.valueOf(stationElement.getAttribute("number")),
-											  stationElement.getAttribute("name"),
+				Station station = new Station(id,
+											  name,
 											  stationElement.getAttribute("address"),
 											  stationElement.getAttribute("fullAddress"),
 											  Double.parseDouble(stationElement.getAttribute("lat")),
 											  Double.parseDouble(stationElement.getAttribute("lng")),
 											  stationElement.getAttribute("open").equalsIgnoreCase("1"));
-				
-				station.setAvailableBikes(15);
-				station.setFreeSpaces(12);
-				station.setTotalSpaces(27);
-				
+						
 				// TODO: implement
-				/*
+				
 				URL detailURL = new URL(STATION_DETAIL_URL + id);
 				Document docDetail = builder.parse(detailURL.openStream());
 				
@@ -95,7 +91,7 @@ public class InformationDataLoader extends AsyncLoader<StationInfo>
 				{
 					// If there's an error with details, skip the station
 					continue;
-				} */
+				} 
 				
 				Log.i(this.toString(), "A: " + station.getAvailableBikes() + " F: " + station.getFreeSpaces() + " T: " + station.getTotalSpaces());
 				
