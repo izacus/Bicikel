@@ -6,43 +6,101 @@
   android:layout_marginLeft = "10dp"
   android:layout_marginRight = "10dp">
  
-  
-  <TextView 
-    android:id = "@+id/txt_bikenum"
-    android:layout_width = "30dp"
+  <LinearLayout
+    android:id = "@+id/bikenum"
+    android:layout_width = "45dp"
     android:layout_height = "wrap_content"
-    android:layout_margin = "10dp"
     android:layout_alignParentLeft = "true"
     android:layout_centerVertical = "true"
-  
-    android:textSize = "26dp"
-    android:textStyle = "bold"
-    />
+    android:layout_margin = "5dp"
+    android:orientation = "vertical"
+    >
     
-  <TextView 
-    android:id = "@+id/txt_freenum"
-    android:layout_width = "30dp"
+	    <TextView 
+		    android:id = "@+id/txt_bikenum"
+		    android:layout_width = "fill_parent"
+		    android:layout_height = "wrap_content"
+		    android:gravity = "center_horizontal"
+		  
+		    android:textSize = "26dp"
+		    android:textStyle = "bold"
+		    android:textColor = "#C00"
+	    />
+	    
+	    <TextView
+	       android:layout_width = "fill_parent"
+	       android:layout_height = "wrap_content"
+	       android:textSize = "13dp"
+	       android:gravity = "center_horizontal"
+	       android:text = "@string/bikes"
+	       />
+    
+  </LinearLayout>
+    
+  <LinearLayout
+    android:id = "@+id/freenum"
+    android:layout_width = "45dp"
     android:layout_height = "wrap_content"
-    android:layout_margin = "10dp"
     android:layout_alignParentRight = "true"
     android:layout_centerVertical = "true"
-  
-    android:textSize = "26dp"
-    android:textStyle = "bold"
-    />
+    android:layout_margin = "5dp"
+    android:orientation = "vertical"
+    >
+    
+        <TextView 
+            android:id = "@+id/txt_freenum"
+            android:layout_width = "fill_parent"
+            android:layout_height = "wrap_content"
+            android:gravity = "center_horizontal"
+          
+            android:textSize = "26dp"
+            android:textStyle = "bold"
+            android:textColor = "#090"
+        />
+        
+        <TextView
+           android:layout_width = "fill_parent"
+           android:layout_height = "wrap_content"
+           android:textSize = "13dp"
+           android:gravity = "center_horizontal"
+           android:text = "@string/free"
+           />
+    
+  </LinearLayout>
 
   <TextView 
     android:id = "@+id/txt_station_name"
     android:layout_width = "wrap_content"
-    android:layout_height = "wrap_content"
-    android:layout_margin = "10dp"
+    android:layout_height = "wrap_content"    
     android:layout_alignParentTop = "true"
     android:layout_centerHorizontal = "true"
+    android:layout_marginTop = "5dp"
     
-    android:layout_toRightOf = "@id/txt_bikenum"
-    android:layout_toLeftOf = "@id/txt_freenum"
+    android:layout_toRightOf = "@id/bikenum"
+    android:layout_toLeftOf = "@id/freenum"
   
-    android:textSize = "14dp" />
+    android:typeface = "serif"
+    android:textSize = "15dp" 
+    android:gravity = "center"
+    />
   
+  <TextView 
+    android:id = "@+id/txt_distance"
+    android:layout_width = "wrap_content"
+    android:layout_height = "wrap_content"    
+    android:layout_alignParentBottom = "true"
+    android:layout_below = "@id/txt_station_name"
+    
+    android:layout_centerHorizontal = "true"
+    android:layout_marginTop = "3dp"
+    android:layout_marginBottom = "10dp"
+    
+    android:layout_toRightOf = "@id/bikenum"
+    android:layout_toLeftOf = "@id/freenum"
+  
+    android:textSize = "14dp"
+    android:textStyle = "bold" 
+    android:gravity = "center"
+    />
   
 </RelativeLayout>
