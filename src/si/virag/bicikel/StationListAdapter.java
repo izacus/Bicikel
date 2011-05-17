@@ -1,6 +1,7 @@
 package si.virag.bicikel;
 
 import java.util.List;
+import java.util.Locale;
 
 import si.virag.bicikel.data.Station;
 import android.app.Activity;
@@ -20,6 +21,7 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		public TextView bikeNum;
 		public TextView freeSpaces;
 		public TextView stationName;
+		public TextView distance;
 	}
 	
 	public StationListAdapter(Activity context, int textViewResourceId, List<Station> items)
@@ -44,6 +46,7 @@ public class StationListAdapter extends ArrayAdapter<Station>
     		viewHolder.bikeNum = (TextView) view.findViewById(R.id.txt_bikenum);
     		viewHolder.freeSpaces = (TextView) view.findViewById(R.id.txt_freenum);
     		viewHolder.stationName = (TextView) view.findViewById(R.id.txt_station_name);
+    		viewHolder.distance = (TextView) view.findViewById(R.id.txt_distance);
     		view.setTag(viewHolder);
 		}
 		else
@@ -55,6 +58,32 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		viewHolder.freeSpaces.setText(String.valueOf(stations.get(position).getFreeSpaces()));
 		viewHolder.stationName.setText(stations.get(position).getName());
 		
+		if (stations.get(position).getDistance() != null)
+		{
+			viewHolder.distance.setText(formatDistance(stations.get(position).getDistance()));
+		}
+		else
+		{
+			viewHolder.distance.setText("");
+		}
+		
+		
 		return view;
+	}
+	
+	public String formatDistance(Float distance)
+	{
+		if (distance > 10000)
+			return "";
+		
+		
+		if (distance < 1200)
+		{
+			return String.format(new Locale("sl"), "%,.1f", distance) + "m";
+		}
+		else
+		{
+			return String.format(new Locale("sl"), "%,.2f", distance / 1000) + "km";
+		}
 	}
 }
