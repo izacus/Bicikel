@@ -2,14 +2,18 @@
 <RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
-  android:layout_height="fill_parent">
+  android:layout_height="fill_parent"
+  android:layout_marginLeft = "10dp"
+  android:layout_marginRight = "10dp">
+ 
   
   <TextView 
     android:id = "@+id/txt_bikenum"
-    android:layout_width = "wrap_content"
+    android:layout_width = "30dp"
     android:layout_height = "wrap_content"
     android:layout_margin = "10dp"
     android:layout_alignParentLeft = "true"
+    android:layout_centerVertical = "true"
   
     android:textSize = "26dp"
     android:textStyle = "bold"
@@ -17,10 +21,11 @@
     
   <TextView 
     android:id = "@+id/txt_freenum"
-    android:layout_width = "wrap_content"
+    android:layout_width = "30dp"
     android:layout_height = "wrap_content"
     android:layout_margin = "10dp"
     android:layout_alignParentRight = "true"
+    android:layout_centerVertical = "true"
   
     android:textSize = "26dp"
     android:textStyle = "bold"
