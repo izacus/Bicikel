@@ -16,6 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <uses-library android:name="com.google.android.maps"></uses-library>
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar" android:name=".map.MapActivity"></activity>
 
     </application>
 </manifest>
