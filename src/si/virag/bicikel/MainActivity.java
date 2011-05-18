@@ -3,6 +3,7 @@ package si.virag.bicikel;
 import si.virag.bicikel.data.Station;
 import si.virag.bicikel.data.StationInfo;
 import si.virag.bicikel.map.MapActivity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -173,7 +174,14 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		switch(item.getItemId())
 		{
 			case MENU_ABOUT:
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle(getString(R.string.app_name) + " " + getString(R.string.app_ver));
+				builder.setMessage(getString(R.string.app_about));
+				
+				AlertDialog alert = builder.create();
+				alert.show();
 				break;
+				
 			case MENU_REFRESH:
 				if (!loadInProgress)
 				{
@@ -196,8 +204,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		menu.add(0, MENU_REFRESH, 0, getString(R.string.menu_refresh));
-		menu.add(0, MENU_ABOUT, 1, getString(R.string.menu_about));
+		menu.add(0, MENU_REFRESH, 0, getString(R.string.menu_refresh)).setIcon(R.drawable.refresh);
+		menu.add(0, MENU_ABOUT, 1, getString(R.string.menu_about)).setIcon(R.drawable.info);
 		return super.onCreateOptionsMenu(menu);
 	}
     
