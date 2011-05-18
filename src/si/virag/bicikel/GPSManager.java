@@ -157,6 +157,7 @@ public class GPSManager implements LocationListener
 		if (currentLocation.getAccuracy() < TARGET_ACCURACY)
 		{
 			callback.sendEmptyMessage(GPS_LOCATION_OK);
+			this.cancelSearch();
 		}
 	}
 
