@@ -1,9 +1,3 @@
 
 syntax: regexp
 ^res/drawable-mdpi/Thumbs\.db$
-syntax: regexp
-^res/drawable-hdpi/Thumbs\.db$
-syntax: glob
-Thumbs.db
-syntax: regexp
-^bin$
