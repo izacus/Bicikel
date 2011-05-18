@@ -66,7 +66,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	@Override
 	public Loader<StationInfo> onCreateLoader(int id, Bundle args)
 	{
-		InformationDataLoader infoLoader = new InformationDataLoader(this);
+		JSONInformationDataLoader infoLoader = new JSONInformationDataLoader(this);
 		return infoLoader;
 	}
 
