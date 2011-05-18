@@ -4,4 +4,7 @@
     
     <string name="bikes">park. koles</string>
     <string name="free">prostih mest</string>
+    
+    <string name="loading">Nalagam...</string>
+    <string name="connection_error">Podatkov ni bilo mogoče naložiti,\n prosimo preverite internetno povezavo.</string>
 </resources>
