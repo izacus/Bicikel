@@ -67,10 +67,8 @@ public class InformationDataLoader extends AsyncLoader<StationInfo>
 											  Double.parseDouble(stationElement.getAttribute("lat")),
 											  Double.parseDouble(stationElement.getAttribute("lng")),
 											  stationElement.getAttribute("open").equalsIgnoreCase("1"));
-						
-				// TODO: implement
-				
-/*				URL detailURL = new URL(STATION_DETAIL_URL + id);
+
+				URL detailURL = new URL(STATION_DETAIL_URL + id);
 				Document docDetail = builder.parse(detailURL.openStream());
 				
 				Element freeSpacesElement = (Element) docDetail.getElementsByTagName("free").item(0);
@@ -91,7 +89,7 @@ public class InformationDataLoader extends AsyncLoader<StationInfo>
 				{
 					// If there's an error with details, skip the station
 					continue;
-				} */ 
+				}  
 				
 				Log.i(this.toString(), "A: " + station.getAvailableBikes() + " F: " + station.getFreeSpaces() + " T: " + station.getTotalSpaces());
 				
