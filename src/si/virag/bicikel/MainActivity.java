@@ -10,10 +10,13 @@ import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 public class MainActivity extends FragmentActivity implements LoaderCallbacks<StationInfo>
@@ -22,6 +25,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	
 	private ViewFlipper viewFlipper;
 	private ListView stationList;
+	private TextView loadingText;
+	private ProgressBar throbber;
 	
 	private StationInfo stationInfo;
 	private Location currentLocation;
@@ -37,10 +42,14 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         
         viewFlipper = (ViewFlipper) findViewById(R.id.main_flipper);
         stationList = (ListView) findViewById(R.id.station_list);
+        loadingText = (TextView) findViewById(R.id.txt_loading);
+        throbber = (ProgressBar) findViewById(R.id.loading_progress);
         
         gpsManager = new GPSManager();
         gpsManager.findCurrentLocation(this, new Handler());
         
+        loadingText.setText(getString(R.string.loading));
+        throbber.setVisibility(View.VISIBLE);
         getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this);
     }
 
@@ -55,8 +64,17 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo result)
 	{
 		stationInfo = result;
-		
 		gpsManager.cancelSearch();
+		
+		// Check for error
+		if (result == null)
+		{
+			throbber.setVisibility(View.GONE);
+			loadingText.setText(getString(R.string.connection_error));
+			loadingText.setGravity(Gravity.CENTER_HORIZONTAL);
+			return;
+		}
+		
 		currentLocation = gpsManager.getCurrentLocation();
 		
 		if (currentLocation != null)
