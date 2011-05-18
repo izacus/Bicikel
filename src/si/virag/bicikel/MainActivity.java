@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -37,8 +38,10 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	private Location currentLocation;
 	
 	private GPSManager gpsManager;
+	private Handler gpsLocationHandler;
 	
 	private boolean loadInProgress;
+	private boolean waitingForLocation;
 	
     /** Called when the activity is first created. */
     @Override
@@ -53,16 +56,31 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         throbber = (ProgressBar) findViewById(R.id.loading_progress);
         
         gpsManager = new GPSManager();
-        gpsManager.findCurrentLocation(this, new Handler());        
+        gpsLocationHandler = new Handler()
+        {
+			@Override
+			public void handleMessage(Message msg)
+			{
+				if (msg.what == GPSManager.GPS_LOCATION_OK && waitingForLocation)
+				{
+					sortDataByLocation();
+				}
+				
+				gpsManager.cancelSearch();
+			}
+        };
+        
+        gpsManager.findCurrentLocation(this, gpsLocationHandler);        
         loadingText.setText(getString(R.string.loading));
         throbber.setVisibility(View.VISIBLE);
         
         loadInProgress = true;
+        waitingForLocation = true;
         
         getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this);
         
     }
-
+    
 	@Override
 	public Loader<StationInfo> onCreateLoader(int id, Bundle args)
 	{
@@ -76,7 +94,6 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		loadInProgress = false;
 		
 		stationInfo = result;
-		gpsManager.cancelSearch();
 		
 		// Check for error
 		if (result == null)
@@ -90,7 +107,10 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		currentLocation = gpsManager.getCurrentLocation();
 		
 		if (currentLocation != null)
+		{
 			stationInfo.calculateDistances(currentLocation);
+			waitingForLocation = false;
+		}
 		
 		StationListAdapter adapter = new StationListAdapter(this, R.layout.station_list_item, stationInfo.getStations());
 		stationList.setAdapter(adapter);
@@ -121,15 +141,31 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	private void refreshData()
 	{
 		viewFlipper.setDisplayedChild(1);
-		
+		waitingForLocation = true;
 		loadInProgress = true;
-        gpsManager.findCurrentLocation(this, new Handler());        
+        gpsManager.findCurrentLocation(this, gpsLocationHandler);        
         loadingText.setText(getString(R.string.loading));
         throbber.setVisibility(View.VISIBLE);
         
         getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this).forceLoad();
 	}
 	
+	
+	private void sortDataByLocation()
+	{
+		// We might not yet have valid data
+		if (stationInfo == null)
+			return;
+		
+		Location currentLocation = gpsManager.getCurrentLocation();
+		
+		if (currentLocation != null)
+		{
+			waitingForLocation = false;
+			stationInfo.calculateDistances(currentLocation);
+			stationList.setAdapter(new StationListAdapter(this, R.layout.station_list_item, stationInfo.getStations()));
+		}
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)

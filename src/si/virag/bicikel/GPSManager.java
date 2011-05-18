@@ -20,6 +20,7 @@ public class GPSManager implements LocationListener
 
 	private static final int NEW_LOCATION_FIX_MILLIS = 180000;
 	private static final int LOCATION_LOCK_TIMEOUT_MILLIS = 30000;
+	private static final int TARGET_ACCURACY = 1000;
 
 
 	private Location currentLocation;
@@ -152,6 +153,11 @@ public class GPSManager implements LocationListener
 		
 		if (currentLocation == null || currentLocation.getAccuracy() > location.getAccuracy())
 			currentLocation = location;
+		
+		if (currentLocation.getAccuracy() < TARGET_ACCURACY)
+		{
+			callback.sendEmptyMessage(GPS_LOCATION_OK);
+		}
 	}
 
 	public void onProviderDisabled(String provider)
