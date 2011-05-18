@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Bicikel</string>
+    <string name="app_ver">1.0.0</string>
+    <string name="app_about">Pripombe in poročila o težavah na jernej@virag.si</string>
     
     <string name="bikes">park. koles</string>
     <string name="free">prostih mest</string>
