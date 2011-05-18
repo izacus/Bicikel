@@ -73,17 +73,19 @@ public class StationListAdapter extends ArrayAdapter<Station>
 	
 	public String formatDistance(Float distance)
 	{
+
 		if (distance > 10000)
 			return "";
 		
-		
+		// Using german locale, because slovene locale is not available on all devices
+		// and germany uses same number format
 		if (distance < 1200)
 		{
-			return String.format(new Locale("sl"), "%,.1f", distance) + " m";
+			return String.format(Locale.GERMAN, "%,.1f", distance) + " m";
 		}
 		else
 		{
-			return String.format(new Locale("sl"), "%,.2f", distance / 1000) + " km";
+			return String.format(Locale.GERMAN, "%,.2f", distance / 1000) + " km";
 		}
 	}
 }

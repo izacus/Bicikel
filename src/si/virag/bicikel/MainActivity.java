@@ -11,6 +11,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,6 +25,9 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 {
 	private static final int INFO_LOADER_ID = 1;
 	
+	private static final int MENU_REFRESH = 1;
+	private static final int MENU_ABOUT = 2;
+	
 	private ViewFlipper viewFlipper;
 	private ListView stationList;
 	private TextView loadingText;
@@ -32,6 +37,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	private Location currentLocation;
 	
 	private GPSManager gpsManager;
+	
+	private boolean loadInProgress;
 	
     /** Called when the activity is first created. */
     @Override
@@ -46,11 +53,14 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         throbber = (ProgressBar) findViewById(R.id.loading_progress);
         
         gpsManager = new GPSManager();
-        gpsManager.findCurrentLocation(this, new Handler());
-        
+        gpsManager.findCurrentLocation(this, new Handler());        
         loadingText.setText(getString(R.string.loading));
         throbber.setVisibility(View.VISIBLE);
+        
+        loadInProgress = true;
+        
         getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this);
+        
     }
 
 	@Override
@@ -63,6 +73,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	@Override
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo result)
 	{
+		loadInProgress = false;
+		
 		stationInfo = result;
 		gpsManager.cancelSearch();
 		
@@ -103,8 +115,54 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	@Override
 	public void onLoaderReset(Loader<StationInfo> loader)
 	{
-		loader.reset();
+		// Nothing TBD
 	}
     
+	private void refreshData()
+	{
+		viewFlipper.setDisplayedChild(1);
+		
+		loadInProgress = true;
+        gpsManager.findCurrentLocation(this, new Handler());        
+        loadingText.setText(getString(R.string.loading));
+        throbber.setVisibility(View.VISIBLE);
+        
+        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this).forceLoad();
+	}
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch(item.getItemId())
+		{
+			case MENU_ABOUT:
+				break;
+			case MENU_REFRESH:
+				if (!loadInProgress)
+				{
+					this.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							refreshData();
+						}
+					});
+				}
+				break;
+		}
+		
+		
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		menu.add(0, MENU_REFRESH, 0, getString(R.string.menu_refresh));
+		menu.add(0, MENU_ABOUT, 1, getString(R.string.menu_about));
+		return super.onCreateOptionsMenu(menu);
+	}
     
 }
