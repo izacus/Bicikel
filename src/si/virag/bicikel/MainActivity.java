@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -56,6 +57,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         loadingText = (TextView) findViewById(R.id.txt_loading);
         throbber = (ProgressBar) findViewById(R.id.loading_progress);
         
+        // Set view flipper animations
+        viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
+        viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        
+        // Setup delayed GPS location handler
         gpsManager = new GPSManager();
         gpsLocationHandler = new Handler()
         {
