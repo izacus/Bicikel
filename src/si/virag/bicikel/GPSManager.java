@@ -141,7 +141,10 @@ public class GPSManager implements LocationListener
 	public void cancelSearch()
 	{
 		if (timeoutTimer != null)
+		{
 			timeoutTimer.cancel();
+			timeoutTimer = null;
+		}
 		
 		locationManager.removeUpdates(this);
 		callback.sendEmptyMessage(GPS_CANCELED);
