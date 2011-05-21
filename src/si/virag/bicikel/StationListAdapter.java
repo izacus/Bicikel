@@ -56,27 +56,23 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		
 		viewHolder.bikeNum.setText(String.valueOf(stations.get(position).getAvailableBikes()));
 		viewHolder.freeSpaces.setText(String.valueOf(stations.get(position).getFreeSpaces()));
-		viewHolder.stationName.setText(stations.get(position).getName());
+		viewHolder.stationName.setText(stations.get(position).getName().replaceAll("-", "\n"));
 		
 		if (stations.get(position).getDistance() != null)
 		{
 			viewHolder.distance.setText(formatDistance(stations.get(position).getDistance()));
+			viewHolder.distance.setVisibility(View.VISIBLE);
 		}
 		else
 		{
-			viewHolder.distance.setText("");
+			viewHolder.distance.setVisibility(View.GONE);
 		}
-		
 		
 		return view;
 	}
 	
 	public String formatDistance(Float distance)
 	{
-
-		if (distance > 10000)
-			return "";
-		
 		// Using german locale, because slovene locale is not available on all devices
 		// and germany uses same number format
 		if (distance < 1200)
