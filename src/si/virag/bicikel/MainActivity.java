@@ -1,6 +1,7 @@
 package si.virag.bicikel;
 
 import java.util.Calendar;
+import java.util.List;
 
 import si.virag.bicikel.data.Station;
 import si.virag.bicikel.data.StationInfo;
@@ -19,9 +20,11 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,6 +41,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	private ListView stationList;
 	private TextView loadingText;
 	private ProgressBar throbber;
+	private Button mapButton;
 	
 	private StationInfo stationInfo;
 	private Location currentLocation;
@@ -66,6 +70,16 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         stationList = (ListView) findViewById(R.id.station_list);
         loadingText = (TextView) findViewById(R.id.txt_loading);
         throbber = (ProgressBar) findViewById(R.id.loading_progress);
+        mapButton = (Button) findViewById(R.id.map_button);
+        
+        mapButton.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View arg0)
+			{
+				 showAllStationsMap();
+			}
+		});
         
         // Set view flipper animations
         viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
@@ -153,8 +167,12 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 				Station station = stationInfo.getStations().get(position);
 				
 				Intent newActivity = new Intent(MainActivity.this, MapActivity.class);
-				newActivity.putExtra("lng", station.getLocation().getLongitude());
-				newActivity.putExtra("lat", station.getLocation().getLatitude());
+				
+				double[] longtitudes = new double[] { station.getLocation().getLongitude() };
+				double[] latitudes = new double[] { station.getLocation().getLatitude() };
+				
+				newActivity.putExtra("lng", longtitudes);
+				newActivity.putExtra("lat", latitudes);
 				
 				startActivity(newActivity);
 			}
@@ -198,7 +216,30 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		}
 	}
 	
-	
+	private void showAllStationsMap()
+	{
+		
+		Intent newActivity = new Intent(MainActivity.this, MapActivity.class);
+		
+		List<Station> stations = stationInfo.getStations();
+		
+		double[] longtitudes = new double[stations.size()];
+		double[] latitudes = new double[stations.size()];
+		
+		int i = 0;
+		
+		for (Station station : stations)
+		{
+			longtitudes[i] = station.getLocation().getLongitude();
+			latitudes[i] = station.getLocation().getLatitude();
+			i++;
+		}
+		
+		newActivity.putExtra("lng", longtitudes);
+		newActivity.putExtra("lat", latitudes);
+		
+		startActivity(newActivity);
+	}
 	
 	@Override
 	protected void onResume()
