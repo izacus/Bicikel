@@ -4,14 +4,16 @@
     android:layout_width = "fill_parent"
     android:layout_height = "fill_parent" >
  
- <Button
+ <ImageButton
  	android:id = "@+id/map_button"
  	android:layout_width = "50dp"
  	android:layout_height = "@dimen/title_height"
  	android:layout_alignParentRight = "true"
  	android:layout_alignParentTop = "true"
  	android:background = "@drawable/button_title"
- 	android:text = "MAP" />
+ 	android:src = "@drawable/pushpin"
+ 	android:scaleType = "centerInside"
+    />
  	
  <LinearLayout
  	android:id = "@+id/delimiter"

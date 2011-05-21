@@ -1,7 +1,6 @@
 package si.virag.bicikel.map;
 
 
-import si.virag.bicikel.R;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,5 +35,13 @@ public class IconOverlay extends Overlay
 		
 		Bitmap image = BitmapFactory.decodeResource(res, icon);
 		canvas.drawBitmap(image, screenPts.x - 16, screenPts.y - 37, null);
+	}
+
+
+	@Override
+	public boolean onTap(GeoPoint p, MapView mapView)
+	{
+		// TODO Auto-generated method stub
+		return super.onTap(p, mapView);
 	}
 }
