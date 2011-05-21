@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width = "fill_parent"
-    android:layout_height = "fill_parent"
-    android:orientation = "vertical" >
+    android:layout_height = "fill_parent" >
+ 
+ <Button
+ 	android:id = "@+id/map_button"
+ 	android:layout_width = "50dp"
+ 	android:layout_height = "@dimen/title_height"
+ 	android:layout_alignParentRight = "true"
+ 	android:layout_alignParentTop = "true"
+ 	android:background = "@drawable/button_title"
+ 	android:text = "MAP" />
+ 	
+ <LinearLayout
+ 	android:id = "@+id/delimiter"
+ 	android:layout_height = "@dimen/title_height"
+ 	android:layout_width = "1sp"
+ 	android:layout_toLeftOf = "@id/map_button"
+ 	android:background = "#FFF" />
 
  <include layout="@layout/title_bar"
-        android:layout_alignParentTop = "true" />
-
-	<ListView
+ 		android:id = "@+id/title_bar"
+ 		android:layout_width = "wrap_content"
+ 		android:layout_height = "@dimen/title_height"
+ 		android:layout_alignParentLeft = "true"
+        android:layout_toLeftOf = "@id/delimiter" />
+ 
+ <ListView
 	  android:layout_width="fill_parent"
 	  android:layout_height="wrap_content"
+	  android:layout_below = "@id/title_bar"
 	  android:id = "@+id/station_list">
-	</ListView>
+ </ListView>
 
-</LinearLayout>
+</RelativeLayout>

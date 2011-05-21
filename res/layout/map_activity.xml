@@ -14,7 +14,7 @@
     android:layout_width = "fill_parent"
     android:layout_height = "wrap_content"
     android:layout_below = "@id/title_bar"
-    android:apiKey = "0oTmqtEHq-AnReOifd6jCMu5Lu4nrNrMpj3YCJw"
+    android:apiKey = "0oTmqtEHq-AlR8agGHCYxhppJyxBEbKyzlYMa0A"
     android:clickable = "true" />
   
 </RelativeLayout>
