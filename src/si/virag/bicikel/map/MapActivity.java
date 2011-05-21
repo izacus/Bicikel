@@ -1,8 +1,10 @@
 package si.virag.bicikel.map;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import si.virag.bicikel.R;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 
@@ -41,19 +43,24 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		Bundle extras = getIntent().getExtras();
 		double[] lats = extras.getDoubleArray("lng");
 		double[] lngs = extras.getDoubleArray("lat");
+		String[] names = extras.getStringArray("names");
 		
 		// Prepare overlays
 		List<Overlay> overlays = mapView.getOverlays();
 		overlays.clear();
 		
+		Drawable marker = getResources().getDrawable(R.drawable.cycling);
+		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
+		
+		List<StationMarker> markers = new ArrayList<StationMarker>();
+		
 		for (int i = 0; i < lats.length; i++)
 		{
-			GeoPoint pt = new GeoPoint((int)(lngs[i] * 1E6), (int)(lats[i] * 1E6));
-			// Add station overlay
-			IconOverlay overlay = new IconOverlay(getResources(), pt, R.drawable.cycling);
-			overlays.add(overlay);
+			StationMarker station = new StationMarker(lngs[i], lats[i], names[i]);
+			markers.add(station);
 		}
 		
+		overlays.add(new StationOverlay(this, marker, markers));
 		
 		// If we're showing only one point, center on it
 		if (lats.length == 1)

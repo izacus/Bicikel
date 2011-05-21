@@ -173,9 +173,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 				
 				double[] longtitudes = new double[] { station.getLocation().getLongitude() };
 				double[] latitudes = new double[] { station.getLocation().getLatitude() };
+				String[] names = new String[] { station.getName() };
 				
 				newActivity.putExtra("lng", longtitudes);
 				newActivity.putExtra("lat", latitudes);
+				newActivity.putExtra("names", names);
 				
 				startActivity(newActivity);
 			}
@@ -227,6 +229,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		
 		double[] longtitudes = new double[stations.size()];
 		double[] latitudes = new double[stations.size()];
+		String[] names = new String[stations.size()];
 		
 		int i = 0;
 		
@@ -234,11 +237,13 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		{
 			longtitudes[i] = station.getLocation().getLongitude();
 			latitudes[i] = station.getLocation().getLatitude();
+			names[i] = station.getName();
 			i++;
 		}
 		
 		newActivity.putExtra("lng", longtitudes);
 		newActivity.putExtra("lat", latitudes);
+		newActivity.putExtra("names", names);
 		
 		startActivity(newActivity);
 	}
