@@ -94,6 +94,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			@Override
 			public void handleMessage(Message msg)
 			{
+				Log.i(this.toString(), "Location update received...");
+				
 				if (msg.what == GPSManager.GPS_LOCATION_OK && waitingForLocation)
 				{
 					sortDataByLocation();
@@ -133,6 +135,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	@Override
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo result)
 	{
+		Log.i(this.toString(), "Loading done.");
 		loadInProgress = false;
 		stationInfo = result;
 		lastUpdate = Calendar.getInstance().getTimeInMillis();
@@ -194,9 +197,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		loadInProgress = true;
         gpsManager.findCurrentLocation(this, gpsLocationHandler);        
         loadingText.setText(getString(R.string.loading));
-        throbber.setVisibility(View.VISIBLE);
-        
-        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this).forceLoad();
+        throbber.setVisibility(View.VISIBLE);               
+        getSupportLoaderManager().getLoader(INFO_LOADER_ID).forceLoad();
 	}
 	
 	
