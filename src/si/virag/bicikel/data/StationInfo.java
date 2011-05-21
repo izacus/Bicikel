@@ -11,6 +11,8 @@ public class StationInfo
 	private long timeUpdated;
 	private ArrayList<Station> stations;
 	
+	private boolean disancesValid = false;
+	
 	public long getTimeUpdated()
 	{
 		return timeUpdated;
@@ -34,6 +36,9 @@ public class StationInfo
 	
 	public void calculateDistances(Location currentLocation)
 	{
+		if (disancesValid)
+			return;
+		
 		for (Station station : stations)
 		{
 			station.setDistance(currentLocation);
@@ -48,5 +53,7 @@ public class StationInfo
 			}
 			
 		});
+		
+		disancesValid = true;
 	}
 }
