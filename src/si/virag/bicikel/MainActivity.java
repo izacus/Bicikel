@@ -24,7 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,7 +41,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	private ListView stationList;
 	private TextView loadingText;
 	private ProgressBar throbber;
-	private Button mapButton;
+	private ImageButton mapButton;
 	
 	private StationInfo stationInfo;
 	private Location currentLocation;
@@ -70,7 +70,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         stationList = (ListView) findViewById(R.id.station_list);
         loadingText = (TextView) findViewById(R.id.txt_loading);
         throbber = (ProgressBar) findViewById(R.id.loading_progress);
-        mapButton = (Button) findViewById(R.id.map_button);
+        mapButton = (ImageButton) findViewById(R.id.map_button);
         
         mapButton.setOnClickListener(new OnClickListener()
 		{
