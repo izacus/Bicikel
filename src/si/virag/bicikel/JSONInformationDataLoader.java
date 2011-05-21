@@ -40,11 +40,15 @@ public class JSONInformationDataLoader extends AsyncLoader<StationInfo>
 			return null;
 		}
 		
-		StationInfo info = new StationInfo();
 		
 		try
 		{
 			JSONObject object = new JSONObject(response);
+			
+			// Get time updated
+			long timeUpdated = object.getLong("updated");
+			
+			StationInfo info = new StationInfo(timeUpdated);
 			
 			// Get marker array
 			JSONObject markers = object.getJSONObject("markers");
@@ -72,14 +76,14 @@ public class JSONInformationDataLoader extends AsyncLoader<StationInfo>
 				
 				Log.d(this.toString(), "Station " + station.getName() + " added.");
 			}
+			
+			return info;
 		}
 		catch (JSONException e)
 		{
 			Log.e(this.toString(), "Error parsing response JSON.", e);
 			return null;
 		}
-	
-		return info;
 	}
 
 	

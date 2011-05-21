@@ -3,6 +3,7 @@ package si.virag.bicikel;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,7 +45,7 @@ public class DirectXMLInformationDataLoader extends AsyncLoader<StationInfo>
 			Document document = builder.parse(url.openStream());
 			
 			// Prepare station information
-			StationInfo info = new StationInfo();
+			StationInfo info = new StationInfo(Calendar.getInstance().getTimeInMillis());
 			
 			// Get marker nodes
 			NodeList nodes = document.getElementsByTagName("marker");
