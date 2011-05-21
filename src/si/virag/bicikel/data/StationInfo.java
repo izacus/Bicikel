@@ -8,11 +8,18 @@ import android.location.Location;
 
 public class StationInfo
 {
+	private long timeUpdated;
 	private ArrayList<Station> stations;
 	
-	public StationInfo()
+	public long getTimeUpdated()
+	{
+		return timeUpdated;
+	}
+
+	public StationInfo(long timeUpdated)
 	{
 		stations = new ArrayList<Station>();
+		this.timeUpdated = timeUpdated;
 	}
 	
 	public void addStation(Station station)

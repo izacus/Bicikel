@@ -1,5 +1,7 @@
 package si.virag.bicikel;
 
+import java.util.Calendar;
+
 import si.virag.bicikel.data.Station;
 import si.virag.bicikel.data.StationInfo;
 import si.virag.bicikel.map.MapActivity;
@@ -12,6 +14,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,12 +48,19 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	private boolean loadInProgress;
 	private boolean waitingForLocation;
 	
+	private Long lastUpdate;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        
+        if (savedInstanceState != null)
+        {
+        	lastUpdate = savedInstanceState.getLong("lastupdate");
+        }
         
         viewFlipper = (ViewFlipper) findViewById(R.id.main_flipper);
         stationList = (ListView) findViewById(R.id.station_list);
@@ -60,6 +70,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         // Set view flipper animations
         viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
         viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        
+        viewFlipper.setDisplayedChild(0);
         
         // Setup delayed GPS location handler
         gpsManager = new GPSManager();
@@ -96,11 +108,20 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	}
 
 	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+		
+		if (lastUpdate != null)
+			outState.putLong("lastupdate", lastUpdate);
+	}
+
+	@Override
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo result)
 	{
 		loadInProgress = false;
-		
 		stationInfo = result;
+		lastUpdate = Calendar.getInstance().getTimeInMillis();
 		
 		// Check for error
 		if (result == null)
@@ -117,6 +138,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		{
 			stationInfo.calculateDistances(currentLocation);
 			waitingForLocation = false;
+			gpsManager.cancelSearch();
 		}
 		
 		StationListAdapter adapter = new StationListAdapter(this, R.layout.station_list_item, stationInfo.getStations());
@@ -147,7 +169,9 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
     
 	private void refreshData()
 	{
-		viewFlipper.setDisplayedChild(1);
+		Log.w(this.toString(), "Forcing data refresh...");
+		
+		viewFlipper.setDisplayedChild(0);
 		waitingForLocation = true;
 		loadInProgress = true;
         gpsManager.findCurrentLocation(this, gpsLocationHandler);        
@@ -174,6 +198,19 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		}
 	}
 	
+	
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		
+		if (lastUpdate != null && lastUpdate != 0 && Calendar.getInstance().getTimeInMillis() - lastUpdate > 5 * 60 * 1000)
+		{
+			refreshData();
+		}
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
