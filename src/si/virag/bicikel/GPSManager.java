@@ -71,8 +71,7 @@ public class GPSManager implements LocationListener
 
 		try
 		{
-			networkOn = locationManager
-					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+			networkOn = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		}
 		catch (Exception e)
 		{};
@@ -147,12 +146,11 @@ public class GPSManager implements LocationListener
 		}
 		
 		locationManager.removeUpdates(this);
-		callback.sendEmptyMessage(GPS_CANCELED);
 	}
 
 	public void onLocationChanged(Location location)
 	{
-		Log.i(this.toString(), "Location changed: " + location.getLatitude() + ", " + location.getLongitude());
+		Log.i(this.toString(), "Location changed: " + location.getLatitude() + ", " + location.getLongitude() + ", " + "ACC " + location.getAccuracy());
 		
 		if (currentLocation == null || currentLocation.getAccuracy() > location.getAccuracy())
 			currentLocation = location;
