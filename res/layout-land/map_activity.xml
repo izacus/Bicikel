@@ -12,7 +12,7 @@
   <include layout="@layout/station_list_item"
      android:id = "@+id/station_info"
      android:layout_width = "fill_parent"
-     android:layout_height = "80dp"
+     android:layout_height = "50dp"
      android:layout_alignParentBottom = "true" />
   
   
