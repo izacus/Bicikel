@@ -20,6 +20,7 @@ public class GPSManager implements LocationListener
 
 	private static final int NEW_LOCATION_FIX_MILLIS = 180000;
 	private static final int LOCATION_LOCK_TIMEOUT_MILLIS = 30000;
+	private static final int TARGET_ACCURACY = 1000;
 
 
 	private Location currentLocation;
@@ -70,8 +71,7 @@ public class GPSManager implements LocationListener
 
 		try
 		{
-			networkOn = locationManager
-					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+			networkOn = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		}
 		catch (Exception e)
 		{};
@@ -140,18 +140,26 @@ public class GPSManager implements LocationListener
 	public void cancelSearch()
 	{
 		if (timeoutTimer != null)
+		{
 			timeoutTimer.cancel();
+			timeoutTimer = null;
+		}
 		
 		locationManager.removeUpdates(this);
-		callback.sendEmptyMessage(GPS_CANCELED);
 	}
 
 	public void onLocationChanged(Location location)
 	{
-		Log.i(this.toString(), "Location changed: " + location.getLatitude() + ", " + location.getLongitude());
+		Log.i(this.toString(), "Location changed: " + location.getLatitude() + ", " + location.getLongitude() + ", " + "ACC " + location.getAccuracy());
 		
 		if (currentLocation == null || currentLocation.getAccuracy() > location.getAccuracy())
 			currentLocation = location;
+		
+		if (currentLocation.getAccuracy() < TARGET_ACCURACY)
+		{
+			callback.sendEmptyMessage(GPS_LOCATION_OK);
+			this.cancelSearch();
+		}
 	}
 
 	public void onProviderDisabled(String provider)

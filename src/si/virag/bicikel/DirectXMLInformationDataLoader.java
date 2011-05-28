@@ -3,6 +3,7 @@ package si.virag.bicikel;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,13 +20,13 @@ import si.virag.bicikel.util.AsyncLoader;
 import android.content.Context;
 import android.util.Log;
 
-public class InformationDataLoader extends AsyncLoader<StationInfo>
+public class DirectXMLInformationDataLoader extends AsyncLoader<StationInfo>
 {
 	private static final String STATION_LIST_URL = "http://www.bicikelj.si/service/carto";
 	private static final String STATION_DETAIL_URL = "http://www.bicikelj.si/service/stationdetails/";
 	
 	
-	public InformationDataLoader(Context context)
+	public DirectXMLInformationDataLoader(Context context)
 	{
 		super(context);
 	}
@@ -44,7 +45,7 @@ public class InformationDataLoader extends AsyncLoader<StationInfo>
 			Document document = builder.parse(url.openStream());
 			
 			// Prepare station information
-			StationInfo info = new StationInfo();
+			StationInfo info = new StationInfo(Calendar.getInstance().getTimeInMillis());
 			
 			// Get marker nodes
 			NodeList nodes = document.getElementsByTagName("marker");

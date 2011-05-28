@@ -31,7 +31,6 @@
       android:layout_centerInParent = "true"
       
       android:text = "@string/loading" />
-    
    </LinearLayout>
   
 </RelativeLayout>

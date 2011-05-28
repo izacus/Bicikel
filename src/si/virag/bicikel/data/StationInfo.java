@@ -8,11 +8,20 @@ import android.location.Location;
 
 public class StationInfo
 {
+	private long timeUpdated;
 	private ArrayList<Station> stations;
 	
-	public StationInfo()
+	private boolean disancesValid = false;
+	
+	public long getTimeUpdated()
+	{
+		return timeUpdated;
+	}
+
+	public StationInfo(long timeUpdated)
 	{
 		stations = new ArrayList<Station>();
+		this.timeUpdated = timeUpdated;
 	}
 	
 	public void addStation(Station station)
@@ -27,6 +36,9 @@ public class StationInfo
 	
 	public void calculateDistances(Location currentLocation)
 	{
+		if (disancesValid)
+			return;
+		
 		for (Station station : stations)
 		{
 			station.setDistance(currentLocation);
@@ -41,5 +53,7 @@ public class StationInfo
 			}
 			
 		});
+		
+		disancesValid = true;
 	}
 }
