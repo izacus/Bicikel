@@ -174,10 +174,15 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 				double[] longtitudes = new double[] { station.getLocation().getLongitude() };
 				double[] latitudes = new double[] { station.getLocation().getLatitude() };
 				String[] names = new String[] { station.getName() };
+				int[] free = new int[] { station.getFreeSpaces() };
+				int[] bikes = new int[] { station.getAvailableBikes() };
+				
 				
 				newActivity.putExtra("lng", longtitudes);
 				newActivity.putExtra("lat", latitudes);
 				newActivity.putExtra("names", names);
+				newActivity.putExtra("free", free);
+				newActivity.putExtra("bikes", bikes);
 				
 				startActivity(newActivity);
 			}
@@ -230,6 +235,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		double[] longtitudes = new double[stations.size()];
 		double[] latitudes = new double[stations.size()];
 		String[] names = new String[stations.size()];
+		int[] freePlaces = new int[stations.size()];
+		int[] bikes = new int[stations.size()];
 		
 		int i = 0;
 		
@@ -238,12 +245,16 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			longtitudes[i] = station.getLocation().getLongitude();
 			latitudes[i] = station.getLocation().getLatitude();
 			names[i] = station.getName();
+			freePlaces[i] = station.getFreeSpaces();
+			bikes[i] = station.getAvailableBikes();
 			i++;
 		}
 		
 		newActivity.putExtra("lng", longtitudes);
 		newActivity.putExtra("lat", latitudes);
 		newActivity.putExtra("names", names);
+		newActivity.putExtra("free", freePlaces);
+		newActivity.putExtra("bikes", bikes);
 		
 		startActivity(newActivity);
 	}
