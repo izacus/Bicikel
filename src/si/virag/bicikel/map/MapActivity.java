@@ -7,6 +7,8 @@ import si.virag.bicikel.R;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -31,6 +33,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 	
 	private MapView mapView;
 	private MyLocationOverlay myLocation;
+	private View infoView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -39,11 +42,15 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		setContentView(R.layout.map_activity);
 		
 		mapView = (MapView) findViewById(R.id.map);
+		infoView = (View) findViewById(R.id.station_info);
+		infoView.setVisibility(View.GONE);
 		
 		Bundle extras = getIntent().getExtras();
 		double[] lats = extras.getDoubleArray("lng");
 		double[] lngs = extras.getDoubleArray("lat");
 		String[] names = extras.getStringArray("names");
+		int[] free = extras.getIntArray("free");
+		int[] bikes = extras.getIntArray("bikes");
 		
 		// Prepare overlays
 		List<Overlay> overlays = mapView.getOverlays();
@@ -56,11 +63,11 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		
 		for (int i = 0; i < lats.length; i++)
 		{
-			StationMarker station = new StationMarker(lngs[i], lats[i], names[i]);
+			StationMarker station = new StationMarker(lngs[i], lats[i], names[i], free[i], bikes[i]);
 			markers.add(station);
 		}
 		
-		overlays.add(new StationOverlay(this, marker, markers));
+		overlays.add(new StationOverlay(infoView, marker, markers));
 		
 		// If we're showing only one point, center on it
 		if (lats.length == 1)
@@ -69,6 +76,16 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			MapController controller = mapView.getController();
 			controller.setCenter(pt);
 			controller.setZoom(17);
+			
+			TextView nameView = (TextView)infoView.findViewById(R.id.txt_station_name);
+			TextView freeView = (TextView)infoView.findViewById(R.id.txt_freenum);
+			TextView bikesView = (TextView)infoView.findViewById(R.id.txt_bikenum);
+			
+			nameView.setText(names[0]);
+			freeView.setText(String.valueOf(free[0]));
+			bikesView.setText(String.valueOf(bikes[0]));
+			
+			infoView.setVisibility(View.VISIBLE);
 		}
 		else
 		{
