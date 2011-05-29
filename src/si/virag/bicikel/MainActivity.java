@@ -2,7 +2,6 @@ package si.virag.bicikel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.List;
 
 import si.virag.bicikel.data.Station;
@@ -213,7 +212,9 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		viewFlipper.setDisplayedChild(0);
 		waitingForLocation = true;
 		loadInProgress = true;
-        gpsManager.findCurrentLocation(this, gpsLocationHandler);        
+		
+		gpsManager.findCurrentLocation(this, gpsLocationHandler);
+		
         loadingText.setText(getString(R.string.loading));
         throbber.setVisibility(View.VISIBLE);               
         getSupportLoaderManager().getLoader(INFO_LOADER_ID).forceLoad();
@@ -226,22 +227,12 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		if (stationInfo == null)
 			return;
 		
-		Location currentLocation = gpsManager.getCurrentLocation();
+		final Location currentLocation = gpsManager.getCurrentLocation();
 		
 		if (currentLocation != null)
 		{
 			waitingForLocation = false;
 			stationInfo.calculateDistances(currentLocation);
-			
-			stationInfoAdapter.sort(new Comparator<Station>()
-			{
-				@Override
-				public int compare(Station object1, Station object2)
-				{
-					return object1.getDistance().compareTo(object2.getDistance());
-				}
-			});
-			
 			stationInfoAdapter.notifyDataSetChanged();
 		}
 	}
