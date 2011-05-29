@@ -119,7 +119,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 				Location myLoc = E6ToLocation(myLocation.getMyLocation().getLatitudeE6(), 
 											  myLocation.getMyLocation().getLongitudeE6());
 				
-				if (myLoc.distanceTo(centerLoc) > 10000)
+				if (myLoc.distanceTo(centerLoc) > 3000)
 					return;
 				
 				MapController controller = mapView.getController();
