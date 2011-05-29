@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import si.virag.bicikel.data.Station;
 import si.virag.bicikel.data.StationInfo;
 import si.virag.bicikel.map.MapActivity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -61,6 +65,9 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	
 	private Long lastUpdate;
 	
+	// GA
+	private GoogleAnalyticsTracker tracker;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -98,7 +105,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			@Override
 			public void onClick(View arg0)
 			{
-				 showAllStationsMap();
+				tracker.trackEvent("StationList", "Click", "MapButton", 0);
+				showAllStationsMap();
 			}
 		});
         
@@ -107,6 +115,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			@Override
 			public void onClick(View v)
 			{
+				tracker.trackEvent("StationList", "Click", "SearchButton", 0);
 				toggleSearchBox();
 			}
 		});
@@ -144,6 +153,9 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         
         getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this);
         
+        // GA
+        tracker = GoogleAnalyticsTracker.getInstance();
+        tracker.start(getString(R.string.analytics_id), 500, this);
     }
     
 	@Override
@@ -232,6 +244,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 				newActivity.putExtra("free", free);
 				newActivity.putExtra("bikes", bikes);
 				
+				tracker.trackEvent("StationInfo", "StationSelect", String.valueOf(station.getId()), 0);
+				
 				startActivity(newActivity);
 			}
 		});
@@ -313,6 +327,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	protected void onResume()
 	{
 		super.onResume();
+		tracker.trackPageView("/StationList");
 		
 		if (lastUpdate != null && lastUpdate != 0 && Calendar.getInstance().getTimeInMillis() - lastUpdate > 5 * 60 * 1000)
 		{
@@ -321,20 +336,42 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	}
 	
 	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		tracker.stop();
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch(item.getItemId())
 		{
 			case MENU_ABOUT:
+				tracker.trackEvent("StationInfo", "Click", "MenuAbout", 0);
+				
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle(getString(R.string.app_name) + " " + getString(R.string.app_ver));
 				builder.setMessage(getString(R.string.app_about));
+				builder.setNeutralButton(R.string.about_legal, new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+							Intent intent = new Intent(Intent.ACTION_VIEW);
+							intent.setData(Uri.parse("http://www.virag.si/bicikel/legal.html"));
+							tracker.trackEvent("StationInfo", "Click", "AboutLegal", 0);
+							startActivity(intent);
+					}
+				});
 				
 				AlertDialog alert = builder.create();
 				alert.show();
 				break;
 				
 			case MENU_REFRESH:
+				tracker.trackEvent("StationInfo", "Click", "MenuRefresh", 0);
+				
 				if (!loadInProgress)
 				{
 					this.runOnUiThread(new Runnable()
@@ -377,6 +414,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		}
 		else
 		{
+			tracker.trackEvent("StationInfo", "SearchToggle", filterText.getText().toString(), 0);
 			filterText.setText("");
 			filterText.setVisibility(View.GONE);
 		}
@@ -385,6 +423,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	@Override
 	public boolean onSearchRequested()
 	{
+		tracker.trackEvent("StationInfo", "KeyPress", "Search", 0);
 		toggleSearchBox();
 		return true;
 	}
