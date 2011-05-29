@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -35,11 +36,17 @@ public class MapActivity extends com.google.android.maps.MapActivity
 	private MyLocationOverlay myLocation;
 	private View infoView;
 	
+	private GoogleAnalyticsTracker tracker;
+	
+	private boolean showingWholeMap;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map_activity);
+		
+		tracker = GoogleAnalyticsTracker.getInstance();
 		
 		mapView = (MapView) findViewById(R.id.map);
 		infoView = (View) findViewById(R.id.station_info);
@@ -67,7 +74,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			markers.add(station);
 		}
 		
-		overlays.add(new StationOverlay(infoView, marker, markers));
+		overlays.add(new StationOverlay(infoView, tracker, marker, markers));
 		
 		// If we're showing only one point, center on it
 		if (lats.length == 1)
@@ -86,6 +93,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			bikesView.setText(String.valueOf(bikes[0]));
 			
 			infoView.setVisibility(View.VISIBLE);
+			showingWholeMap = false;			
 		}
 		else
 		{
@@ -93,6 +101,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			MapController controller = mapView.getController();
 			controller.setCenter(pt);
 			controller.setZoom(15);
+			showingWholeMap = true;
 		}
 		
 		// Add user location overlay
@@ -141,6 +150,15 @@ public class MapActivity extends com.google.android.maps.MapActivity
 	protected void onResume()
 	{
 		super.onResume();
+		if (showingWholeMap)
+		{
+			tracker.trackPageView("/MapView/whole");
+		}
+		else
+		{
+			tracker.trackPageView("/MapView/single");
+		}
+
 		myLocation.enableCompass();
 		myLocation.enableMyLocation();
 	}
