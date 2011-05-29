@@ -420,6 +420,9 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			tracker.trackEvent("StationInfo", "SearchToggle", filterText.getText().toString(), 0);
 			filterText.setText("");
 			filterText.setVisibility(View.GONE);
+			
+			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(filterText.getWindowToken(), 0);
 		}
 	}
 	
