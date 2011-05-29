@@ -164,6 +164,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		}
 		
 		stationInfoAdapter.clear();
+		
 		for (Station station : stationInfo.getStations())
 		{
 			stationInfoAdapter.add(station);
