@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
@@ -19,16 +20,19 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 	private List<OverlayItem> items = new ArrayList<OverlayItem>();
 	private List<StationMarker> markers;
 	
+	private GoogleAnalyticsTracker tracker;
+	
 	private TextView stationName;
 	private TextView numBikes;
 	private TextView freeSpaces;
 	
-	public StationOverlay(View infoView, Drawable marker, List<StationMarker> markers)
+	public StationOverlay(View infoView, GoogleAnalyticsTracker tracker, Drawable marker, List<StationMarker> markers)
 	{
 		super(marker);
 	
 		this.infoView = infoView;
 		this.markers = markers;
+		this.tracker = tracker;
 		
 		stationName = (TextView) infoView.findViewById(R.id.txt_station_name);
 		numBikes = (TextView)infoView.findViewById(R.id.txt_bikenum);
@@ -54,6 +58,8 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 	@Override
 	protected boolean onTap(int index)
 	{
+		tracker.trackEvent("MapView", "MarkerTap", items.get(index).getTitle(), 0);
+		
 		stationName.setText(items.get(index).getTitle());
 		numBikes.setText(String.valueOf(markers.get(index).getBikes()));
 		freeSpaces.setText(String.valueOf(markers.get(index).getFree()));
