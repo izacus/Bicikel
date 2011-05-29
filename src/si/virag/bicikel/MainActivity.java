@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-
 import si.virag.bicikel.data.Station;
 import si.virag.bicikel.data.StationInfo;
 import si.virag.bicikel.map.MapActivity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
@@ -29,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -37,6 +37,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
+
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 public class MainActivity extends FragmentActivity implements LoaderCallbacks<StationInfo>, TextWatcher
 {
@@ -90,15 +92,13 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         	
         	if (savedInstanceState.containsKey("filter"))
         	{
+        		Log.d(this.toString(), "Found stored filter value, setting...");
         		filterText.setVisibility(View.VISIBLE);
         		filterText.setText(savedInstanceState.getString("filter"));
         	}
         }
         
         filterText.addTextChangedListener(this);
-        
-        stationInfoAdapter = new StationListAdapter(this, R.layout.station_list_item, new ArrayList<Station>());
-        stationList.setAdapter(stationInfoAdapter);
         
         mapButton.setOnClickListener(new OnClickListener()
 		{
@@ -205,21 +205,27 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			gpsManager.cancelSearch();
 		}
 		
+		if (stationInfoAdapter == null || stationInfoAdapter.getContext() != this)
+		{
+			stationInfoAdapter = new StationListAdapter(this, R.layout.station_list_item, new ArrayList<Station>());
+			stationList.setAdapter(stationInfoAdapter);
+		}
+			
 		// Fill in station data and notify adapter for the change
 		stationInfoAdapter.clear();
 		for (Station station : stationInfo.getStations())
 		{
 			stationInfoAdapter.add(station);
 		}
-		stationInfoAdapter.notifyDataSetChanged();
 		
 		// Check if there is text in search input
 		// This use case happens when orientation changes
 		if (filterText.getVisibility() == View.VISIBLE && filterText.getText().toString().trim().length() > 0)
 		{
-			stationInfoAdapter.getFilter().filter(filterText.getText());
+			stationInfoAdapter.getFilter().filter(filterText.getText().toString().trim());
 		}
 		
+		stationInfoAdapter.notifyDataSetChanged();
 		viewFlipper.showNext();
 		
 		stationList.setOnItemClickListener(new OnItemClickListener()
@@ -403,14 +409,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		if (filterText.getVisibility() == View.GONE)
 		{
 			filterText.setVisibility(View.VISIBLE);
-			filterText.post(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					filterText.requestFocus();
-				}
-			});
+			filterText.requestFocus();
+			Log.d(this.toString(), "Showing search...");
+			
+			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.showSoftInput(filterText, 0);
 		}
 		else
 		{
@@ -457,6 +460,9 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count)
 	{
+		if (stationInfoAdapter == null)
+			return;
+		
 		if (s.toString().trim().length() > 0)
 		{
 			stationInfoAdapter.getFilter().filter(s.toString().trim());
