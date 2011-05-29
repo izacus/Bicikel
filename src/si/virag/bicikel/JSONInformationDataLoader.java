@@ -72,7 +72,11 @@ public class JSONInformationDataLoader extends AsyncLoader<StationInfo>
 				station.setAvailableBikes(stationStatus.getInt("available"));
 				station.setFreeSpaces(stationStatus.getInt("free"));
 				station.setTotalSpaces(stationStatus.getInt("total"));
-				info.addStation(station);
+				
+				if (station.getTotalSpaces() > 0)
+				{
+					info.addStation(station);
+				}
 				
 				Log.d(this.toString(), "Station " + station.getName() + " added.");
 			}
