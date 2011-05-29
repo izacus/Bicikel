@@ -75,7 +75,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			GeoPoint pt = new GeoPoint((int)(lngs[0] * 1E6), (int)(lats[0] * 1E6));
 			MapController controller = mapView.getController();
 			controller.setCenter(pt);
-			controller.setZoom(17);
+			controller.setZoom(16);
 			
 			TextView nameView = (TextView)infoView.findViewById(R.id.txt_station_name);
 			TextView freeView = (TextView)infoView.findViewById(R.id.txt_freenum);
