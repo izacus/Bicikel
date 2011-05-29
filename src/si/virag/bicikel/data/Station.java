@@ -110,6 +110,13 @@ public class Station
 	}
 	
 	@Override
+	public String toString()
+	{
+		Log.d("Station", "Returning " + this.name);
+		return this.name;
+	}
+
+	@Override
 	public boolean equals(Object o)
 	{
 		Station s = (Station)o;
