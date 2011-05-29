@@ -215,7 +215,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				Station station = stationInfo.getStations().get(position);
+				Station station = stationInfoAdapter.getItem(position);
 				
 				Intent newActivity = new Intent(MainActivity.this, MapActivity.class);
 				
@@ -366,11 +366,17 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		if (filterText.getVisibility() == View.GONE)
 		{
 			filterText.setVisibility(View.VISIBLE);
-			filterText.requestFocus();
+			filterText.post(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					filterText.requestFocus();
+				}
+			});
 		}
 		else
 		{
-			filterText.clearFocus();
 			filterText.setText("");
 			filterText.setVisibility(View.GONE);
 		}
@@ -412,7 +418,16 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count)
 	{
-		stationInfoAdapter.getFilter().filter(s.toString().trim());
+		if (s.toString().trim().length() > 0)
+		{
+			stationInfoAdapter.getFilter().filter(s.toString().trim());
+			Log.i(this.toString(), "Filtering to " + s);
+		}
+		else
+		{
+			stationInfoAdapter.getFilter().filter("");
+		}
+			
 		stationInfoAdapter.notifyDataSetChanged();
 	}
     
