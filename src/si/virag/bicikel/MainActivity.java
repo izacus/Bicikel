@@ -291,6 +291,13 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		{
 			waitingForLocation = false;
 			stationInfo.calculateDistances(currentLocation);
+			stationInfoAdapter.clear();
+			
+			for (Station station : stationInfo.getStations())
+			{
+				stationInfoAdapter.add(station);
+			}
+			
 			stationInfoAdapter.notifyDataSetChanged();
 		}
 	}
