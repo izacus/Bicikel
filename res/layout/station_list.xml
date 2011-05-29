@@ -11,28 +11,61 @@
  	android:layout_alignParentRight = "true"
  	android:layout_alignParentTop = "true"
  	android:background = "@drawable/button_title"
- 	android:src = "@drawable/pushpin"
+ 	android:src = "@drawable/pin"
  	android:scaleType = "center"
     />
- 	
- <LinearLayout
- 	android:id = "@+id/delimiter"
- 	android:layout_height = "@dimen/title_height"
- 	android:layout_width = "1sp"
- 	android:layout_toLeftOf = "@id/map_button"
- 	android:background = "#CCC" />
+  
+   <LinearLayout
+    android:id = "@+id/delimiter1"
+    android:layout_height = "@dimen/title_height"
+    android:layout_width = "1sp"
+    android:layout_toLeftOf = "@id/map_button"
+    android:background = "#EEE" />
+        
+  <ImageButton
+    android:id = "@+id/search_button"
+    android:layout_width = "45dp"
+    android:layout_height = "@dimen/title_height"
+    android:layout_toLeftOf = "@id/delimiter1"
+    android:layout_alignParentTop = "true"
+    android:background = "@drawable/button_title"
+    android:src = "@drawable/search"
+    android:scaleType = "center"
+    />
+   
+  <LinearLayout
+    android:id = "@+id/delimiter2"
+    android:layout_height = "@dimen/title_height"
+    android:layout_width = "1sp"
+    android:layout_toLeftOf = "@id/search_button"
+    android:background = "#EEE" /> 	
+
 
  <include layout="@layout/title_bar"
  		android:id = "@+id/title_bar"
  		android:layout_width = "wrap_content"
  		android:layout_height = "@dimen/title_height"
  		android:layout_alignParentLeft = "true"
-        android:layout_toLeftOf = "@id/delimiter" />
+        android:layout_toLeftOf = "@id/delimiter2" />
+ 
+ <EditText
+    android:id = "@+id/edit_filter"
+    android:layout_width = "fill_parent"
+    android:layout_height = "wrap_content"
+    android:layout_below = "@id/title_bar"
+    android:visibility = "gone"
+    android:maxLines = "1"
+    android:lines = "1"
+    android:layout_margin = "5dp"
+    android:hint = "@string/search_hint" 
+    android:inputType = "textCapSentences"
+    android:imeOptions = "flagNoExtractUi"
+    />
  
  <ListView
 	  android:layout_width="fill_parent"
 	  android:layout_height="fill_parent"
-	  android:layout_below = "@id/title_bar"
+	  android:layout_below = "@id/edit_filter"
 	  android:id = "@+id/station_list">
  </ListView>
 

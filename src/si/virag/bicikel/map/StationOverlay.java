@@ -54,13 +54,10 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 	@Override
 	protected boolean onTap(int index)
 	{
-		//Toast.makeText(context, items.get(index).getTitle(), Toast.LENGTH_SHORT).show();
 		stationName.setText(items.get(index).getTitle());
 		numBikes.setText(String.valueOf(markers.get(index).getBikes()));
 		freeSpaces.setText(String.valueOf(markers.get(index).getFree()));
-		
 		infoView.setVisibility(View.VISIBLE);
-		
 		
 		return true;
 	}

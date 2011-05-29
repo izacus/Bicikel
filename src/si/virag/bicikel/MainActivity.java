@@ -16,6 +16,8 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -25,13 +27,14 @@ import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-public class MainActivity extends FragmentActivity implements LoaderCallbacks<StationInfo>
+public class MainActivity extends FragmentActivity implements LoaderCallbacks<StationInfo>, TextWatcher
 {
 	private static final int INFO_LOADER_ID = 1;
 	
@@ -43,6 +46,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	private TextView loadingText;
 	private ProgressBar throbber;
 	private ImageButton mapButton;
+	private ImageButton searchButton;
+	private EditText filterText;
 	
 	private StationInfo stationInfo;
 	private StationListAdapter stationInfoAdapter;
@@ -63,16 +68,27 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         
-        if (savedInstanceState != null)
-        {
-        	lastUpdate = savedInstanceState.getLong("lastupdate");
-        }
-        
         viewFlipper = (ViewFlipper) findViewById(R.id.main_flipper);
         stationList = (ListView) findViewById(R.id.station_list);
         loadingText = (TextView) findViewById(R.id.txt_loading);
         throbber = (ProgressBar) findViewById(R.id.loading_progress);
         mapButton = (ImageButton) findViewById(R.id.map_button);
+        searchButton = (ImageButton) findViewById(R.id.search_button);
+        filterText = (EditText) findViewById(R.id.edit_filter);
+        
+        // Check for saved state
+        if (savedInstanceState != null)
+        {
+        	lastUpdate = savedInstanceState.getLong("lastupdate");
+        	
+        	if (savedInstanceState.containsKey("filter"))
+        	{
+        		filterText.setVisibility(View.VISIBLE);
+        		filterText.setText(savedInstanceState.getString("filter"));
+        	}
+        }
+        
+        filterText.addTextChangedListener(this);
         
         stationInfoAdapter = new StationListAdapter(this, R.layout.station_list_item, new ArrayList<Station>());
         stationList.setAdapter(stationInfoAdapter);
@@ -86,10 +102,19 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			}
 		});
         
+        searchButton.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				toggleSearchBox();
+			}
+		});
+        
+        
         // Set view flipper animations
         viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
         viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
-        
         viewFlipper.setDisplayedChild(0);
         
         // Setup delayed GPS location handler
@@ -135,6 +160,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		
 		if (lastUpdate != null)
 			outState.putLong("lastupdate", lastUpdate);
+		
+		if (filterText.getVisibility() == View.VISIBLE && filterText.getText().toString().trim().length() > 0)
+		{
+			outState.putString("filter", filterText.getText().toString());
+		}
 	}
 
 	@Override
@@ -154,8 +184,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			return;
 		}
 		
+		// Update location if location data is available
 		currentLocation = gpsManager.getCurrentLocation();
-		
 		if (currentLocation != null)
 		{
 			stationInfo.calculateDistances(currentLocation);
@@ -163,14 +193,21 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			gpsManager.cancelSearch();
 		}
 		
+		// Fill in station data and notify adapter for the change
 		stationInfoAdapter.clear();
-		
 		for (Station station : stationInfo.getStations())
 		{
 			stationInfoAdapter.add(station);
 		}
-		
 		stationInfoAdapter.notifyDataSetChanged();
+		
+		// Check if there is text in search input
+		// This use case happens when orientation changes
+		if (filterText.getVisibility() == View.VISIBLE && filterText.getText().toString().trim().length() > 0)
+		{
+			stationInfoAdapter.getFilter().filter(filterText.getText());
+		}
+		
 		viewFlipper.showNext();
 		
 		stationList.setOnItemClickListener(new OnItemClickListener()
@@ -282,7 +319,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			refreshData();
 		}
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -322,6 +359,61 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		menu.add(0, MENU_REFRESH, 0, getString(R.string.menu_refresh)).setIcon(R.drawable.refresh);
 		menu.add(0, MENU_ABOUT, 1, getString(R.string.menu_about)).setIcon(R.drawable.info);
 		return super.onCreateOptionsMenu(menu);
+	}
+	
+	private void toggleSearchBox()
+	{
+		if (filterText.getVisibility() == View.GONE)
+		{
+			filterText.setVisibility(View.VISIBLE);
+			filterText.requestFocus();
+		}
+		else
+		{
+			filterText.clearFocus();
+			filterText.setText("");
+			filterText.setVisibility(View.GONE);
+		}
+	}
+	
+	@Override
+	public boolean onSearchRequested()
+	{
+		toggleSearchBox();
+		return true;
+	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		if (filterText.getVisibility() == View.VISIBLE)
+		{
+			toggleSearchBox();
+		}
+		else
+		{
+			super.onBackPressed();
+		}
+	}	
+	
+	@Override
+	public void afterTextChanged(Editable s)
+	{
+		// Nothing TBD
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after)
+	{
+		// Nothing TBD
+	}
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count)
+	{
+		stationInfoAdapter.getFilter().filter(s.toString().trim());
+		stationInfoAdapter.notifyDataSetChanged();
 	}
     
 }
