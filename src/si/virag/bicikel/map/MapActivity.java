@@ -114,8 +114,12 @@ public class MapActivity extends com.google.android.maps.MapActivity
 					return;
 				
 				MapController controller = mapView.getController();
-				controller.animateTo(myLocation.getMyLocation());
-				controller.setZoom(16);
+				
+				if (myLocation.getMyLocation() != null)
+				{
+					controller.animateTo(myLocation.getMyLocation());
+					controller.setZoom(16);
+				}
 			}
 		});
 		
