@@ -183,9 +183,11 @@ public class GPSManager implements LocationListener
 		
 		if (currentLocation != null && (currentTime - currentLocation.getTime() < NEW_LOCATION_FIX_MILLIS))
 		{
+			Log.d(this.toString(), "Valid current location, lat: " + currentLocation.getLatitude() + " lng: " + currentLocation.getLongitude());
 			return currentLocation;
 		}
 		
+		Log.d(this.toString(), "Request for a non-valid location.");
 		return null;
 	}
 }

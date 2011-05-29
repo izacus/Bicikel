@@ -61,7 +61,7 @@ public class Station
 
 	public String getName()
 	{
-		return name;
+		return name.replaceAll("-", "\n");
 	}
 
 	public String getAddress()
