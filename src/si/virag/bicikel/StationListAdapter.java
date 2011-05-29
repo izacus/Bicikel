@@ -14,7 +14,6 @@ import android.widget.TextView;
 public class StationListAdapter extends ArrayAdapter<Station>
 {
 	private Activity context;
-	private List<Station> stations;
 	
 	private static class StationViewHolder
 	{
@@ -28,7 +27,6 @@ public class StationListAdapter extends ArrayAdapter<Station>
 	{
 		super(context, textViewResourceId, items);
 		this.context = context;
-		this.stations = items;
 	}
 
 	@Override
@@ -54,13 +52,13 @@ public class StationListAdapter extends ArrayAdapter<Station>
 			viewHolder = (StationViewHolder)view.getTag();
 		}
 		
-		viewHolder.bikeNum.setText(String.valueOf(stations.get(position).getAvailableBikes()));
-		viewHolder.freeSpaces.setText(String.valueOf(stations.get(position).getFreeSpaces()));
-		viewHolder.stationName.setText(stations.get(position).getName().replaceAll("-", "\n"));
+		viewHolder.bikeNum.setText(String.valueOf(getItem(position).getAvailableBikes()));
+		viewHolder.freeSpaces.setText(String.valueOf(getItem(position).getFreeSpaces()));
+		viewHolder.stationName.setText(getItem(position).getName().replaceAll("-", "\n"));
 		
-		if (stations.get(position).getDistance() != null)
+		if (getItem(position).getDistance() != null)
 		{
-			viewHolder.distance.setText(formatDistance(stations.get(position).getDistance()));
+			viewHolder.distance.setText(formatDistance(getItem(position).getDistance()));
 			viewHolder.distance.setVisibility(View.VISIBLE);
 		}
 		else
@@ -84,4 +82,6 @@ public class StationListAdapter extends ArrayAdapter<Station>
 			return String.format(Locale.GERMAN, "%,.2f", distance / 1000) + " km";
 		}
 	}
+	
+	
 }
