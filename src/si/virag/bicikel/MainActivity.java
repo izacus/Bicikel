@@ -1,6 +1,8 @@
 package si.virag.bicikel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 
 import si.virag.bicikel.data.Station;
@@ -44,6 +46,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	private ImageButton mapButton;
 	
 	private StationInfo stationInfo;
+	private StationListAdapter stationInfoAdapter;
 	private Location currentLocation;
 	
 	private GPSManager gpsManager;
@@ -71,6 +74,9 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         loadingText = (TextView) findViewById(R.id.txt_loading);
         throbber = (ProgressBar) findViewById(R.id.loading_progress);
         mapButton = (ImageButton) findViewById(R.id.map_button);
+        
+        stationInfoAdapter = new StationListAdapter(this, R.layout.station_list_item, new ArrayList<Station>());
+        stationList.setAdapter(stationInfoAdapter);
         
         mapButton.setOnClickListener(new OnClickListener()
 		{
@@ -158,8 +164,13 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			gpsManager.cancelSearch();
 		}
 		
-		StationListAdapter adapter = new StationListAdapter(this, R.layout.station_list_item, stationInfo.getStations());
-		stationList.setAdapter(adapter);
+		stationInfoAdapter.clear();
+		for (Station station : stationInfo.getStations())
+		{
+			stationInfoAdapter.add(station);
+		}
+		
+		stationInfoAdapter.notifyDataSetChanged();
 		viewFlipper.showNext();
 		
 		stationList.setOnItemClickListener(new OnItemClickListener()
@@ -221,7 +232,17 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		{
 			waitingForLocation = false;
 			stationInfo.calculateDistances(currentLocation);
-			stationList.setAdapter(new StationListAdapter(this, R.layout.station_list_item, stationInfo.getStations()));
+			
+			stationInfoAdapter.sort(new Comparator<Station>()
+			{
+				@Override
+				public int compare(Station object1, Station object2)
+				{
+					return object1.getDistance().compareTo(object2.getDistance());
+				}
+			});
+			
+			stationInfoAdapter.notifyDataSetChanged();
 		}
 	}
 	

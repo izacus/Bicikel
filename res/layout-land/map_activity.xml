@@ -22,7 +22,7 @@
     android:layout_height = "fill_parent"
     android:layout_below = "@id/title_bar"
     android:layout_above = "@id/station_info"
-    android:apiKey = "0oTmqtEHq-AlR8agGHCYxhppJyxBEbKyzlYMa0A"
+    android:apiKey = "0oTmqtEHq-AmPqfXWthSXkMladNn--3qUmoQO9g"
     android:clickable = "true" />
   
 
