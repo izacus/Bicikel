@@ -12,7 +12,7 @@
  	android:layout_alignParentTop = "true"
  	android:background = "@drawable/button_title"
  	android:src = "@drawable/pushpin"
- 	android:scaleType = "centerInside"
+ 	android:scaleType = "center"
     />
  	
  <LinearLayout
