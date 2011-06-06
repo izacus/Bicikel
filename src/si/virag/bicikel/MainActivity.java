@@ -155,12 +155,14 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         
         // GA
         tracker = GoogleAnalyticsTracker.getInstance();
-        tracker.start(getString(R.string.analytics_id), 500, this);
+        tracker.start(getString(R.string.analytics_id), this);
     }
     
 	@Override
 	public Loader<StationInfo> onCreateLoader(int id, Bundle args)
 	{
+		// Send analytics data, consider refresh as user permission
+		tracker.dispatch();
 		JSONInformationDataLoader infoLoader = new JSONInformationDataLoader(this);
 		return infoLoader;
 	}
