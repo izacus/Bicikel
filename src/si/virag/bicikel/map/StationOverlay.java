@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import si.virag.bicikel.R;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
@@ -26,7 +27,11 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 	private TextView numBikes;
 	private TextView freeSpaces;
 	
-	public StationOverlay(View infoView, GoogleAnalyticsTracker tracker, Drawable marker, List<StationMarker> markers)
+	private Drawable defaultInfoBackground;
+	private int fullColor;
+	private int emptyColor;
+	
+	public StationOverlay(Context context, View infoView, GoogleAnalyticsTracker tracker, Drawable marker, List<StationMarker> markers)
 	{
 		super(marker);
 	
@@ -37,6 +42,10 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 		stationName = (TextView) infoView.findViewById(R.id.txt_station_name);
 		numBikes = (TextView)infoView.findViewById(R.id.txt_bikenum);
 		freeSpaces = (TextView)infoView.findViewById(R.id.txt_freenum);
+		
+		defaultInfoBackground = infoView.getBackground();
+		fullColor = context.getResources().getColor(R.color.full_background);
+		emptyColor = context.getResources().getColor(R.color.empty_background);
 		
 		for (StationMarker station : markers)
 		{
@@ -58,11 +67,28 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 	@Override
 	protected boolean onTap(int index)
 	{
+		int bikeNumber = markers.get(index).getBikes();
+		int freeNumber = markers.get(index).getFree();
+		
 		tracker.trackEvent("MapView", "MarkerTap", items.get(index).getTitle(), 0);
 		
 		stationName.setText(items.get(index).getTitle());
-		numBikes.setText(String.valueOf(markers.get(index).getBikes()));
-		freeSpaces.setText(String.valueOf(markers.get(index).getFree()));
+		numBikes.setText(String.valueOf(bikeNumber));
+		freeSpaces.setText(String.valueOf(freeNumber));
+		
+		if (bikeNumber == 0)
+		{
+			infoView.setBackgroundColor(emptyColor);
+		}
+		else if (freeNumber == 0)
+		{
+			infoView.setBackgroundColor(fullColor);
+		}
+		else
+		{
+			infoView.setBackgroundDrawable(defaultInfoBackground);
+		}
+		
 		infoView.setVisibility(View.VISIBLE);
 		
 		return true;

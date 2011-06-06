@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import si.virag.bicikel.data.Station;
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class StationListAdapter extends ArrayAdapter<Station>
-{
-	private Activity context;
-	
+{	
 	private static class StationViewHolder
 	{
 		public TextView bikeNum;
@@ -23,10 +22,25 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		public TextView distance;
 	}
 	
+	private Activity context;
+	
+	private Drawable defaultBackground;
+	private int fullStation;
+	private int emptyStation;
+	
 	public StationListAdapter(Activity context, int textViewResourceId, List<Station> items)
 	{
 		super(context, textViewResourceId, items);
 		this.context = context;
+		
+		// Get default background color
+		LayoutInflater li = context.getLayoutInflater();
+		View view = li.inflate(R.layout.station_list_item, null);
+		defaultBackground = view.getBackground();
+		
+		// Get colors for full or empty stations
+		fullStation = context.getResources().getColor(R.color.full_background);
+		emptyStation = context.getResources().getColor(R.color.empty_background);
 	}
 
 	@Override
@@ -64,6 +78,20 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		else
 		{
 			viewHolder.distance.setVisibility(View.GONE);
+		}
+		
+		// Colorize background
+		if (getItem(position).getAvailableBikes() == 0)
+		{
+			view.setBackgroundColor(emptyStation);
+		}
+		else if (getItem(position).getFreeSpaces() == 0)
+		{
+			view.setBackgroundColor(fullStation);
+		}
+		else 
+		{
+			view.setBackgroundDrawable(defaultBackground);
 		}
 		
 		return view;
