@@ -298,7 +298,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 				stationInfoAdapter.add(station);
 			}
 			
-			stationInfoAdapter.notifyDataSetChanged();
+			stationInfoAdapter.notifyDataSetInvalidated();
 		}
 	}
 	
