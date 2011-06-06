@@ -59,22 +59,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		int[] free = extras.getIntArray("free");
 		int[] bikes = extras.getIntArray("bikes");
 		
-		// Prepare overlays
-		List<Overlay> overlays = mapView.getOverlays();
-		overlays.clear();
-		
-		Drawable marker = getResources().getDrawable(R.drawable.cycling);
-		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
-		
-		List<StationMarker> markers = new ArrayList<StationMarker>();
-		
-		for (int i = 0; i < lats.length; i++)
-		{
-			StationMarker station = new StationMarker(lngs[i], lats[i], names[i], free[i], bikes[i]);
-			markers.add(station);
-		}
-		
-		overlays.add(new StationOverlay(infoView, tracker, marker, markers));
+		List<Overlay> overlays = prepareOverlays(lats, lngs, names, free, bikes);
 		
 		// If we're showing only one point, center on it
 		if (lats.length == 1)
@@ -91,6 +76,15 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			nameView.setText(names[0]);
 			freeView.setText(String.valueOf(free[0]));
 			bikesView.setText(String.valueOf(bikes[0]));
+			
+			if (free[0] == 0)
+			{
+				infoView.setBackgroundColor(getResources().getColor(R.color.full_background));
+			}
+			else if (bikes[0] == 0)
+			{
+				infoView.setBackgroundColor(getResources().getColor(R.color.empty_background));
+			}
 			
 			infoView.setVisibility(View.VISIBLE);
 			showingWholeMap = false;			
@@ -136,6 +130,73 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		
 		mapView.invalidate();
 		mapView.setBuiltInZoomControls(true);
+	}
+
+	/**
+	 * Prepares overlays with station icons
+	 */
+	private List<Overlay> prepareOverlays(double[] lats, double[] lngs, String[] names, int[] free, int[] bikes)
+	{
+		// Prepare overlays
+		List<Overlay> overlays = mapView.getOverlays();
+		overlays.clear();
+		
+		// Normal markers
+		Drawable marker = getResources().getDrawable(R.drawable.cycling);
+		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
+		
+		List<StationMarker> normalMarkers = new ArrayList<StationMarker>();
+		
+		for (int i = 0; i < lats.length; i++)
+		{
+			// Skip full or empty stations
+			if (free[i] == 0 || bikes[i] == 0)
+				continue;
+			
+			StationMarker station = new StationMarker(lngs[i], lats[i], names[i], free[i], bikes[i]);
+			normalMarkers.add(station);
+		}
+		
+		overlays.add(new StationOverlay(this, infoView, tracker, marker, normalMarkers));
+		
+		
+		// Full station markers
+		Drawable fullMarker = getResources().getDrawable(R.drawable.cycling_green);
+		fullMarker.setBounds(0, 0, fullMarker.getIntrinsicWidth(), fullMarker.getIntrinsicHeight());
+		
+		List<StationMarker> fullMarkers = new ArrayList<StationMarker>();
+		
+		for (int i = 0; i < lats.length; i++)
+		{
+			// Skip full or empty stations
+			if (free[i] != 0)
+				continue;
+			
+			StationMarker station = new StationMarker(lngs[i], lats[i], names[i], free[i], bikes[i]);
+			fullMarkers.add(station);
+		}
+		
+		overlays.add(new StationOverlay(this, infoView, tracker, fullMarker, fullMarkers));
+		
+		// Empty station markers
+		Drawable emptyMarker = getResources().getDrawable(R.drawable.cycling_red);
+		emptyMarker.setBounds(0, 0, emptyMarker.getIntrinsicWidth(), emptyMarker.getIntrinsicHeight());
+		
+		List<StationMarker> emptyMarkers = new ArrayList<StationMarker>();
+		
+		for (int i = 0; i < lats.length; i++)
+		{
+			// Skip full or empty stations
+			if (bikes[i] != 0)
+				continue;
+			
+			StationMarker station = new StationMarker(lngs[i], lats[i], names[i], free[i], bikes[i]);
+			emptyMarkers.add(station);
+		}
+		
+		overlays.add(new StationOverlay(this, infoView, tracker, emptyMarker, emptyMarkers));
+		
+		return overlays;
 	}
 	
 	@Override
