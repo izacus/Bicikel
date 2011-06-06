@@ -151,11 +151,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         loadInProgress = true;
         waitingForLocation = true;
         
-        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this);
-        
         // GA
         tracker = GoogleAnalyticsTracker.getInstance();
         tracker.start(getString(R.string.analytics_id), this);
+        
+        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this);
     }
     
 	@Override
