@@ -4,4 +4,13 @@
         name="title_gradient_start">#248F24</color>
     <color
         name="title_gradient_end">#33CC33</color>
+    <color
+        name="text_free">#009900</color>
+    <color
+        name="text_bikes">#CC0000</color>
+     
+    <color
+        name="empty_background">#ffdddd</color>
+    <color
+        name="full_background">#ddffdd</color>
 </resources>

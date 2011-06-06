@@ -24,7 +24,7 @@
 		  
 		    android:textSize = "26dp"
 		    android:textStyle = "bold"
-		    android:textColor = "#C00"
+		    android:textColor = "@color/text_bikes"
 	    />
 	    
 	    <TextView
@@ -55,7 +55,7 @@
           
             android:textSize = "26dp"
             android:textStyle = "bold"
-            android:textColor = "#090"
+            android:textColor = "@color/text_free"
         />
         
         <TextView
