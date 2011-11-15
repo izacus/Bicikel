@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    >
+
+<RelativeLayout  
   android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:layout_marginLeft = "10dp"
-  android:layout_marginRight = "10dp">
+  android:layout_height="70dp"
+  android:layout_marginLeft = "8dp"
+  android:layout_marginRight = "8dp">
  
   <LinearLayout
     android:id = "@+id/bikenum"
     android:layout_width = "45dp"
     android:layout_height = "wrap_content"
     android:layout_alignParentLeft = "true"
-    android:layout_centerVertical = "true"
-    android:layout_margin = "5dp"
+    android:layout_alignParentTop="true"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
     android:orientation = "vertical"
     >
     
@@ -40,10 +47,11 @@
   <LinearLayout
     android:id = "@+id/freenum"
     android:layout_width = "45dp"
-    android:layout_height = "wrap_content"
+    android:layout_height = "fill_parent"
     android:layout_alignParentRight = "true"
-    android:layout_centerVertical = "true"
-    android:layout_margin = "5dp"
+    android:layout_alignParentTop="true"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
     android:orientation = "vertical"
     >
     
@@ -72,7 +80,6 @@
     android:id = "@+id/txt_station_name"
     android:layout_width = "wrap_content"
     android:layout_height = "wrap_content"    
-    android:layout_alignParentTop = "true"
     android:layout_centerHorizontal = "true"
     android:layout_marginTop = "10dp"
     
@@ -90,8 +97,6 @@
     android:layout_width = "wrap_content"
     android:layout_height = "wrap_content"    
     android:layout_alignParentBottom = "true"
-    android:layout_below = "@id/txt_station_name"
-    
     android:layout_centerHorizontal = "true"
     android:layout_marginTop = "3dp"
     android:paddingBottom = "5dp"
@@ -99,10 +104,23 @@
     android:layout_toRightOf = "@id/bikenum"
     android:layout_toLeftOf = "@id/freenum"
   
-    android:textSize = "14dp"
+    android:textSize = "12dp"
     android:textColor = "@color/distance_text"
-    android:textStyle = "bold" 
     android:gravity = "center"
     />
-  
 </RelativeLayout>
+<RelativeLayout
+    android:id = "@+id/filled_bar"
+    android:background="@color/bike_gradient_fill"
+    android:layout_width="fill_parent"
+    android:layout_height="1dp" >
+    
+	<LinearLayout
+	    android:id="@+id/free_bar"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:layout_alignParentRight="true"
+	    android:background="@color/free_gradient_fill"
+	    />
+</RelativeLayout>
+</LinearLayout>
