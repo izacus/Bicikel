@@ -5,11 +5,12 @@ import java.util.Locale;
 
 import si.virag.bicikel.data.Station;
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class StationListAdapter extends ArrayAdapter<Station>
@@ -20,27 +21,15 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		public TextView freeSpaces;
 		public TextView stationName;
 		public TextView distance;
+		public LinearLayout free_bar;
 	}
 	
 	private Activity context;
-	
-	private Drawable defaultBackground;
-	private int fullStation;
-	private int emptyStation;
 	
 	public StationListAdapter(Activity context, int textViewResourceId, List<Station> items)
 	{
 		super(context, textViewResourceId, items);
 		this.context = context;
-		
-		// Get default background color
-		LayoutInflater li = context.getLayoutInflater();
-		View view = li.inflate(R.layout.station_list_item, null);
-		defaultBackground = view.getBackground();
-		
-		// Get colors for full or empty stations
-		fullStation = context.getResources().getColor(R.color.full_background);
-		emptyStation = context.getResources().getColor(R.color.empty_background);
 	}
 
 	@Override
@@ -59,15 +48,17 @@ public class StationListAdapter extends ArrayAdapter<Station>
     		viewHolder.freeSpaces = (TextView) view.findViewById(R.id.txt_freenum);
     		viewHolder.stationName = (TextView) view.findViewById(R.id.txt_station_name);
     		viewHolder.distance = (TextView) view.findViewById(R.id.txt_distance);
+    		viewHolder.free_bar = (LinearLayout) view.findViewById(R.id.free_bar);
     		view.setTag(viewHolder);
 		}
 		else
 		{
 			viewHolder = (StationViewHolder)view.getTag();
 		}
+		Station station = getItem(position);
 		
-		viewHolder.bikeNum.setText(String.valueOf(getItem(position).getAvailableBikes()));
-		viewHolder.freeSpaces.setText(String.valueOf(getItem(position).getFreeSpaces()));
+		viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "-" : String.valueOf(station.getAvailableBikes()));
+		viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "-" : String.valueOf(station.getFreeSpaces()));
 		viewHolder.stationName.setText(getItem(position).getName().replaceAll("-", "\n"));
 		
 		if (getItem(position).getDistance() != null)
@@ -80,20 +71,18 @@ public class StationListAdapter extends ArrayAdapter<Station>
 			viewHolder.distance.setVisibility(View.GONE);
 		}
 		
-		// Colorize background
-		if (getItem(position).getAvailableBikes() == 0)
+		LayoutParams params = (LayoutParams) viewHolder.free_bar.getLayoutParams();
+		
+		if (station.getAvailableBikes() == 0)
 		{
-			view.setBackgroundColor(emptyStation);
+			params.width = parent.getWidth();	// This is here to prevent ugly red dot because of rounding errors
 		}
-		else if (getItem(position).getFreeSpaces() == 0)
+		else
 		{
-			view.setBackgroundColor(fullStation);
-		}
-		else 
-		{
-			view.setBackgroundDrawable(defaultBackground);
+			params.width = (parent.getWidth() / (station.getFreeSpaces() + station.getAvailableBikes())) * getItem(position).getFreeSpaces();
 		}
 		
+		viewHolder.free_bar.setLayoutParams(params);
 		return view;
 	}
 	

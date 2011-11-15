@@ -4,8 +4,8 @@
     <string name="app_ver">1.1</string>
     <string name="app_about">Pripombe in poročila o težavah na jernej@virag.si</string>
     
-    <string name="bikes">park. koles</string>
-    <string name="free">prostih mest</string>
+    <string name="bikes">koles</string>
+    <string name="free">mest</string>
     
     <string name="loading">Nalagam...</string>
     <string name="connection_error">Podatkov ni bilo mogoče naložiti,\n prosimo preverite internetno povezavo.</string>
