@@ -10,6 +10,12 @@
         name="text_bikes">#CC0000</color>
      
     <color
+        name="station_text">#000</color>
+    
+    <color
+        name="distance_text">#999</color>
+        
+    <color
         name="empty_background">#ffdddd</color>
     <color
         name="full_background">#ddffdd</color>
