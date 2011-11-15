@@ -80,7 +80,8 @@
     android:layout_toLeftOf = "@id/freenum"
   
     android:typeface = "serif"
-    android:textSize = "15dp" 
+    android:textSize = "15dp"
+    android:textColor="@color/station_text" 
     android:gravity = "center"
     />
   
@@ -99,6 +100,7 @@
     android:layout_toLeftOf = "@id/freenum"
   
     android:textSize = "14dp"
+    android:textColor = "@color/distance_text"
     android:textStyle = "bold" 
     android:gravity = "center"
     />
