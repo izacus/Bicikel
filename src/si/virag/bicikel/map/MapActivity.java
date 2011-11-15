@@ -50,6 +50,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		
 		mapView = (MapView) findViewById(R.id.map);
 		infoView = (View) findViewById(R.id.station_info);
+		infoView.findViewById(R.id.filled_bar).setVisibility(View.INVISIBLE);
 		infoView.setVisibility(View.GONE);
 		
 		Bundle extras = getIntent().getExtras();
@@ -74,17 +75,8 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			TextView bikesView = (TextView)infoView.findViewById(R.id.txt_bikenum);
 			
 			nameView.setText(names[0]);
-			freeView.setText(String.valueOf(free[0]));
-			bikesView.setText(String.valueOf(bikes[0]));
-			
-			if (free[0] == 0)
-			{
-				infoView.setBackgroundColor(getResources().getColor(R.color.full_background));
-			}
-			else if (bikes[0] == 0)
-			{
-				infoView.setBackgroundColor(getResources().getColor(R.color.empty_background));
-			}
+			freeView.setText(free[0] == 0 ? "-" : String.valueOf(free[0]));
+			bikesView.setText(bikes[0] == 0 ? "-" : String.valueOf(bikes[0]));
 			
 			infoView.setVisibility(View.VISIBLE);
 			showingWholeMap = false;			
@@ -129,7 +121,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		overlays.add(myLocation);
 		
 		mapView.invalidate();
-		mapView.setBuiltInZoomControls(true);
+		mapView.setBuiltInZoomControls(false);
 	}
 
 	/**
