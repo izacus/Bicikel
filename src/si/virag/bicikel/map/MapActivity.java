@@ -52,6 +52,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		infoView = (View) findViewById(R.id.station_info);
 		infoView.findViewById(R.id.filled_bar).setVisibility(View.INVISIBLE);
 		infoView.setVisibility(View.GONE);
+		infoView.setOnTouchListener(new StationInfoTouchHandler(this));
 		
 		Bundle extras = getIntent().getExtras();
 		double[] lats = extras.getDoubleArray("lng");
