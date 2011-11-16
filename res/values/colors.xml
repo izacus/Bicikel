@@ -6,10 +6,10 @@
         name="title_gradient_end">#33CC33</color>
     
     <color
-        name="bike_gradient_fill">#7FCC0000</color>
+        name="bike_gradient_fill">#3FCC0000</color>
     
     <color
-        name="free_gradient_fill">#7F009900</color>
+        name="free_gradient_fill">#3F009900</color>
         
     <color
         name="text_free">#009900</color>
