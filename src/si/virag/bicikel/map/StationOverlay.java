@@ -30,7 +30,7 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 	public StationOverlay(Context context, View infoView, GoogleAnalyticsTracker tracker, Drawable marker, List<StationMarker> markers)
 	{
 		super(marker);
-	
+
 		this.infoView = infoView;
 		this.markers = markers;
 		this.tracker = tracker;
@@ -68,7 +68,7 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 		numBikes.setText(bikeNumber == 0 ? "-" : String.valueOf(bikeNumber));
 		freeSpaces.setText(freeNumber == 0 ? "-" : String.valueOf(freeNumber));
 		infoView.setVisibility(View.VISIBLE);
-		
+
 		return true;
 	}
 

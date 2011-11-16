@@ -9,12 +9,27 @@
            android:layout_alignParentTop = "true"
            />
   
-  <include layout="@layout/station_list_item"
-     android:id = "@+id/station_info"
-     android:layout_width = "fill_parent"
-     android:layout_height = "80dp"
-     android:layout_alignParentBottom = "true" />
+  <LinearLayout
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:id = "@+id/station_info"
+      android:orientation="vertical"
+      android:layout_alignParentBottom = "true">
   
+      <TextView 
+		 android:text="@string/show_directions"
+		 android:textColor="@android:color/black"
+		 android:textSize="12dp"
+		 android:textStyle="bold"
+		 android:gravity="center_horizontal"
+		 android:layout_width="fill_parent"      
+		 android:layout_height="wrap_content"
+	      />
+      
+	  <include layout="@layout/station_list_item"
+	     android:layout_width = "fill_parent"
+	     android:layout_height = "80dp"/>
+  </LinearLayout>
   
   <com.google.android.maps.MapView
     android:id = "@+id/map"
