@@ -10,6 +10,8 @@
     <string name="loading">Nalagam...</string>
     <string name="connection_error">Podatkov ni bilo mogoče naložiti,\n prosimo preverite internetno povezavo.</string>
     
+    <string name="show_directions">Pokaži pot do postaje</string>
+        
     <string name="search_hint">Iskanje po postajah</string>
     
     <string name="menu_refresh">Osveži</string>
