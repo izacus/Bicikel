@@ -69,20 +69,20 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		}
 		
 		Bundle extras = getIntent().getExtras();
-		double[] lats = extras.getDoubleArray("lng");
-		double[] lngs = extras.getDoubleArray("lat");
+		double[] longtitudes = extras.getDoubleArray("lng");
+		double[] latitudes = extras.getDoubleArray("lat");
 		String[] names = extras.getStringArray("names");
 		int[] free = extras.getIntArray("free");
 		int[] bikes = extras.getIntArray("bikes");
 		
-		List<Overlay> overlays = prepareOverlays(lats, lngs, names, free, bikes);
+		List<Overlay> overlays = prepareOverlays(longtitudes, latitudes, names, free, bikes);
 		
 		// If we're showing only one point, center on it
-		if (lats.length == 1)
+		if (longtitudes.length == 1)
 		{
-			GeoPoint pt = new GeoPoint((int)(lngs[0] * 1E6), (int)(lats[0] * 1E6));
-			selectedLat = lats[0];
-			selectedLng = lngs[0];
+			GeoPoint pt = new GeoPoint((int)(latitudes[0] * 1E6), (int)(longtitudes[0] * 1E6));
+			selectedLat = latitudes[0];
+			selectedLng = longtitudes[0];
 			MapController controller = mapView.getController();
 			controller.setCenter(pt);
 			controller.setZoom(16);
