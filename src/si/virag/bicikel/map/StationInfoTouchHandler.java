@@ -1,19 +1,21 @@
 package si.virag.bicikel.map;
 
 import si.virag.bicikel.R;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
 public class StationInfoTouchHandler implements OnTouchListener 
 {
-	private Context context;
+	private MapActivity context;
 	private Drawable defaultBackground;
 	private Drawable selectedBackground;
 	
-	public StationInfoTouchHandler(Context context)
+	public StationInfoTouchHandler(MapActivity context)
 	{
 		this.context = context;
 		this.selectedBackground = context.getResources().getDrawable(R.drawable.info_select);
@@ -32,6 +34,12 @@ public class StationInfoTouchHandler implements OnTouchListener
 				break;
 			case MotionEvent.ACTION_UP:
 				parent.setBackgroundDrawable(defaultBackground);
+				if ((context.getSelectedLat() < 0.1) || (context.getSelectedLng() < 0.1))
+				{
+					return true;
+				}
+			
+				startMaps(context.getSelectedLat(), context.getSelectedLng(), context.getMyLocationLat(), context.getMyLocationLng());
 				break;
 			default:
 				break;
@@ -40,4 +48,24 @@ public class StationInfoTouchHandler implements OnTouchListener
 		return true;
 	}
 
+	
+	private void startMaps(double lat, double lng, double myLat, double myLng)
+	{
+		Uri mapsUri;
+		if (myLat > 0.1 && myLng > 0.1)
+		{
+			mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&saddr=" + myLat + ", " + myLng + "&daddr=" + lat + "," + lng);
+		}
+		else
+		{
+			mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&daddr=" + lat + "," + lng);
+		}
+		
+		Log.i(this.toString(), "Opening maps with " + mapsUri);
+		
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, mapsUri);
+		// This prevents app selection pop-up
+		intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+		context.startActivity(intent);
+	}
 }
