@@ -1,5 +1,7 @@
 package si.virag.bicikel.map;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 import si.virag.bicikel.R;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -12,12 +14,16 @@ import android.view.View.OnTouchListener;
 public class StationInfoTouchHandler implements OnTouchListener 
 {
 	private MapActivity context;
+	private GoogleAnalyticsTracker tracker;
+	
 	private Drawable defaultBackground;
 	private Drawable selectedBackground;
 	
-	public StationInfoTouchHandler(MapActivity context)
+	public StationInfoTouchHandler(MapActivity context, GoogleAnalyticsTracker tracker)
 	{
 		this.context = context;
+		this.tracker = tracker;
+		
 		this.selectedBackground = context.getResources().getDrawable(R.drawable.info_select);
 	}
 	
@@ -51,6 +57,9 @@ public class StationInfoTouchHandler implements OnTouchListener
 	
 	private void startMaps(double lat, double lng, double myLat, double myLng)
 	{
+		if (tracker != null)
+			tracker.trackEvent("MapView", "StationTap", "Station", 0);
+		
 		Uri mapsUri;
 		if (myLat > 0.1 && myLng > 0.1)
 		{
