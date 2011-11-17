@@ -4,11 +4,11 @@ package si.virag.bicikel.map;
 import java.util.ArrayList;
 import java.util.List;
 
-import si.virag.bicikel.R;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.TextView;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.maps.GeoPoint;
@@ -17,27 +17,24 @@ import com.google.android.maps.OverlayItem;
 
 public class StationOverlay extends ItemizedOverlay<OverlayItem>
 {
-	private View infoView;
+	private Handler tapNotifier;
+	
 	private List<OverlayItem> items = new ArrayList<OverlayItem>();
 	private List<StationMarker> markers;
 	
 	private GoogleAnalyticsTracker tracker;
 	
-	private TextView stationName;
-	private TextView numBikes;
-	private TextView freeSpaces;
-	
-	public StationOverlay(Context context, View infoView, GoogleAnalyticsTracker tracker, Drawable marker, List<StationMarker> markers)
+	public StationOverlay(Context context, 
+						  Handler tapNotifier, 
+						  GoogleAnalyticsTracker tracker, 
+						  Drawable marker, 
+						  List<StationMarker> markers)
 	{
 		super(marker);
-
-		this.infoView = infoView;
-		this.markers = markers;
-		this.tracker = tracker;
 		
-		stationName = (TextView) infoView.findViewById(R.id.txt_station_name);
-		numBikes = (TextView)infoView.findViewById(R.id.txt_bikenum);
-		freeSpaces = (TextView)infoView.findViewById(R.id.txt_freenum);
+		this.tracker = tracker;
+		this.markers = markers;
+		this.tapNotifier = tapNotifier;
 		
 		for (StationMarker station : markers)
 		{
@@ -64,11 +61,16 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 		
 		tracker.trackEvent("MapView", "MarkerTap", items.get(index).getTitle(), 0);
 		
-		stationName.setText(items.get(index).getTitle());
-		numBikes.setText(bikeNumber == 0 ? "-" : String.valueOf(bikeNumber));
-		freeSpaces.setText(freeNumber == 0 ? "-" : String.valueOf(freeNumber));
-		infoView.setVisibility(View.VISIBLE);
-
+		Bundle tapped = new Bundle();
+		tapped.putString("name", items.get(index).getTitle());
+		tapped.putString("numBikes", bikeNumber == 0 ? "-" : String.valueOf(bikeNumber));
+		tapped.putString("freeSpaces", freeNumber == 0 ? "-" : String.valueOf(freeNumber));
+		tapped.putDouble("lat", markers.get(index).getLatitude());
+		tapped.putDouble("lng", markers.get(index).getLongtitude());
+		Message msg = new Message();
+		msg.setData(tapped);
+		tapNotifier.sendMessage(msg);
+		
 		return true;
 	}
 
