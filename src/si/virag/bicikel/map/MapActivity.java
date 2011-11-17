@@ -55,6 +55,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		tracker = GoogleAnalyticsTracker.getInstance();
 		
 		mapView = (MapView) findViewById(R.id.map);
+		
 		infoView = (View) findViewById(R.id.station_info);
 		infoView.findViewById(R.id.filled_bar).setVisibility(View.INVISIBLE);
 		infoView.setVisibility(View.GONE);
@@ -79,6 +80,8 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		if (lats.length == 1)
 		{
 			GeoPoint pt = new GeoPoint((int)(lngs[0] * 1E6), (int)(lats[0] * 1E6));
+			selectedLat = lats[0];
+			selectedLng = lngs[0];
 			MapController controller = mapView.getController();
 			controller.setCenter(pt);
 			controller.setZoom(16);
@@ -276,6 +279,33 @@ public class MapActivity extends com.google.android.maps.MapActivity
 	{
 		return false;
 	}
+	
+	public double getSelectedLng()
+	{
+		return selectedLng;
+	}
+	
+	public double getSelectedLat()
+	{
+		return selectedLat;
+	}
+	
+	public double getMyLocationLat()
+	{
+		if (myLocation.getMyLocation() != null)
+			return myLocation.getMyLocation().getLatitudeE6() / (double)1E6;
+		
+		return 0;
+	}
+	
+	public double getMyLocationLng()
+	{
+		if (myLocation.getMyLocation() != null)
+			return myLocation.getMyLocation().getLongitudeE6() / (double)1E6;
+		
+		return 0;
+	}
+	
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) 
