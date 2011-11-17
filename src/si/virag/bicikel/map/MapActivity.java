@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -261,13 +262,20 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		if (tracker == null)
 			tracker = GoogleAnalyticsTracker.getInstance();
 		
-		if (showingWholeMap)
+		try
 		{
-			tracker.trackPageView("/MapView/whole");
+			if (showingWholeMap)
+			{
+				tracker.trackPageView("/MapView/whole");
+			}
+			else
+			{
+				tracker.trackPageView("/MapView/single");
+			}
 		}
-		else
+		catch (Exception e)		// For some reason GAE tracker tends to crash after resume
 		{
-			tracker.trackPageView("/MapView/single");
+			Log.e(this.toString(), e.getMessage());
 		}
 
 		myLocation.enableCompass();
