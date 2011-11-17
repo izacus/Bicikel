@@ -55,7 +55,7 @@ public class StationInfoTouchHandler implements OnTouchListener
 	}
 
 	
-	private void startMaps(double lng, double lat, double myLat, double myLng)
+	private void startMaps(double lat, double lng, double myLat, double myLng)
 	{
 		if (tracker != null)
 			tracker.trackEvent("MapView", "StationTap", "Station", 0);
