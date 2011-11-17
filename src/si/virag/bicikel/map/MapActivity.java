@@ -7,6 +7,9 @@ import si.virag.bicikel.R;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.Message;
 import android.view.View;
 import android.widget.TextView;
 
@@ -40,6 +43,9 @@ public class MapActivity extends com.google.android.maps.MapActivity
 	
 	private boolean showingWholeMap;
 	
+	private double selectedLat;
+	private double selectedLng;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -53,6 +59,12 @@ public class MapActivity extends com.google.android.maps.MapActivity
 		infoView.findViewById(R.id.filled_bar).setVisibility(View.INVISIBLE);
 		infoView.setVisibility(View.GONE);
 		infoView.setOnTouchListener(new StationInfoTouchHandler(this));
+		
+		if (savedInstanceState != null)
+		{
+			selectedLat = savedInstanceState.getDouble("selectedLat", 0);
+			selectedLng = savedInstanceState.getDouble("selectedLng", 0);
+		}
 		
 		Bundle extras = getIntent().getExtras();
 		double[] lats = extras.getDoubleArray("lng");
@@ -130,6 +142,24 @@ public class MapActivity extends com.google.android.maps.MapActivity
 	 */
 	private List<Overlay> prepareOverlays(double[] lats, double[] lngs, String[] names, int[] free, int[] bikes)
 	{
+		Handler tapNotifier = new Handler(new Callback() {
+			
+			@Override
+			public boolean handleMessage(Message msg) 
+			{
+				Bundle data = msg.getData();
+				String name = data.getString("name");
+				String free = data.getString("freeSpaces");
+				String bikes = data.getString("numBikes");
+				double lat = data.getDouble("lat");
+				double lng = data.getDouble("lng");
+				
+				setSelectedStation(name, free, bikes, lat, lng);
+				
+				return true;
+			}
+		});
+		
 		// Prepare overlays
 		List<Overlay> overlays = mapView.getOverlays();
 		overlays.clear();
@@ -150,7 +180,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			normalMarkers.add(station);
 		}
 		
-		overlays.add(new StationOverlay(this, infoView, tracker, marker, normalMarkers));
+		overlays.add(new StationOverlay(this, tapNotifier, tracker, marker, normalMarkers));
 		
 		
 		// Full station markers
@@ -169,7 +199,7 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			fullMarkers.add(station);
 		}
 		
-		overlays.add(new StationOverlay(this, infoView, tracker, fullMarker, fullMarkers));
+		overlays.add(new StationOverlay(this, tapNotifier, tracker, fullMarker, fullMarkers));
 		
 		// Empty station markers
 		Drawable emptyMarker = getResources().getDrawable(R.drawable.cycling_red);
@@ -187,9 +217,29 @@ public class MapActivity extends com.google.android.maps.MapActivity
 			emptyMarkers.add(station);
 		}
 		
-		overlays.add(new StationOverlay(this, infoView, tracker, emptyMarker, emptyMarkers));
+		overlays.add(new StationOverlay(this, tapNotifier, tracker, emptyMarker, emptyMarkers));
 		
 		return overlays;
+	}
+	
+	private void setSelectedStation(String name, 
+									String free, 
+									String bikes,
+									double lat, 
+									double lng) 
+	{
+		selectedLat = lat;
+		selectedLng = lng;
+		
+		TextView nameView = (TextView)infoView.findViewById(R.id.txt_station_name);
+		TextView freeView = (TextView)infoView.findViewById(R.id.txt_freenum);
+		TextView bikesView = (TextView)infoView.findViewById(R.id.txt_bikenum);
+		
+		nameView.setText(name);
+		freeView.setText(free);
+		bikesView.setText(bikes);
+		
+		infoView.setVisibility(View.VISIBLE);
 	}
 	
 	@Override
@@ -204,6 +254,10 @@ public class MapActivity extends com.google.android.maps.MapActivity
 	protected void onResume()
 	{
 		super.onResume();
+		
+		if (tracker == null)
+			tracker = GoogleAnalyticsTracker.getInstance();
+		
 		if (showingWholeMap)
 		{
 			tracker.trackPageView("/MapView/whole");
@@ -221,6 +275,15 @@ public class MapActivity extends com.google.android.maps.MapActivity
 	protected boolean isRouteDisplayed()
 	{
 		return false;
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) 
+	{
+		super.onSaveInstanceState(outState);
+		
+		outState.putDouble("selectedLng", selectedLng);
+		outState.putDouble("selectedLat", selectedLat);
 	}
 
 }
