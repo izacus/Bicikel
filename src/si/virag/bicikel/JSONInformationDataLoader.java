@@ -8,12 +8,12 @@ import org.json.JSONObject;
 
 import si.virag.bicikel.data.Station;
 import si.virag.bicikel.data.StationInfo;
-import si.virag.bicikel.util.AsyncLoader;
 import si.virag.bicikel.util.HTTPHelper;
 import android.content.Context;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-public class JSONInformationDataLoader extends AsyncLoader<StationInfo>
+public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 {
 	private static final String STATION_LIST_URL = "http://prevoz.org/api/bicikelj/list/";
 	
