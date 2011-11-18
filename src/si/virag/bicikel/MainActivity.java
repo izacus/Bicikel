@@ -153,9 +153,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         
         // GA
         tracker = GoogleAnalyticsTracker.getInstance();
-        tracker.start(getString(R.string.analytics_id), this);
-        
-        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this);
+        tracker.startNewSession(getString(R.string.analytics_id), this);
+        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this).forceLoad();
     }
     
 	@Override
@@ -354,7 +353,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 	protected void onDestroy()
 	{
 		super.onDestroy();
-		tracker.stop();
+		tracker.stopSession();
 	}
 
 	@Override
@@ -487,5 +486,4 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 			
 		stationInfoAdapter.notifyDataSetChanged();
 	}
-    
 }
