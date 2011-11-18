@@ -16,11 +16,11 @@ import org.xml.sax.SAXException;
 
 import si.virag.bicikel.data.Station;
 import si.virag.bicikel.data.StationInfo;
-import si.virag.bicikel.util.AsyncLoader;
 import android.content.Context;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-public class DirectXMLInformationDataLoader extends AsyncLoader<StationInfo>
+public class DirectXMLInformationDataLoader extends AsyncTaskLoader<StationInfo>
 {
 	private static final String STATION_LIST_URL = "http://www.bicikelj.si/service/carto";
 	private static final String STATION_DETAIL_URL = "http://www.bicikelj.si/service/stationdetails/";
