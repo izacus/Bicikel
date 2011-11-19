@@ -16,6 +16,10 @@ import android.util.Log;
 public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 {
 	private static final String STATION_LIST_URL = "http://prevoz.org/api/bicikelj/list/";
+	private static final int CACHE_VALIDITY = 60 * 1000;	// ms
+	
+	private StationInfo cachedResults = null;
+	private long lastUpdate = 0;
 	
 	public JSONInformationDataLoader(Context context)
 	{
@@ -81,6 +85,8 @@ public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 				Log.d(this.toString(), "Station " + station.getName() + " added.");
 			}
 			
+			this.cachedResults = info;
+			this.lastUpdate = System.currentTimeMillis();
 			return info;
 		}
 		catch (JSONException e)
@@ -90,6 +96,28 @@ public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 		}
 	}
 
-	
+	@Override
+	protected void onReset() 
+	{
+		super.onReset();
+		onStopLoading();
+		lastUpdate = 0;
+		cachedResults = null;
+	}
+
+	@Override
+	protected void onStartLoading() 
+	{
+		super.onStartLoading();
+		
+		if (takeContentChanged() || cachedResults == null || System.currentTimeMillis() - lastUpdate > CACHE_VALIDITY)
+		{
+			forceLoad();
+		}
+		else
+		{
+			deliverResult(cachedResults);
+		}
+	}
 	
 }

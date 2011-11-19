@@ -154,7 +154,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         // GA
         tracker = GoogleAnalyticsTracker.getInstance();
         tracker.startNewSession(getString(R.string.analytics_id), this);
-        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this).forceLoad();
+        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this).startLoading();
     }
     
 	@Override
