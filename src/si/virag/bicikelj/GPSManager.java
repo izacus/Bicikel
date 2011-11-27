@@ -1,4 +1,4 @@
-package si.virag.bicikel;
+package si.virag.bicikelj;
 
 import java.util.Calendar;
 import java.util.Timer;

@@ -1,9 +1,9 @@
-package si.virag.bicikel;
+package si.virag.bicikelj;
 
 import java.util.List;
 import java.util.Locale;
 
-import si.virag.bicikel.data.Station;
+import si.virag.bicikelj.data.Station;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
