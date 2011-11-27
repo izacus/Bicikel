@@ -1,4 +1,4 @@
-package si.virag.bicikel;
+package si.virag.bicikelj;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -6,9 +6,9 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import si.virag.bicikel.data.Station;
-import si.virag.bicikel.data.StationInfo;
-import si.virag.bicikel.util.HTTPHelper;
+import si.virag.bicikelj.data.Station;
+import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.util.HTTPHelper;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;

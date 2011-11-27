@@ -1,8 +1,8 @@
-package si.virag.bicikel.map;
+package si.virag.bicikelj.map;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
-import si.virag.bicikel.R;
+import si.virag.bicikelj.R;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;

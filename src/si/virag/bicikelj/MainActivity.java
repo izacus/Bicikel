@@ -1,12 +1,12 @@
-package si.virag.bicikel;
+package si.virag.bicikelj;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import si.virag.bicikel.data.Station;
-import si.virag.bicikel.data.StationInfo;
-import si.virag.bicikel.map.MapActivity;
+import si.virag.bicikelj.data.Station;
+import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.map.MapActivity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;

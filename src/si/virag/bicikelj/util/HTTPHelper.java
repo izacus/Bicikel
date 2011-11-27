@@ -1,4 +1,4 @@
-package si.virag.bicikel.util;
+package si.virag.bicikelj.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
