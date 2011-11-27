@@ -1,4 +1,4 @@
-package si.virag.bicikel.data;
+package si.virag.bicikelj.data;
 
 import android.location.Location;
 import android.util.Log;
