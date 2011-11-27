@@ -1,4 +1,4 @@
-package si.virag.bicikel;
+package si.virag.bicikelj;
 
 import android.content.Context;
 import android.os.Build;

@@ -56,23 +56,4 @@ public class StationInfo
 		
 		disancesValid = true;
 	}
-
-	public StationInfo getFilteredInfo(String filterText)
-	{
-		StationInfo newInfo = new StationInfo(timeUpdated);
-		
-		for (Station station : stations)
-		{
-			if (filterSanitize(station.getName()).contains(filterSanitize(filterText))) {
-				newInfo.addStation(station);
-			}
-		}
-		
-		return newInfo;
-	}
-	
-	private static String filterSanitize(String text)
-	{
-		return text.trim().toUpperCase().replace('È', 'C').replace('Š','S').replace('Ž', 'Z');
-	}
 }

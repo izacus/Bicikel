@@ -1,9 +1,9 @@
-package si.virag.bicikel.map;
+package si.virag.bicikelj.map;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import si.virag.bicikel.R;
+import si.virag.bicikelj.R;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;

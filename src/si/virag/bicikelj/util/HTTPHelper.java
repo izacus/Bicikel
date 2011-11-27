@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -138,18 +135,7 @@ public class HTTPHelper
 	public static String httpGet(String urlString, String params) throws IOException
 	{
 		URL url = new URL(urlString + (params != null ? params : ""));
-		
-		URLConnection connection;
-		if (urlString.startsWith("https"))
-		{
-			Log.d("HTTPHelper", "[HTTPS] Getting " + urlString);
-			connection = (HttpsURLConnection)url.openConnection();
-		}
-		else
-		{
-			Log.d("HTTPHelper", "[HTTP] Getting " + urlString);
-			connection = (HttpURLConnection)url.openConnection();
-		}
+		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		
 		String responseString = null;
 		try
@@ -160,14 +146,7 @@ public class HTTPHelper
 		}
 		finally
 		{
-			if (connection instanceof HttpsURLConnection)
-			{
-				((HttpsURLConnection)connection).disconnect();
-			}
-			else
-			{
-				((HttpURLConnection)connection).disconnect();
-			}
+			connection.disconnect();
 		}
 		
 		return responseString;

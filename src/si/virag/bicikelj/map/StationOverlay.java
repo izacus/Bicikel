@@ -1,4 +1,4 @@
-package si.virag.bicikel.map;
+package si.virag.bicikelj.map;
 
 
 import java.util.ArrayList;

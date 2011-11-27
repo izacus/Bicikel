@@ -1,4 +1,4 @@
-package si.virag.bicikel;
+package si.virag.bicikelj;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -14,8 +14,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import si.virag.bicikel.data.Station;
-import si.virag.bicikel.data.StationInfo;
+import si.virag.bicikelj.data.Station;
+import si.virag.bicikelj.data.StationInfo;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
