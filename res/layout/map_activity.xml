@@ -40,5 +40,4 @@
     android:apiKey = "@string/maps_apikey"
     android:clickable = "true" />
   
-
 </RelativeLayout>
