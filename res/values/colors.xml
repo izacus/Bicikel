@@ -21,9 +21,4 @@
     
     <color
         name="distance_text">#999</color>
-        
-    <color
-        name="empty_background">#ffdddd</color>
-    <color
-        name="full_background">#ddffdd</color>
 </resources>
