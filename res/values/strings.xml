@@ -7,7 +7,7 @@
     <string name="bikes">koles</string>
     <string name="free">mest</string>
     
-    <string name="loading">Nalagam...</string>
+    <string name="loading">Nalagam&#8230;</string>
     <string name="connection_error">Podatkov ni bilo mogoče naložiti,\n prosimo preverite internetno povezavo.</string>
     
     <string name="show_directions">Pokaži pot do postaje</string>
@@ -20,4 +20,8 @@
     
     <string name="analytics_id">UA-23654648-1</string>
     <string name="maps_apikey">0oTmqtEHq-Anwh0B0qhK2NkelsH8--CfjRsU1Qw</string>
+    
+    <!-- Content description strings -->
+    <string name="cd_map_button">Pokaži zemljevid</string>
+    <string name="cd_search_button">Išči</string>
 </resources>
