@@ -259,6 +259,15 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		});
 	}
 	
+	
+	
+	@Override
+	protected void onPause() 
+	{
+		super.onPause();
+		gpsManager.cancelSearch();
+	}
+
 	@Override
 	public void onLoaderReset(Loader<StationInfo> loader)
 	{
@@ -304,6 +313,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		}
 	}
 	
+	
+	
 	private void showAllStationsMap()
 	{
 		
@@ -345,8 +356,12 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		tracker.trackPageView("/StationList");
 		
 		if (lastUpdate != null && lastUpdate != 0 && Calendar.getInstance().getTimeInMillis() - lastUpdate > 5 * 60 * 1000)
-		{
+	    {
 			refreshData();
+		}
+		else if (currentLocation == null)
+		{
+			gpsManager.findCurrentLocation(this, gpsLocationHandler);
 		}
 	}
 	
