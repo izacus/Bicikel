@@ -7,24 +7,19 @@ import java.util.List;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.map.MapActivity;
-import android.app.AlertDialog;
+import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -155,7 +150,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
         tracker = GoogleAnalyticsTracker.getInstance();
         tracker.startNewSession(getString(R.string.analytics_id), this);
         tracker.trackEvent("Application", "Startup", getString(R.string.app_ver), 0);
-        getSupportLoaderManager().initLoader(INFO_LOADER_ID, null, this).startLoading();
+        getLoaderManager().initLoader(INFO_LOADER_ID, null, this).startLoading();
     }
     
 	@Override
@@ -286,7 +281,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		
         loadingText.setText(getString(R.string.loading));
         throbber.setVisibility(View.VISIBLE);               
-        getSupportLoaderManager().getLoader(INFO_LOADER_ID).forceLoad();
+        getLoaderManager().getLoader(INFO_LOADER_ID).forceLoad();
 	}
 	
 	
@@ -371,7 +366,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		super.onDestroy();
 		tracker.stopSession();
 	}
-
+/*
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -427,7 +422,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<St
 		menu.add(0, MENU_ABOUT, 1, getString(R.string.menu_about)).setIcon(R.drawable.info);
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+	*/
 	private void toggleSearchBox()
 	{
 		if (filterText.getVisibility() == View.GONE)

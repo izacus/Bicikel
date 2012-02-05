@@ -16,8 +16,8 @@ import org.xml.sax.SAXException;
 
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 public class DirectXMLInformationDataLoader extends AsyncTaskLoader<StationInfo>
