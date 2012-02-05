@@ -9,8 +9,8 @@ import org.json.JSONObject;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.util.HTTPHelper;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
