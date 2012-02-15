@@ -57,7 +57,12 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	{
 		// TODO Error checking
 		adapter.clear();
-		adapter.addAll(data.getStations());
+		
+		for (Station station : data.getStations())
+		{
+			adapter.add(station);
+		}
+		
 		adapter.notifyDataSetChanged();
 	}
 
