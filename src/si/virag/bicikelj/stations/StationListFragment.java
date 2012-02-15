@@ -9,33 +9,34 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 public class StationListFragment extends ListFragment implements LoaderCallbacks<StationInfo>
 {
+	private static final int STATION_LOADER_ID = 0;
+	
 	private StationListAdapter adapter = null;
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) 
 	{
 		super.onActivityCreated(savedInstanceState);
+		setHasOptionsMenu(true);
 		adapter = new StationListAdapter(getActivity(), R.layout.stationlist_item, new ArrayList<Station>());
 		this.setListAdapter(adapter);
-		getLoaderManager().initLoader(0, null, this);
+		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
 	}
 
 	@Override
 	public void onStart() 
 	{
 		super.onStart();
-		
-		// Show loading progress in the Action bar
-		getActivity().setSupportProgress(Window.PROGRESS_END);
-		getActivity().setSupportProgressBarIndeterminateVisibility(true);
 	}
 
 	@Override
@@ -70,6 +71,24 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	public void onLoaderReset(Loader<StationInfo> loader) 
 	{
 		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
+	{
+		inflater.inflate(R.menu.menu_stationlist, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId())
+		{
+			case R.id.menu_refresh: 
+				adapter.clear();
+				adapter.notifyDataSetChanged();
+				//getLoaderManager().initLoader(STATION_LOADER_ID, null, this).forceLoad();
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 }
