@@ -109,6 +109,8 @@ public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 	@Override
 	protected void onStartLoading() 
 	{
+		super.onStartLoading();
+		
 		if (takeContentChanged() || cachedResults == null || System.currentTimeMillis() - lastUpdate > CACHE_VALIDITY)
 		{
 			forceLoad();

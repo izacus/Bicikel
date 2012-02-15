@@ -1,22 +1,18 @@
 package si.virag.bicikelj.stations;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
-import si.virag.bicikelj.data.StationInfo;
-import si.virag.bicikelj.util.DisplayUtils;
 import android.app.Activity;
-import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class StationListAdapter extends BaseAdapter
+public class StationListAdapter extends ArrayAdapter<Station>
 {	
 	private static class StationViewHolder
 	{
@@ -27,12 +23,11 @@ public class StationListAdapter extends BaseAdapter
 	}
 	
 	private Activity context;
-	private List<Station> items;
 	
 	public StationListAdapter(Activity context, int textViewResourceId, List<Station> items)
 	{
+		super(context, textViewResourceId, items);
 		this.context = context;
-		this.items = items;
 	}
 
 	@Override
@@ -57,22 +52,15 @@ public class StationListAdapter extends BaseAdapter
 		{
 			viewHolder = (StationViewHolder)view.getTag();
 		}
+		Station station = getItem(position);
 		
-		try
-		{
-			Station station = getItem(position);
-			viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "Ø" : String.valueOf(station.getAvailableBikes()));
-			viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "Ø" : String.valueOf(station.getFreeSpaces()));
-			viewHolder.stationName.setText(getItem(position).getName().replaceAll("Ø", "\n"));
-		}
-		catch (IndexOutOfBoundsException e)
-		{
-			return null;
-		}
+		viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "-" : String.valueOf(station.getAvailableBikes()));
+		viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "-" : String.valueOf(station.getFreeSpaces()));
+		viewHolder.stationName.setText(getItem(position).getName().replaceAll("-", "\n"));
 		
 		if (getItem(position).getDistance() != null)
 		{
-			viewHolder.distance.setText(DisplayUtils.formatDistance(getItem(position).getDistance()));
+			viewHolder.distance.setText(formatDistance(getItem(position).getDistance()));
 			viewHolder.distance.setVisibility(View.VISIBLE);
 		}
 		else
@@ -82,84 +70,20 @@ public class StationListAdapter extends BaseAdapter
 		
 		return view;
 	}
-
 	
-	public void updateData(StationInfo info)
+	public String formatDistance(Float distance)
 	{
-		if (info == null) {
-			this.clearData();
-			return;
-		}
-		
-		if (info.getStations().size() != this.getCount())
+		// Using german locale, because slovene locale is not available on all devices
+		// and germany uses same number format
+		if (distance < 1200)
 		{
-			this.items = info.getStations();
-			this.notifyDataSetInvalidated();
-			this.notifyDataSetChanged();
-			return;
+			return String.format(Locale.GERMAN, "%,.1f", distance) + " m";
 		}
-		
-		for (Station station : info.getStations())
+		else
 		{
-			for (int i = 0; i < this.getCount(); i++)
-			{
-				if (getItem(i).getId() == station.getId())
-				{
-					getItem(i).setFreeSpaces(station.getFreeSpaces());
-					getItem(i).setAvailableBikes(station.getAvailableBikes());
-					break;
-				}
-			}
+			return String.format(Locale.GERMAN, "%,.2f", distance / 1000) + " km";
 		}
-		
-		this.notifyDataSetChanged();
 	}
 	
-	public void updateLocation(Location location)
-	{
-		for (Station station : items)
-		{
-			station.setDistance(location);
-		}
-		
-		Collections.sort(items, new Comparator<Station>()
-		{
-			@Override
-			public int compare(Station lhs, Station rhs)
-			{
-				return lhs.getDistance().compareTo(rhs.getDistance());
-			}
-		});
-		
-		this.notifyDataSetChanged();
-	}
 	
-	public void clearData()
-	{
-		this.items.clear();
-		this.notifyDataSetInvalidated();
-		this.notifyDataSetChanged();
-	}
-
-	@Override
-	public int getCount() 
-	{
-		return this.items.size();
-	}
-
-	@Override
-	public Station getItem(int position) 
-	{
-		if (position < 0 && position >= this.items.size())
-			throw new IndexOutOfBoundsException();
-		return this.items.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) 
-	{
-		if (position < 0 && position >= this.items.size())
-			throw new IndexOutOfBoundsException();
-		return this.items.get(position).getId();
-	}
 }
