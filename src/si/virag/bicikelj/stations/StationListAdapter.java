@@ -1,16 +1,15 @@
-package si.virag.bicikelj;
+package si.virag.bicikelj.stations;
 
 import java.util.List;
 import java.util.Locale;
 
+import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class StationListAdapter extends ArrayAdapter<Station>
@@ -21,7 +20,6 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		public TextView freeSpaces;
 		public TextView stationName;
 		public TextView distance;
-		public LinearLayout free_bar;
 	}
 	
 	private Activity context;
@@ -41,14 +39,13 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		if (view == null)
 		{
             LayoutInflater li = context.getLayoutInflater();
-            view = li.inflate(R.layout.station_list_item, null);
+            view = li.inflate(R.layout.stationlist_item, null);
             
             viewHolder = new StationViewHolder();
-    		viewHolder.bikeNum = (TextView) view.findViewById(R.id.txt_bikenum);
-    		viewHolder.freeSpaces = (TextView) view.findViewById(R.id.txt_freenum);
-    		viewHolder.stationName = (TextView) view.findViewById(R.id.txt_station_name);
-    		viewHolder.distance = (TextView) view.findViewById(R.id.txt_distance);
-    		viewHolder.free_bar = (LinearLayout) view.findViewById(R.id.free_bar);
+    		viewHolder.bikeNum = (TextView) view.findViewById(R.id.stationlist_num_full);
+    		viewHolder.freeSpaces = (TextView) view.findViewById(R.id.stationlist_num_free);
+    		viewHolder.stationName = (TextView) view.findViewById(R.id.stationlist_name);
+    		viewHolder.distance = (TextView) view.findViewById(R.id.stationlist_distance);
     		view.setTag(viewHolder);
 		}
 		else
@@ -71,18 +68,6 @@ public class StationListAdapter extends ArrayAdapter<Station>
 			viewHolder.distance.setVisibility(View.GONE);
 		}
 		
-		LayoutParams params = (LayoutParams) viewHolder.free_bar.getLayoutParams();
-		
-		if (station.getAvailableBikes() == 0)
-		{
-			params.width = parent.getWidth();	// This is here to prevent ugly red dot because of rounding errors
-		}
-		else
-		{
-			params.width = (parent.getWidth() / (station.getFreeSpaces() + station.getAvailableBikes())) * getItem(position).getFreeSpaces();
-		}
-		
-		viewHolder.free_bar.setLayoutParams(params);
 		return view;
 	}
 	
