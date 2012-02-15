@@ -18,7 +18,7 @@
         <TextView
             android:id="@+id/stationlist_num_full"
             android:layout_width="match_parent" 
-            android:layout_height="32dp"
+            android:layout_height="28dp"
             android:gravity="center"
             style="@style/StationList.Numbers.Full"
             />
@@ -26,7 +26,7 @@
         <TextView
             android:id="@+id/stationlist_label_full"
             android:layout_width="match_parent"
-            android:layout_height="16dp"
+            android:layout_height="20dp"
             android:gravity="center"
             style="@style/StationList.Labels"
             android:text="@string/bikes"
@@ -44,7 +44,7 @@
         <TextView
             android:id="@+id/stationlist_num_free"
             android:layout_width="match_parent" 
-            android:layout_height="32dp"
+            android:layout_height="28dp"
             android:gravity="center"
             style="@style/StationList.Numbers.Free"
             />
@@ -52,7 +52,7 @@
         <TextView
             android:id="@+id/stationlist_label_free"
             android:layout_width="match_parent"
-            android:layout_height="16dp"
+            android:layout_height="20dp"
             android:gravity="center"
             style="@style/StationList.Labels"
             android:text="@string/free"
