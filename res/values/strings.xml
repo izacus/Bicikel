@@ -5,4 +5,6 @@
     <string name="stationlist_loading">Nalagam&#8230;</string>
     <string name="bikes">koles</string>
     <string name="free">prostih</string>
+    
+    <string name="menu_refresh">Osveži</string>
 </resources>
