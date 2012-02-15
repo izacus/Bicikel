@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp">
+
+    <LinearLayout 
+        android:id="@+id/stationlist_full"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="8dp"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:id="@+id/stationlist_num_full"
+            android:layout_width="match_parent" 
+            android:layout_height="32dp"
+            android:gravity="center"
+            style="@style/StationList.Numbers.Full"
+            />
+        
+        <TextView
+            android:id="@+id/stationlist_label_full"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:gravity="center"
+            style="@style/StationList.Labels"
+            android:text="@string/bikes"
+            />
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:id="@+id/stationlist_free"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_toLeftOf="@id/stationlist_full"
+        android:orientation="vertical"
+        android:layout_marginLeft="8dp"
+        >
+        <TextView
+            android:id="@+id/stationlist_num_free"
+            android:layout_width="match_parent" 
+            android:layout_height="32dp"
+            android:gravity="center"
+            style="@style/StationList.Numbers.Free"
+            />
+        
+        <TextView
+            android:id="@+id/stationlist_label_free"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:gravity="center"
+            style="@style/StationList.Labels"
+            android:text="@string/free"
+            />
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/stationlist_name"
+        android:layout_width="match_parent" 
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/stationlist_free"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="8dp"
+        style="@style/StationList.Name"
+        />
+    
+    <TextView
+        android:id="@+id/stationlist_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/stationlist_full"
+        android:layout_below="@id/stationlist_name"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="8dp"
+        style="@style/StationList.Distance"
+     />
+    
+</RelativeLayout>
