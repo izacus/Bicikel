@@ -12,6 +12,8 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -23,11 +25,18 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	
 	private StationListAdapter adapter = null;
 	
+	private Animation fadeOut;
+	private Animation fadeIn;
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) 
 	{
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
+		
+		fadeOut = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out);
+		fadeIn = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
+		
 		adapter = new StationListAdapter(getActivity(), R.layout.stationlist_item, new ArrayList<Station>());
 		this.setListAdapter(adapter);
 		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
@@ -56,12 +65,21 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	@Override
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo data) 
 	{
-		// TODO Error checking
-		adapter.clear();
+		// Clear animation listener
+		fadeOut.setAnimationListener(null);
+		getListView().startAnimation(fadeIn);
 		
-		for (Station station : data.getStations())
+		// Update data in-place when already available
+		if (adapter.getCount() > 0)
 		{
-			adapter.add(station);
+			adapter.updateData(data);
+		}
+		else
+		{
+			for (Station station : data.getStations())
+			{
+				adapter.add(station);
+			}
 		}
 		
 		adapter.notifyDataSetChanged();
@@ -84,9 +102,8 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		switch (item.getItemId())
 		{
 			case R.id.menu_refresh: 
-				adapter.clear();
-				adapter.notifyDataSetChanged();
-				//getLoaderManager().initLoader(STATION_LOADER_ID, null, this).forceLoad();
+				getLoaderManager().initLoader(STATION_LOADER_ID, null, StationListFragment.this).forceLoad();
+				getListView().startAnimation(fadeOut);
 			default:
 				return super.onOptionsItemSelected(item);
 		}
