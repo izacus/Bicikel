@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
+import si.virag.bicikelj.data.StationInfo;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,5 +86,19 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		}
 	}
 	
-	
+	public void updateData(StationInfo info)
+	{
+		for (Station station : info.getStations())
+		{
+			for (int i = 0; i < this.getCount(); i++)
+			{
+				if (getItem(i).getId() == station.getId())
+				{
+					getItem(i).setFreeSpaces(station.getFreeSpaces());
+					getItem(i).setAvailableBikes(station.getAvailableBikes());
+					break;
+				}
+			}
+		}
+	}
 }
