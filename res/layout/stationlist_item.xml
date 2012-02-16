@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp">
 
@@ -62,24 +62,27 @@
     <TextView
         android:id="@+id/stationlist_name"
         android:layout_width="match_parent" 
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_toLeftOf="@id/stationlist_free"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="5dp"
         android:layout_marginRight="8dp"
+        android:maxLines="2"
+        android:ellipsize="end"
         style="@style/StationList.Name"
         />
     
     <TextView
         android:id="@+id/stationlist_distance"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="16dp"
         android:layout_toLeftOf="@id/stationlist_full"
         android:layout_below="@id/stationlist_name"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
         style="@style/StationList.Distance"
      />
     

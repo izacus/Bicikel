@@ -77,20 +77,25 @@ public class GPSManager implements LocationListener
                 {};
 
                 // Check if either network or GPS provider have new enough location data
-                
-                Log.d(this.toString(), "Checking for cached GPS location.");
+                if (gpsOn)
+                {
+                        Log.d(this.toString(), "Checking for cached GPS location.");
 
-                if (checkCachedLocation(locationManager, LocationManager.GPS_PROVIDER))
-                {
-                        callback.sendEmptyMessage(GPS_LOCATION_OK);
-                        return;
+                        if (checkCachedLocation(locationManager, LocationManager.GPS_PROVIDER))
+                        {
+                                callback.sendEmptyMessage(GPS_LOCATION_OK);
+                                return;
+                        }
                 }
-                
-                Log.d(this.toString(), "Checking for cached network location.");
-                if (checkCachedLocation(locationManager, LocationManager.NETWORK_PROVIDER))
+
+                if (networkOn)
                 {
-                        callback.sendEmptyMessage(GPS_LOCATION_OK);
-                        return;
+                        Log.d(this.toString(), "Checking for cached network location.");
+                        if (checkCachedLocation(locationManager, LocationManager.NETWORK_PROVIDER))
+                        {
+                                callback.sendEmptyMessage(GPS_LOCATION_OK);
+                                return;
+                        }
                 }
 
                 // Both data is out of date, start attempting to get a fix

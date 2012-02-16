@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.util.GPSManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +30,9 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	
 	private StationListAdapter adapter = null;
 	
+	private GPSManager gpsManager;
+	private Location location;
+	
 	private Animation fadeOut;
 	private Animation fadeIn;
 	
@@ -36,16 +44,43 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		
 		fadeOut = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out);
 		fadeIn = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
+		gpsManager = new GPSManager();
 		
 		adapter = new StationListAdapter(getActivity(), R.layout.stationlist_item, new ArrayList<Station>());
 		this.setListAdapter(adapter);
 		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
 	}
 
+
 	@Override
-	public void onStart() 
+	public void onPause()
 	{
-		super.onStart();
+		super.onPause();
+		gpsManager.cancelSearch();
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		gpsManager.findCurrentLocation(getActivity(), new Handler() 
+		{
+
+			@Override
+			public void handleMessage(Message msg)
+			{
+				if (msg.what != GPSManager.GPS_LOCATION_OK)
+				{
+					Log.w(this.toString(), "Can't get current location.");
+					return;
+				}
+				
+				location = gpsManager.getCurrentLocation();
+				adapter.updateLocation(location);
+				adapter.notifyDataSetChanged();
+			}
+			
+		});
 	}
 
 	@Override
@@ -82,6 +117,10 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 			}
 		}
 		
+		if (location != null)
+		{
+			adapter.updateLocation(location);
+		}
 		adapter.notifyDataSetChanged();
 	}
 

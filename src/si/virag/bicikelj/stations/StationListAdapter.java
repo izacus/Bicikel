@@ -1,5 +1,7 @@
 package si.virag.bicikelj.stations;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -7,6 +9,7 @@ import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import android.app.Activity;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +27,13 @@ public class StationListAdapter extends ArrayAdapter<Station>
 	}
 	
 	private Activity context;
+	private List<Station> items;
 	
 	public StationListAdapter(Activity context, int textViewResourceId, List<Station> items)
 	{
 		super(context, textViewResourceId, items);
 		this.context = context;
+		this.items = items;
 	}
 
 	@Override
@@ -100,5 +105,22 @@ public class StationListAdapter extends ArrayAdapter<Station>
 				}
 			}
 		}
+	}
+	
+	public void updateLocation(Location location)
+	{
+		for (Station station : items)
+		{
+			station.setDistance(location);
+		}
+		
+		Collections.sort(items, new Comparator<Station>()
+		{
+			@Override
+			public int compare(Station lhs, Station rhs)
+			{
+				return lhs.getDistance().compareTo(rhs.getDistance());
+			}
+		});
 	}
 }
