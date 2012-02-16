@@ -16,7 +16,7 @@ import android.util.Log;
 
 public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 {
-	private static final String STATION_LIST_URL = "http://prevoz.org/api/bicikelj/list/";
+	private static final String STATION_LIST_URL = "https://prevoz.org/api/bicikelj/list/";
 	private static final int CACHE_VALIDITY = 60 * 1000;	// ms
 	
 	private StationInfo cachedResults = null;
