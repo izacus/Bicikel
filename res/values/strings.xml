@@ -7,4 +7,6 @@
     <string name="free">prostih</string>
     
     <string name="menu_refresh">Osveži</string>
+    
+    <string name="maps_api_key"></string>
 </resources>
