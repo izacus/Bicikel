@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.util.GPSManager;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -31,6 +34,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	private StationListAdapter adapter = null;
 	
 	private GPSManager gpsManager;
+
 	private Location location;
 	
 	private Animation fadeOut;
@@ -146,5 +150,13 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) 
+	{
+		super.onListItemClick(l, v, position, id);
+		Intent intent = new Intent(getActivity(), StationMapActivity.class);
+		startActivity(intent);
 	}
 }
