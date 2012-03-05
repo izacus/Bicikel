@@ -3,7 +3,6 @@ package si.virag.bicikelj.stations;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
