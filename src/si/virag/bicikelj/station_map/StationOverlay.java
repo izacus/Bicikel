@@ -33,9 +33,9 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 		for (StationMarker station : markers)
 		{
 			boundCenterBottom(marker);
-			items.add(new OverlayItem(new GeoPoint((int)(station.getLocation().getLatitude() * 1E6), 
-					 							   (int)(station.getLocation().getLongitude() * 1E6)), 
-					 							   String.valueOf(station.getId()), ""));
+			items.add(new OverlayItem(new GeoPoint((int)(station.getLatitude() * 1E6), 
+					 							   (int)(station.getLongtitude() * 1E6)), 
+					 							   station.getDescription(), ""));
 		}
 		
 		populate();		
@@ -50,13 +50,19 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 	@Override
 	protected boolean onTap(int index)
 	{
-		int stationId = markers.get(index).getId();
+		int bikeNumber = markers.get(index).getBikes();
+		int freeNumber = markers.get(index).getFree();
 		
 		Bundle tapped = new Bundle();
-		tapped.putInt("stationId", stationId);
+		tapped.putString("name", items.get(index).getTitle());
+		tapped.putString("numBikes", bikeNumber == 0 ? "-" : String.valueOf(bikeNumber));
+		tapped.putString("freeSpaces", freeNumber == 0 ? "-" : String.valueOf(freeNumber));
+		tapped.putDouble("lat", markers.get(index).getLatitude());
+		tapped.putDouble("lng", markers.get(index).getLongtitude());
 		Message msg = new Message();
 		msg.setData(tapped);
 		tapNotifier.sendMessage(msg);
+		
 		return true;
 	}
 
