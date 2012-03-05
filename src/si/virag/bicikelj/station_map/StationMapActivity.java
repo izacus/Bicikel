@@ -6,6 +6,7 @@ import java.util.List;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.util.DisplayUtils;
+import android.R.anim;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -14,7 +15,8 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.view.View;
-import android.widget.RelativeLayout.LayoutParams;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockMapActivity;
@@ -24,6 +26,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
+import com.nineoldandroids.animation.ObjectAnimator;
 
 public class StationMapActivity extends SherlockMapActivity 
 {
@@ -39,6 +42,10 @@ public class StationMapActivity extends SherlockMapActivity
     private TextView detailFree;
     private TextView detailDistance;
     private TextView detailName;
+    private boolean detailDisplayed = false;
+    
+    private Double selectedLat = null;
+    private Double selectedLng = null;
     
     private Location myLocation;
     
@@ -62,6 +69,20 @@ public class StationMapActivity extends SherlockMapActivity
         String[] names = extras.getStringArray("names");
         int[] free = extras.getIntArray("frees");
         int[] bikes = extras.getIntArray("fulls");
+        
+        if (savedInstanceState != null)
+        {
+        	if (savedInstanceState.containsKey("detailDisplayed"))
+        	{
+        		detailDisplayed = savedInstanceState.getBoolean("detailDisplayed");
+        	}
+        	
+        	if (savedInstanceState.containsKey("lat"))
+        	{
+        		selectedLat = savedInstanceState.getDouble("lat");
+        		selectedLng = savedInstanceState.getDouble("lng");
+        	}
+        }
         
         List<Overlay> overlays = prepareOverlays(longtitudes, latitudes, names, free, bikes);
         
@@ -104,6 +125,22 @@ public class StationMapActivity extends SherlockMapActivity
         
         mapView.invalidate();
         mapView.setBuiltInZoomControls(false);
+        
+        // Hide detail view off-screen
+        if (!detailDisplayed)
+        {
+	        detail.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() 
+	        {
+				@Override
+				public void onGlobalLayout() 
+				{
+					detail.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+					ObjectAnimator animator = ObjectAnimator.ofFloat(detail, "translationY", detail.getHeight());
+					animator.setDuration(0);
+					animator.start();
+				}
+			});
+        }
 	}
 	
 	@Override
@@ -153,10 +190,7 @@ public class StationMapActivity extends SherlockMapActivity
                             double lat = data.getDouble("lat");
                             double lng = data.getDouble("lng");
                             
-                            // TODO: distance
-                            
                             setSelectedStation(name, free, bikes, lat, lng);
-                            
                             return true;
                     }
 
@@ -225,9 +259,17 @@ public class StationMapActivity extends SherlockMapActivity
 	
 	private void setSelectedStation(String name, String free, String bikes, double lat, double lng) 
 	{
+		selectedLat = lat;
+		selectedLng = lng;
+		detailDisplayed = true;
+		
 		detailName.setText(name);
 		detailFull.setText(bikes);
 		detailFree.setText(free);
+		
+        // Pop-in detail view
+        ObjectAnimator animator = ObjectAnimator.ofFloat(detail, "translationY", 0);
+        animator.setInterpolator(new DecelerateInterpolator());
 		
 		if (myLocation != null)
 		{
@@ -243,6 +285,8 @@ public class StationMapActivity extends SherlockMapActivity
 		{
 			detailDistance.setVisibility(View.GONE);
 		}
+		
+		animator.start();
 	}
 	
 	@Override
@@ -250,7 +294,23 @@ public class StationMapActivity extends SherlockMapActivity
 		return false;
 	}
 	
-    private static Location E6ToLocation(int latitudeE6, int longtitudeE6)
+    @Override
+	protected void onSaveInstanceState(Bundle outState) 
+    {
+		super.onSaveInstanceState(outState);
+		if (selectedLat != null) {
+			outState.putDouble("lat", selectedLat);
+		}
+		
+		if (selectedLng != null) {
+			outState.putDouble("lng", selectedLng);
+		}
+		
+		outState.putBoolean("detailDisplayed", detailDisplayed);
+			
+	}
+
+	private static Location E6ToLocation(int latitudeE6, int longtitudeE6)
     {
             Location loc = new Location("");
             
