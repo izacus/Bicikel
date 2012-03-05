@@ -36,9 +36,10 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	private GPSManager gpsManager;
 
 	private Location location;
-	
 	private Animation fadeOut;
 	private Animation fadeIn;
+	
+	private StationInfo data;
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) 
@@ -104,6 +105,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	@Override
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo data) 
 	{
+		this.data = data;
 		// Clear animation listener
 		fadeOut.setAnimationListener(null);
 		getListView().startAnimation(fadeIn);
@@ -156,7 +158,47 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	public void onListItemClick(ListView l, View v, int position, long id) 
 	{
 		super.onListItemClick(l, v, position, id);
+		
+		showFullMap();
+	}
+	
+	private void showFullMap()
+	{
+		if (this.data == null)
+			return;
+		
 		Intent intent = new Intent(getActivity(), StationMapActivity.class);
+		intent.putExtras(packStationData(data));
 		startActivity(intent);
+	}
+	
+	private static Bundle packStationData(StationInfo data)
+	{
+		int stationNum = data.getStations().size();
+		
+		double[] lngs = new double[stationNum];
+		double[] lats = new double[stationNum];
+		String[] names = new String[stationNum];
+		int[] frees = new int[stationNum];
+		int[] fulls = new int[stationNum];
+		
+		for (int i = 0; i < stationNum; i++)
+		{
+			Station station = data.getStations().get(i);
+			lngs[i] = station.getLocation().getLongitude();
+			lats[i] = station.getLocation().getLatitude();
+			names[i] = station.getName();
+			frees[i] = station.getFreeSpaces();
+			fulls[i] = station.getAvailableBikes();
+		}
+		
+		Bundle targetBundle = new Bundle();
+		targetBundle.putDoubleArray("lats", lats);
+		targetBundle.putDoubleArray("lngs", lngs);
+		targetBundle.putStringArray("names", names);
+		targetBundle.putIntArray("frees", frees);
+		targetBundle.putIntArray("fulls", fulls);
+		
+		return targetBundle;
 	}
 }
