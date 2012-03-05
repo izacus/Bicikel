@@ -5,6 +5,7 @@ import java.util.List;
 
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
+import si.virag.bicikelj.util.DisplayUtils;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
+import android.view.View;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockMapActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -27,8 +30,17 @@ public class StationMapActivity extends SherlockMapActivity
     private static final int MAP_CENTER_LNG = 14506542;
 	
 	private MapView mapView;
-    private MyLocationOverlay myLocation;
+    private MyLocationOverlay myLocationOverlay;
 	
+    // Detail displays
+    private View detail;
+    private TextView detailFull;
+    private TextView detailFree;
+    private TextView detailDistance;
+    private TextView detailName;
+    
+    private Location myLocation;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,6 +49,11 @@ public class StationMapActivity extends SherlockMapActivity
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		mapView = (MapView)findViewById(R.id.map_view);
+		detail = findViewById(R.id.maps_detail);
+		detailFull = (TextView)findViewById(R.id.maps_num_full);
+		detailFree = (TextView)findViewById(R.id.maps_num_free);
+		detailName = (TextView)findViewById(R.id.maps_name);
+		detailDistance = (TextView)findViewById(R.id.maps_distance);
 		
         Bundle extras = getIntent().getExtras();
         double[] longtitudes = extras.getDoubleArray("lngs");
@@ -54,39 +71,40 @@ public class StationMapActivity extends SherlockMapActivity
         controller.setZoom(15);
         
         // Add user location overlay
-        myLocation = new MyLocationOverlay(this, mapView);
-        myLocation.enableCompass();
-        myLocation.enableMyLocation();
+        myLocationOverlay = new MyLocationOverlay(this, mapView);
+        myLocationOverlay.enableCompass();
+        myLocationOverlay.enableMyLocation();
         
         // Add user location overlay
-        myLocation = new MyLocationOverlay(this, mapView);
-        myLocation.enableCompass();
-        myLocation.enableMyLocation();
+        myLocationOverlay = new MyLocationOverlay(this, mapView);
+        myLocationOverlay.enableCompass();
+        myLocationOverlay.enableMyLocation();
         
-        myLocation.runOnFirstFix(new Runnable()
+        myLocationOverlay.runOnFirstFix(new Runnable()
         {
                 @Override
                 public void run()
                 {
                         // Make sure we don't scroll away from the city
                         Location centerLoc = E6ToLocation(MAP_CENTER_LAT, MAP_CENTER_LNG);
-                        Location myLoc = E6ToLocation(myLocation.getMyLocation().getLatitudeE6(), 
-                                                      myLocation.getMyLocation().getLongitudeE6());
+                        Location myLoc = E6ToLocation(myLocationOverlay.getMyLocation().getLatitudeE6(), 
+                                                      myLocationOverlay.getMyLocation().getLongitudeE6());
                         
+                        myLocation = myLoc;
                         if (myLoc.distanceTo(centerLoc) > 3000)
                                 return;
                         
                         MapController controller = mapView.getController();
                         
-                        if (myLocation.getMyLocation() != null)
+                        if (myLocationOverlay.getMyLocation() != null)
                         {
-                                controller.animateTo(myLocation.getMyLocation());
+                                controller.animateTo(myLocationOverlay.getMyLocation());
                                 controller.setZoom(16);
                         }
                 }
         });
         
-        overlays.add(myLocation);
+        overlays.add(myLocationOverlay);
         
         mapView.invalidate();
         mapView.setBuiltInZoomControls(false);
@@ -123,10 +141,13 @@ public class StationMapActivity extends SherlockMapActivity
                             double lat = data.getDouble("lat");
                             double lng = data.getDouble("lng");
                             
-                            // TODO
+                            // TODO: distance
+                            
+                            setSelectedStation(name, free, bikes, lat, lng);
                             
                             return true;
                     }
+
             });
             
             // Prepare overlays
@@ -190,6 +211,27 @@ public class StationMapActivity extends SherlockMapActivity
             return overlays;
     }
 	
+	private void setSelectedStation(String name, String free, String bikes, double lat, double lng) 
+	{
+		detailName.setText(name);
+		detailFull.setText(bikes);
+		detailFree.setText(free);
+		
+		if (myLocation != null)
+		{
+			Location loc = new Location("");
+			loc.setLatitude(lat);
+			loc.setLongitude(lng);
+			float distance = myLocation.distanceTo(loc);
+			
+			detailDistance.setText(DisplayUtils.formatDistance(distance));
+			detailDistance.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			detailDistance.setVisibility(View.GONE);
+		}
+	}
 	
 	@Override
 	protected boolean isRouteDisplayed() {
