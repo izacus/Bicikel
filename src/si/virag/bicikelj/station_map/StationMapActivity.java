@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.view.View;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockMapActivity;
@@ -75,11 +76,6 @@ public class StationMapActivity extends SherlockMapActivity
         myLocationOverlay.enableCompass();
         myLocationOverlay.enableMyLocation();
         
-        // Add user location overlay
-        myLocationOverlay = new MyLocationOverlay(this, mapView);
-        myLocationOverlay.enableCompass();
-        myLocationOverlay.enableMyLocation();
-        
         myLocationOverlay.runOnFirstFix(new Runnable()
         {
                 @Override
@@ -124,7 +120,23 @@ public class StationMapActivity extends SherlockMapActivity
 		}
 	}
 	
-    /**
+    @Override
+	protected void onPause() 
+    {
+		super.onPause();
+		myLocationOverlay.disableCompass();
+		myLocationOverlay.disableMyLocation();
+	}
+
+	@Override
+	protected void onResume() 
+	{
+		super.onResume();
+        myLocationOverlay.enableCompass();
+        myLocationOverlay.enableMyLocation();
+	}
+
+	/**
      * Prepares overlays with station icons
      */
     private List<Overlay> prepareOverlays(double[] lats, double[] lngs, String[] names, int[] free, int[] bikes)
