@@ -8,6 +8,7 @@ import java.util.Locale;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.util.DisplayUtils;
 import android.app.Activity;
 import android.location.Location;
 import android.view.LayoutInflater;
@@ -66,7 +67,7 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		
 		if (getItem(position).getDistance() != null)
 		{
-			viewHolder.distance.setText(formatDistance(getItem(position).getDistance()));
+			viewHolder.distance.setText(DisplayUtils.formatDistance(getItem(position).getDistance()));
 			viewHolder.distance.setVisibility(View.VISIBLE);
 		}
 		else
@@ -76,20 +77,7 @@ public class StationListAdapter extends ArrayAdapter<Station>
 		
 		return view;
 	}
-	
-	public String formatDistance(Float distance)
-	{
-		// Using german locale, because slovene locale is not available on all devices
-		// and germany uses same number format
-		if (distance < 1200)
-		{
-			return String.format(Locale.GERMAN, "%,.1f", distance) + " m";
-		}
-		else
-		{
-			return String.format(Locale.GERMAN, "%,.2f", distance / 1000) + " km";
-		}
-	}
+
 	
 	public void updateData(StationInfo info)
 	{
