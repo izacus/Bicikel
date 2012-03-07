@@ -6,7 +6,6 @@ import java.util.List;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.util.DisplayUtils;
-import android.R.anim;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -16,6 +15,7 @@ import android.os.Handler.Callback;
 import android.os.Message;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
@@ -26,6 +26,9 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.Animator.AnimatorListener;
+import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
 public class StationMapActivity extends SherlockMapActivity 
@@ -43,6 +46,8 @@ public class StationMapActivity extends SherlockMapActivity
     private TextView detailDistance;
     private TextView detailName;
     private boolean detailDisplayed = false;
+    // Disable tap while animating
+    private boolean tapDisabled = false;
     
     private Double selectedLat = null;
     private Double selectedLng = null;
@@ -56,12 +61,7 @@ public class StationMapActivity extends SherlockMapActivity
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		mapView = (MapView)findViewById(R.id.map_view);
-		detail = findViewById(R.id.maps_detail);
-		detailFull = (TextView)findViewById(R.id.maps_num_full);
-		detailFree = (TextView)findViewById(R.id.maps_num_free);
-		detailName = (TextView)findViewById(R.id.maps_name);
-		detailDistance = (TextView)findViewById(R.id.maps_distance);
+		prepareInterface();
 		
         Bundle extras = getIntent().getExtras();
         double[] longtitudes = extras.getDoubleArray("lngs");
@@ -70,6 +70,7 @@ public class StationMapActivity extends SherlockMapActivity
         int[] free = extras.getIntArray("frees");
         int[] bikes = extras.getIntArray("fulls");
         
+        // Restore state
         if (savedInstanceState != null)
         {
         	if (savedInstanceState.containsKey("detailDisplayed"))
@@ -85,8 +86,27 @@ public class StationMapActivity extends SherlockMapActivity
         }
         
         List<Overlay> overlays = prepareOverlays(longtitudes, latitudes, names, free, bikes);
+        setupMap(overlays);
         
-        // Show whole map
+        // Hide detail view off-screen
+        if (!detailDisplayed)
+        {
+	        detail.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() 
+	        {
+				@Override
+				public void onGlobalLayout() 
+				{
+					detail.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+					ObjectAnimator animator = ObjectAnimator.ofFloat(detail, "translationY", detail.getHeight());
+					animator.setDuration(0);
+					animator.start();
+				}
+			});
+        }
+	}
+
+	private void setupMap(List<Overlay> overlays) {
+		// Show whole map
         GeoPoint pt = new GeoPoint(MAP_CENTER_LAT, MAP_CENTER_LNG);
         MapController controller = mapView.getController();
         controller.setCenter(pt);
@@ -116,31 +136,22 @@ public class StationMapActivity extends SherlockMapActivity
                         if (myLocationOverlay.getMyLocation() != null)
                         {
                                 controller.animateTo(myLocationOverlay.getMyLocation());
-                                controller.setZoom(16);
                         }
                 }
         });
         
         overlays.add(myLocationOverlay);
-        
         mapView.invalidate();
         mapView.setBuiltInZoomControls(false);
-        
-        // Hide detail view off-screen
-        if (!detailDisplayed)
-        {
-	        detail.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() 
-	        {
-				@Override
-				public void onGlobalLayout() 
-				{
-					detail.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-					ObjectAnimator animator = ObjectAnimator.ofFloat(detail, "translationY", detail.getHeight());
-					animator.setDuration(0);
-					animator.start();
-				}
-			});
-        }
+	}
+
+	private void prepareInterface() {
+		mapView = (MapView)findViewById(R.id.map_view);
+		detail = findViewById(R.id.maps_detail);
+		detailFull = (TextView)findViewById(R.id.maps_num_full);
+		detailFree = (TextView)findViewById(R.id.maps_num_free);
+		detailName = (TextView)findViewById(R.id.maps_name);
+		detailDistance = (TextView)findViewById(R.id.maps_distance);
 	}
 	
 	@Override
@@ -183,6 +194,9 @@ public class StationMapActivity extends SherlockMapActivity
                     @Override
                     public boolean handleMessage(Message msg) 
                     {
+                    		if (tapDisabled)
+                    			return true;
+                    	
                             Bundle data = msg.getData();
                             String name = data.getString("name");
                             String free = data.getString("freeSpaces");
@@ -257,27 +271,103 @@ public class StationMapActivity extends SherlockMapActivity
             return overlays;
     }
 	
-	private void setSelectedStation(String name, String free, String bikes, double lat, double lng) 
+	private void setSelectedStation(final String name, final String free, final String bikes, double lat, double lng) 
 	{
 		selectedLat = lat;
 		selectedLng = lng;
-		detailDisplayed = true;
 		
-		detailName.setText(name);
-		detailFull.setText(bikes);
-		detailFree.setText(free);
-		
-        // Pop-in detail view
-        ObjectAnimator animator = ObjectAnimator.ofFloat(detail, "translationY", 0);
-        animator.setInterpolator(new DecelerateInterpolator());
-		
+		final Float distance;
 		if (myLocation != null)
 		{
 			Location loc = new Location("");
 			loc.setLatitude(lat);
 			loc.setLongitude(lng);
-			float distance = myLocation.distanceTo(loc);
+			distance = myLocation.distanceTo(loc);
+		}
+		else
+		{
+			distance = null;
+		}
+		
+		if (!detailDisplayed)
+		{
+			setDetailsText(name, free, bikes, distance);
+			// Pop-in details
+			ObjectAnimator animator = ObjectAnimator.ofFloat(detail, "translationY", 0);
+	        animator.setInterpolator(new DecelerateInterpolator());
+			animator.start();
+		}
+		else 
+		{
+			tapDisabled = true;
+			final AnimatorSet fadeIn = new AnimatorSet();
+			final ObjectAnimator fadeInText = ObjectAnimator.ofFloat(detailName, "alpha", 255);
+			final ObjectAnimator fadeInFree = ObjectAnimator.ofFloat(detailFree, "alpha", 255);
+			final ObjectAnimator fadeInFull = ObjectAnimator.ofFloat(detailFull, "alpha", 255);
+			final ObjectAnimator fadeInDistance = ObjectAnimator.ofFloat(detailDistance, "alpha", 255);
+			fadeIn.setInterpolator(new AccelerateInterpolator());
+			fadeIn.play(fadeInText).with(fadeInFree);
+			fadeIn.play(fadeInFree).with(fadeInFull);
+			fadeIn.play(fadeInFull).with(fadeInDistance);
 			
+			final AnimatorSet fadeOut = new AnimatorSet();
+			final ObjectAnimator fadeOutText = ObjectAnimator.ofFloat(detailName, "alpha", 0);
+			final ObjectAnimator fadeOutFree = ObjectAnimator.ofFloat(detailFree, "alpha", 0);
+			final ObjectAnimator fadeOutFull = ObjectAnimator.ofFloat(detailFull, "alpha", 0);
+			final ObjectAnimator fadeOutDistance = ObjectAnimator.ofFloat(detailDistance, "alpha", 0);
+			fadeOut.setInterpolator(new AccelerateInterpolator());
+			fadeOut.play(fadeOutText).with(fadeOutFree);
+			fadeOut.play(fadeOutFree).with(fadeOutFull);
+			fadeOut.play(fadeOutFull).with(fadeOutDistance);
+			
+			fadeOut.addListener(new AnimatorListener() 
+			{
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					setDetailsText(name, free, bikes, distance);
+					fadeIn.start();
+				}
+
+				@Override
+				public void onAnimationStart(Animator animation) {}
+
+				@Override
+				public void onAnimationCancel(Animator animation) {}
+
+				@Override
+				public void onAnimationRepeat(Animator animation) {}
+			});
+			
+			fadeIn.addListener(new AnimatorListener() {
+				
+				@Override
+				public void onAnimationStart(Animator animation) {}
+				
+				@Override
+				public void onAnimationRepeat(Animator animation) {}
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					tapDisabled = false;
+				}
+				
+				@Override
+				public void onAnimationCancel(Animator animation) {}
+			});
+			
+			fadeOut.start();
+		}
+		
+		detailDisplayed = true;
+	}
+
+	private void setDetailsText(String name, String free, String bikes, Float distance) {
+		detailName.setText(name);
+		detailFull.setText(bikes);
+		detailFree.setText(free);
+		
+		if (distance != null)
+		{
 			detailDistance.setText(DisplayUtils.formatDistance(distance));
 			detailDistance.setVisibility(View.VISIBLE);
 		}
@@ -285,8 +375,6 @@ public class StationMapActivity extends SherlockMapActivity
 		{
 			detailDistance.setVisibility(View.GONE);
 		}
-		
-		animator.start();
 	}
 	
 	@Override
