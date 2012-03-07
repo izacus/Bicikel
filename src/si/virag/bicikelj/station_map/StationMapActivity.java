@@ -88,6 +88,16 @@ public class StationMapActivity extends SherlockMapActivity
         List<Overlay> overlays = prepareOverlays(longtitudes, latitudes, names, free, bikes);
         setupMap(overlays);
         
+        if (longtitudes.length == 1)
+        {
+        	detailDisplayed = true;
+        	setSelectedStation(names[0], 
+        					   free[0] == 0 ? "-" : String.valueOf(free[0]), 
+        					   bikes[0] == 0 ? "-" : String.valueOf(bikes[0]), 
+        					   latitudes[0], 
+        					   longtitudes[0]);
+        }
+        
         // Hide detail view off-screen
         if (!detailDisplayed)
         {
