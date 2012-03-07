@@ -1,7 +1,9 @@
 package si.virag.bicikelj.station_map;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockMapActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.flurry.android.FlurryAgent;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -172,12 +175,22 @@ public class StationMapActivity extends SherlockMapActivity
 		detailDistance = (TextView)findViewById(R.id.maps_distance);
 	}
 	
+	
+	
+	@Override
+	public void onBackPressed() 
+	{
+		super.onBackPressed();
+		FlurryAgent.logEvent("MapBackButtonTap");
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) 
 	{
 		switch (item.getItemId())
 		{
 			case android.R.id.home:
+				FlurryAgent.logEvent("MapBackHomeTap");
 				Intent intent = new Intent(this, MainActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
@@ -214,13 +227,17 @@ public class StationMapActivity extends SherlockMapActivity
                     {
                     		if (tapDisabled)
                     			return true;
-                    	
+                    		
                             Bundle data = msg.getData();
                             String name = data.getString("name");
                             String free = data.getString("freeSpaces");
                             String bikes = data.getString("numBikes");
                             double lat = data.getDouble("lat");
                             double lng = data.getDouble("lng");
+                            
+                    		Map<String, String> params = new HashMap<String, String>();
+                    		params.put("Station", name);
+                    		FlurryAgent.logEvent("MapStationMarkerTap");
                             
                             setSelectedStation(name, free, bikes, lat, lng);
                             return true;
@@ -425,4 +442,22 @@ public class StationMapActivity extends SherlockMapActivity
             
             return loc;
     }
+
+	@Override
+	protected void onStop() 
+	{
+		super.onStop();
+		FlurryAgent.onEndSession(this);
+	}
+
+	@Override
+	protected void onStart() 
+	{
+		super.onStart();
+		FlurryAgent.setUseHttps(true);	// Don't send users data in plain text
+		FlurryAgent.setReportLocation(false);	// Don't report users location for stats, not needed
+		FlurryAgent.onStartSession(this, getString(R.string.flurry_api_key));
+	}
+	
+	
 }
