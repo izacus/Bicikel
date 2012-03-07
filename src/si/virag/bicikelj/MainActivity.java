@@ -1,11 +1,11 @@
 package si.virag.bicikelj;
 
+import android.os.Bundle;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.flurry.android.FlurryAgent;
 
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-
-public class MainActivity extends FragmentActivity 
+public class MainActivity extends SherlockFragmentActivity 
 {
     /** Called when the activity is first created. */
     @Override
