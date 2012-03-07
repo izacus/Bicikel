@@ -1,7 +1,9 @@
 package si.virag.bicikelj.stations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
@@ -27,6 +29,7 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.flurry.android.FlurryAgent;
 
 public class StationListFragment extends SherlockListFragment implements LoaderCallbacks<StationInfo>
 {
@@ -77,6 +80,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 			{
 				if (msg.what != GPSManager.GPS_LOCATION_OK)
 				{
+					FlurryAgent.logEvent("LocationNotAvailable");
 					Log.w(this.toString(), "Can't get current location.");
 					return;
 				}
@@ -126,8 +130,10 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		
 		if (location != null)
 		{
+			FlurryAgent.logEvent("LocationRetrievedBeforeLoad");
 			adapter.updateLocation(location);
 		}
+		
 		adapter.notifyDataSetChanged();
 	}
 
@@ -150,8 +156,10 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 			case R.id.menu_refresh: 
 				getLoaderManager().initLoader(STATION_LOADER_ID, null, StationListFragment.this).forceLoad();
 				getListView().startAnimation(fadeOut);
+				FlurryAgent.logEvent("StationListRefresh");
 			case R.id.menu_map:
 				showFullMap();
+				FlurryAgent.logEvent("FullMap");
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -164,6 +172,11 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		
 		ArrayList<Station> station = new ArrayList<Station>();
 		station.add(data.getStations().get(position));
+		//
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("Station", data.getStations().get(position).getName());
+		FlurryAgent.logEvent("StationListTap", params);
+		//
 		Intent intent = new Intent(getActivity(), StationMapActivity.class);
 		intent.putExtras(packStationData(station));
 		startActivity(intent);
