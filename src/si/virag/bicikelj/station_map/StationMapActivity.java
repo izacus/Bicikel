@@ -88,15 +88,28 @@ public class StationMapActivity extends SherlockMapActivity
         List<Overlay> overlays = prepareOverlays(longtitudes, latitudes, names, free, bikes);
         setupMap(overlays);
         
-        if (longtitudes.length == 1)
-        {
+	    if (longtitudes.length == 1)
+	    {
         	detailDisplayed = true;
         	setSelectedStation(names[0], 
         					   free[0] == 0 ? "-" : String.valueOf(free[0]), 
         					   bikes[0] == 0 ? "-" : String.valueOf(bikes[0]), 
         					   latitudes[0], 
         					   longtitudes[0]);
+        	
+            GeoPoint pt = new GeoPoint((int)(latitudes[0] * 1E6), (int)(longtitudes[0] * 1E6));
+            MapController controller = mapView.getController();
+            controller.setCenter(pt);
+            controller.setZoom(16);
         }
+		else
+		{
+			// Show whole map
+	        GeoPoint pt = new GeoPoint(MAP_CENTER_LAT, MAP_CENTER_LNG);
+	        MapController controller = mapView.getController();
+	        controller.setCenter(pt);
+	        controller.setZoom(15);
+		}
         
         // Hide detail view off-screen
         if (!detailDisplayed)
@@ -115,13 +128,8 @@ public class StationMapActivity extends SherlockMapActivity
         }
 	}
 
-	private void setupMap(List<Overlay> overlays) {
-		// Show whole map
-        GeoPoint pt = new GeoPoint(MAP_CENTER_LAT, MAP_CENTER_LNG);
-        MapController controller = mapView.getController();
-        controller.setCenter(pt);
-        controller.setZoom(15);
-        
+	private void setupMap(List<Overlay> overlays) 
+	{
         // Add user location overlay
         myLocationOverlay = new MyLocationOverlay(this, mapView);
         myLocationOverlay.enableCompass();
