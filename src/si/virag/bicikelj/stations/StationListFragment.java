@@ -1,6 +1,7 @@
 package si.virag.bicikelj.stations;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
@@ -149,6 +150,8 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 			case R.id.menu_refresh: 
 				getLoaderManager().initLoader(STATION_LOADER_ID, null, StationListFragment.this).forceLoad();
 				getListView().startAnimation(fadeOut);
+			case R.id.menu_map:
+				showFullMap();
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -159,7 +162,11 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	{
 		super.onListItemClick(l, v, position, id);
 		
-		showFullMap();
+		ArrayList<Station> station = new ArrayList<Station>();
+		station.add(data.getStations().get(position));
+		Intent intent = new Intent(getActivity(), StationMapActivity.class);
+		intent.putExtras(packStationData(station));
+		startActivity(intent);
 	}
 	
 	private void showFullMap()
@@ -168,13 +175,14 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 			return;
 		
 		Intent intent = new Intent(getActivity(), StationMapActivity.class);
-		intent.putExtras(packStationData(data));
+		intent.putExtras(packStationData(data.getStations()));
 		startActivity(intent);
 	}
 	
-	private static Bundle packStationData(StationInfo data)
+	
+	private static Bundle packStationData(List<Station> data)
 	{
-		int stationNum = data.getStations().size();
+		int stationNum = data.size();
 		
 		double[] lngs = new double[stationNum];
 		double[] lats = new double[stationNum];
@@ -184,7 +192,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		
 		for (int i = 0; i < stationNum; i++)
 		{
-			Station station = data.getStations().get(i);
+			Station station = data.get(i);
 			lngs[i] = station.getLocation().getLongitude();
 			lats[i] = station.getLocation().getLatitude();
 			names[i] = station.getName();
