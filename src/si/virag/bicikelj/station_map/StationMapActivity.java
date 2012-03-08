@@ -336,20 +336,20 @@ public class StationMapActivity extends SherlockMapActivity
 		{
 			tapDisabled = true;
 			final AnimatorSet fadeIn = new AnimatorSet();
-			final ObjectAnimator fadeInText = ObjectAnimator.ofFloat(detailName, "alpha", 255);
-			final ObjectAnimator fadeInFree = ObjectAnimator.ofFloat(detailFree, "alpha", 255);
-			final ObjectAnimator fadeInFull = ObjectAnimator.ofFloat(detailFull, "alpha", 255);
-			final ObjectAnimator fadeInDistance = ObjectAnimator.ofFloat(detailDistance, "alpha", 255);
+			final ObjectAnimator fadeInText = ObjectAnimator.ofFloat(detailName, "alpha", 0, 255);
+			final ObjectAnimator fadeInFree = ObjectAnimator.ofFloat(detailFree, "alpha", 0, 255);
+			final ObjectAnimator fadeInFull = ObjectAnimator.ofFloat(detailFull, "alpha", 0, 255);
+			final ObjectAnimator fadeInDistance = ObjectAnimator.ofFloat(detailDistance, "alpha", 0, 255);
 			fadeIn.setInterpolator(new AccelerateInterpolator());
 			fadeIn.play(fadeInText).with(fadeInFree);
 			fadeIn.play(fadeInFree).with(fadeInFull);
 			fadeIn.play(fadeInFull).with(fadeInDistance);
 			
 			final AnimatorSet fadeOut = new AnimatorSet();
-			final ObjectAnimator fadeOutText = ObjectAnimator.ofFloat(detailName, "alpha", 0);
-			final ObjectAnimator fadeOutFree = ObjectAnimator.ofFloat(detailFree, "alpha", 0);
-			final ObjectAnimator fadeOutFull = ObjectAnimator.ofFloat(detailFull, "alpha", 0);
-			final ObjectAnimator fadeOutDistance = ObjectAnimator.ofFloat(detailDistance, "alpha", 0);
+			final ObjectAnimator fadeOutText = ObjectAnimator.ofFloat(detailName, "alpha", 255, 0);
+			final ObjectAnimator fadeOutFree = ObjectAnimator.ofFloat(detailFree, "alpha", 255, 0);
+			final ObjectAnimator fadeOutFull = ObjectAnimator.ofFloat(detailFull, "alpha", 255, 0);
+			final ObjectAnimator fadeOutDistance = ObjectAnimator.ofFloat(detailDistance, "alpha", 255, 0);
 			fadeOut.setInterpolator(new AccelerateInterpolator());
 			fadeOut.play(fadeOutText).with(fadeOutFree);
 			fadeOut.play(fadeOutFree).with(fadeOutFull);
