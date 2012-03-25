@@ -23,12 +23,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuItem.OnActionExpandListener;
 import com.flurry.android.FlurryAgent;
 
 public class StationListFragment extends SherlockListFragment implements LoaderCallbacks<StationInfo>
@@ -147,6 +149,23 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
 	{
 		inflater.inflate(R.menu.menu_stationlist, menu);
+		
+		final MenuItem searchItem = menu.findItem(R.id.menu_search);
+		searchItem.setOnActionExpandListener(new OnActionExpandListener() {
+			
+			@Override
+			public boolean onMenuItemActionExpand(MenuItem item) 
+			{
+				EditText searchBox = (EditText) searchItem.getActionView().findViewById(R.id.search_box);
+				searchBox.requestFocus();
+				return true;
+			}
+			
+			@Override
+			public boolean onMenuItemActionCollapse(MenuItem item) {
+				return true;
+			}
+		});
 	}
 
 	@Override
