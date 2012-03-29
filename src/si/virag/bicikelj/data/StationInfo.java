@@ -63,11 +63,16 @@ public class StationInfo
 		
 		for (Station station : stations)
 		{
-			if (station.getName().toUpperCase().contains(filterText.trim().toUpperCase())) {
+			if (filterSanitize(station.getName()).contains(filterSanitize(filterText))) {
 				newInfo.addStation(station);
 			}
 		}
 		
 		return newInfo;
+	}
+	
+	private static String filterSanitize(String text)
+	{
+		return text.trim().toUpperCase().replace('È', 'C').replace('Š','S').replace('Ž', 'Z');
 	}
 }
