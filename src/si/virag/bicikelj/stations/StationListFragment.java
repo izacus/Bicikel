@@ -10,6 +10,8 @@ import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.util.GPSManager;
+import si.virag.bicikelj.util.ShowKeyboardRunnable;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -152,25 +155,27 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		inflater.inflate(R.menu.menu_stationlist, menu);
 		
 		final MenuItem searchItem = menu.findItem(R.id.menu_search);
+		final EditText searchBox = (EditText) searchItem.getActionView().findViewById(R.id.search_box);
 		searchItem.setOnActionExpandListener(new OnActionExpandListener() {
 			
 			@Override
 			public boolean onMenuItemActionExpand(MenuItem item) 
 			{
-				EditText searchBox = (EditText) searchItem.getActionView().findViewById(R.id.search_box);
-				searchBox.requestFocus();
+				searchBox.post(new ShowKeyboardRunnable(getActivity(), searchBox));
 				return true;
 			}
 			
 			@Override
 			public boolean onMenuItemActionCollapse(MenuItem item) {
 				adapter.updateData(data);
-				refreshAdapterLocation();
+				refreshAdapterLocation();				
+				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
 				return true;
 			}
 		});
 		
-		((EditText)searchItem.getActionView().findViewById(R.id.search_box)).addTextChangedListener(new TextWatcher() {
+		searchBox.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 			
