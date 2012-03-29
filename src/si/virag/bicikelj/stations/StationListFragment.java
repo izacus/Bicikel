@@ -25,8 +25,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -91,6 +89,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 				}
 				
 				location = gpsManager.getCurrentLocation();
+				gpsManager.cancelSearch();
 				refreshAdapterLocation();
 			}
 			
