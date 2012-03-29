@@ -47,8 +47,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	private GPSManager gpsManager;
 
 	private Location location;
-	private Animation fadeOut;
-	private Animation fadeIn;
 	
 	private MenuItem searchActionView;
 	
@@ -59,9 +57,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	{
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		
-		fadeOut = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out);
-		fadeIn = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
 		gpsManager = new GPSManager();
 		
 		
@@ -130,9 +125,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo data) 
 	{
 		this.data = data;
-		// Clear animation listener
-		fadeOut.setAnimationListener(null);
-		getListView().startAnimation(fadeIn);
 		
 		// Update data in-place when already available
 		adapter.updateData(data);
@@ -165,6 +157,9 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 			@Override
 			public boolean onMenuItemActionExpand(MenuItem item) 
 			{
+				if (StationListFragment.this.data == null)
+					return false;
+				
 				searchBox.post(new ShowKeyboardRunnable(getActivity(), searchBox));
 				return true;
 			}
@@ -231,18 +226,29 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		if (this.data == null)
+		{
+			return false;
+		}
+		
 		switch (item.getItemId())
 		{
-			case R.id.menu_refresh: 
-				getLoaderManager().initLoader(STATION_LOADER_ID, null, StationListFragment.this).forceLoad();
-				getListView().startAnimation(fadeOut);
+			case R.id.menu_refresh:
+				this.adapter.clearData();
+				this.adapter.notifyDataSetChanged();
+				this.data = null;
+				getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
 				FlurryAgent.logEvent("StationListRefresh");
+				break;
 			case R.id.menu_map:
 				showFullMap();
 				FlurryAgent.logEvent("FullMap");
+				break;
 			default:
-				return super.onOptionsItemSelected(item);
+				break;
 		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
