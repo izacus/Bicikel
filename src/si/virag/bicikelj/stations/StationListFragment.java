@@ -50,6 +50,8 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	private Animation fadeOut;
 	private Animation fadeIn;
 	
+	private MenuItem searchActionView;
+	
 	private StationInfo data;
 	
 	@Override
@@ -61,6 +63,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		fadeOut = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out);
 		fadeIn = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
 		gpsManager = new GPSManager();
+		
 		
 		adapter = new StationListAdapter(getActivity(), R.layout.stationlist_item, new ArrayList<Station>());
 		this.setListAdapter(adapter);
@@ -155,6 +158,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		inflater.inflate(R.menu.menu_stationlist, menu);
 		
 		final MenuItem searchItem = menu.findItem(R.id.menu_search);
+		this.searchActionView = searchItem;
 		final EditText searchBox = (EditText) searchItem.getActionView().findViewById(R.id.search_box);
 		searchItem.setOnActionExpandListener(new OnActionExpandListener() {
 			
@@ -189,6 +193,20 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		});
 	}
 
+	public void searchRequested()
+	{
+		if (this.searchActionView != null)
+		{
+			if (this.searchActionView.isActionViewExpanded()) {
+				this.searchActionView.collapseActionView();
+			}
+			else
+			{
+				this.searchActionView.expandActionView();
+			}
+		}
+	}
+	
 	private void filterStations(String text)
 	{
 		Log.d(this.toString(), "Filter: " + text);
