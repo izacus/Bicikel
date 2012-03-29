@@ -13,10 +13,10 @@ import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class StationListAdapter extends ArrayAdapter<Station>
+public class StationListAdapter extends BaseAdapter
 {	
 	private static class StationViewHolder
 	{
@@ -31,7 +31,6 @@ public class StationListAdapter extends ArrayAdapter<Station>
 	
 	public StationListAdapter(Activity context, int textViewResourceId, List<Station> items)
 	{
-		super(context, textViewResourceId, items);
 		this.context = context;
 		this.items = items;
 	}
@@ -80,6 +79,12 @@ public class StationListAdapter extends ArrayAdapter<Station>
 	
 	public void updateData(StationInfo info)
 	{
+		if (info.getStations().size() != this.getCount())
+		{
+			this.items = info.getStations();
+			return;
+		}
+		
 		for (Station station : info.getStations())
 		{
 			for (int i = 0; i < this.getCount(); i++)
@@ -109,5 +114,27 @@ public class StationListAdapter extends ArrayAdapter<Station>
 				return lhs.getDistance().compareTo(rhs.getDistance());
 			}
 		});
+	}
+
+	@Override
+	public int getCount() 
+	{
+		return this.items.size();
+	}
+
+	@Override
+	public Station getItem(int position) 
+	{
+		if (position < 0 && position >= this.items.size())
+			throw new IndexOutOfBoundsException();
+		return this.items.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) 
+	{
+		if (position < 0 && position >= this.items.size())
+			throw new IndexOutOfBoundsException();
+		return this.items.get(position).getId();
 	}
 }
