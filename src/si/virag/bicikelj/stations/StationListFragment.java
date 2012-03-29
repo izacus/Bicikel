@@ -17,6 +17,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,13 +90,22 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 				}
 				
 				location = gpsManager.getCurrentLocation();
-				adapter.updateLocation(location);
-				adapter.notifyDataSetChanged();
+				refreshAdapterLocation();
 			}
 			
 		});
 	}
 
+	public void refreshAdapterLocation()
+	{
+		if (adapter != null && location != null)
+		{
+			adapter.updateLocation(location);
+		}
+		
+		adapter.notifyDataSetChanged();
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, 
 							 ViewGroup container,
@@ -118,17 +129,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		getListView().startAnimation(fadeIn);
 		
 		// Update data in-place when already available
-		if (adapter.getCount() > 0)
-		{
-			adapter.updateData(data);
-		}
-		else
-		{
-			for (Station station : data.getStations())
-			{
-				adapter.add(station);
-			}
-		}
+		adapter.updateData(data);
 		
 		if (location != null)
 		{
@@ -163,11 +164,48 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 			
 			@Override
 			public boolean onMenuItemActionCollapse(MenuItem item) {
+				adapter.updateData(data);
+				refreshAdapterLocation();
 				return true;
+			}
+		});
+		
+		((EditText)searchItem.getActionView().findViewById(R.id.search_box)).addTextChangedListener(new TextWatcher() {
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				filterStations(s.toString());
 			}
 		});
 	}
 
+	private void filterStations(String text)
+	{
+		Log.d(this.toString(), "Filter: " + text);
+		
+		if (text.trim().length() > 0)
+		{
+			StationInfo filteredInfo = data.getFilteredInfo(text);
+			
+			if (filteredInfo.getStations().size() > 0)
+				adapter.updateData(filteredInfo);
+			else
+				adapter.updateData(data);
+			
+			refreshAdapterLocation();
+		}
+		else
+		{
+			adapter.updateData(data);
+			refreshAdapterLocation();
+		}
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId())
