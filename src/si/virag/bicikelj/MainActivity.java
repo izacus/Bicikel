@@ -1,5 +1,6 @@
 package si.virag.bicikelj;
 
+import si.virag.bicikelj.stations.StationListFragment;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -30,6 +31,14 @@ public class MainActivity extends SherlockFragmentActivity
 	{
 		super.onStop();
 		FlurryAgent.onEndSession(this);
+	}
+
+	@Override
+	public boolean onSearchRequested() 
+	{
+		StationListFragment slFragment = (StationListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
+		slFragment.searchRequested();
+		return super.onSearchRequested();
 	}
     
     
