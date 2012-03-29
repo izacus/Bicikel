@@ -115,6 +115,11 @@ public class StationListAdapter extends BaseAdapter
 			}
 		});
 	}
+	
+	public void clearData()
+	{
+		this.items.clear();
+	}
 
 	@Override
 	public int getCount() 
