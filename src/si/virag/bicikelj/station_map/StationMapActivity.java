@@ -7,6 +7,7 @@ import java.util.Map;
 
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
+import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.util.DisplayUtils;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -48,13 +49,22 @@ public class StationMapActivity extends SherlockMapActivity
     private boolean detailDisplayed = false;
     // Disable tap while animating
     private boolean tapDisabled = false;
-    
-    private Double selectedLat = null;
-    private Double selectedLng = null;
-    
     private Location myLocation;
     
-    private Bundle data;
+    private ArrayList<Station> stations;
+    private int selectedStationId = - 1;
+    
+    private Station getStationById(int id)
+    {
+    	for (Station station : stations)
+    	{
+    		if (station.getId() == id)
+    			return station;
+    	}
+    	
+    	return null;
+    }
+    
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +76,6 @@ public class StationMapActivity extends SherlockMapActivity
 		prepareInterface();
 		
         Bundle extras;
-        
         if (savedInstanceState == null)
         {
         	extras = getIntent().getExtras();
@@ -76,13 +85,7 @@ public class StationMapActivity extends SherlockMapActivity
         	extras = savedInstanceState;
         }
         
-        this.data = extras;
-        
-        double[] longtitudes = extras.getDoubleArray("lngs");
-        double[] latitudes = extras.getDoubleArray("lats");
-        String[] names = extras.getStringArray("names");
-        int[] free = extras.getIntArray("frees");
-        int[] bikes = extras.getIntArray("fulls");
+        this.stations = extras.getParcelableArrayList("stations");
         
         // Restore state
         if (savedInstanceState != null)
@@ -92,35 +95,24 @@ public class StationMapActivity extends SherlockMapActivity
         		detailDisplayed = savedInstanceState.getBoolean("detailDisplayed");
         	}
         	
-        	if (savedInstanceState.containsKey("lat"))
+        	if (savedInstanceState.containsKey("stationId"))
         	{
-        		selectedLat = savedInstanceState.getDouble("lat");
-        		selectedLng = savedInstanceState.getDouble("lng");
-        		
-        		// Set label again
-        		for (int i = 0; i < longtitudes.length; i++)
-        		{
-        			if ((longtitudes[i] - selectedLng < 0.0000001) && (latitudes[i] - selectedLat < 0.0000001))
-        			{
-        				setSelectedStation(names[i], free[i], bikes[i], selectedLat, selectedLng);
-        			}
-        		}
+        		selectedStationId = savedInstanceState.getInt("stationId");
+        		Station station = getStationById(selectedStationId);
+        		setSelectedStation(station);
         	}
         }
         
-        List<Overlay> overlays = prepareOverlays(longtitudes, latitudes, names, free, bikes);
+        List<Overlay> overlays = prepareOverlays(stations);
         setupMap(overlays);
         
-	    if (longtitudes.length == 1)
+	    if (stations.size() == 1)
 	    {
+	    	Station station = stations.get(0);
         	detailDisplayed = true;
-        	setSelectedStation(names[0], 
-        					   free[0], 
-        					   bikes[0], 
-        					   latitudes[0], 
-        					   longtitudes[0]);
+        	setSelectedStation(station);
         	
-            GeoPoint pt = new GeoPoint((int)(latitudes[0] * 1E6), (int)(longtitudes[0] * 1E6));
+            GeoPoint pt = new GeoPoint((int)(station.getLocation().getLatitude() * 1E6), (int)(station.getLocation().getLongitude() * 1E6));
             MapController controller = mapView.getController();
             controller.setCenter(pt);
             controller.setZoom(16);
@@ -133,7 +125,8 @@ public class StationMapActivity extends SherlockMapActivity
 	        controller.setCenter(pt);
 	        controller.setZoom(15);
 		}
-        
+      
+	    
         // Hide detail view off-screen
         if (!detailDisplayed)
         {
@@ -239,8 +232,8 @@ public class StationMapActivity extends SherlockMapActivity
 	/**
      * Prepares overlays with station icons
      */
-    private List<Overlay> prepareOverlays(double[] lats, double[] lngs, String[] names, int[] free, int[] bikes)
-    {
+    private List<Overlay> prepareOverlays(ArrayList<Station> stations)
+    {    	
             Handler tapNotifier = new Handler(new Callback() {
                     
                     @Override
@@ -250,17 +243,22 @@ public class StationMapActivity extends SherlockMapActivity
                     			return true;
                     		
                             Bundle data = msg.getData();
-                            String name = data.getString("name");
-                            int free = data.getInt("freeSpaces");
-                            int bikes = data.getInt("numBikes");
-                            double lat = data.getDouble("lat");
-                            double lng = data.getDouble("lng");
+                            int id = data.getInt("stationId");
+                            Station station = getStationById(id);
                             
-                    		Map<String, String> params = new HashMap<String, String>();
-                    		params.put("Station", name);
-                    		FlurryAgent.logEvent("MapStationMarkerTap");
+                            if (station != null)
+                            {
+                        		Map<String, String> params = new HashMap<String, String>();
+                        		params.put("Station", station.getName());
+                        		FlurryAgent.logEvent("MapStationMarkerTap");
+                                
+                                setSelectedStation(station);
+                            }
+                            else
+                            {
+                            	FlurryAgent.logEvent("MapStationMarkerTapInvalidId");
+                            }
                             
-                            setSelectedStation(name, free, bikes, lat, lng);
                             return true;
                     }
 
@@ -276,14 +274,14 @@ public class StationMapActivity extends SherlockMapActivity
             
             List<StationMarker> normalMarkers = new ArrayList<StationMarker>();
             
-            for (int i = 0; i < lats.length; i++)
+            for (Station station : stations)
             {
                     // Skip full or empty stations
-                    if (free[i] == 0 || bikes[i] == 0)
+                    if (station.getFreeSpaces() == 0 || station.getAvailableBikes() == 0)
                             continue;
                     
-                    StationMarker station = new StationMarker(lngs[i], lats[i], names[i], free[i], bikes[i]);
-                    normalMarkers.add(station);
+                    StationMarker statMarker = new StationMarker(station.getId(), station.getLocation());
+                    normalMarkers.add(statMarker);
             }
             
             overlays.add(new StationOverlay(this, tapNotifier, marker, normalMarkers));
@@ -295,14 +293,14 @@ public class StationMapActivity extends SherlockMapActivity
             
             List<StationMarker> fullMarkers = new ArrayList<StationMarker>();
             
-            for (int i = 0; i < lats.length; i++)
+            for (Station station : stations)
             {
                     // Skip full or empty stations
-                    if (free[i] != 0)
+                    if (station.getFreeSpaces() != 0)
                             continue;
                     
-                    StationMarker station = new StationMarker(lngs[i], lats[i], names[i], free[i], bikes[i]);
-                    fullMarkers.add(station);
+                    StationMarker statMarker = new StationMarker(station.getId(), station.getLocation());
+                    fullMarkers.add(statMarker);
             }
             
             overlays.add(new StationOverlay(this, tapNotifier, fullMarker, fullMarkers));
@@ -313,39 +311,35 @@ public class StationMapActivity extends SherlockMapActivity
             
             List<StationMarker> emptyMarkers = new ArrayList<StationMarker>();
             
-            for (int i = 0; i < lats.length; i++)
+            for (Station station : stations)
             {
                     // Skip full or empty stations
-                    if (bikes[i] != 0)
+                    if (station.getAvailableBikes() != 0)
                             continue;
                     
-                    StationMarker station = new StationMarker(lngs[i], lats[i], names[i], free[i], bikes[i]);
-                    emptyMarkers.add(station);
+                    StationMarker statMarker = new StationMarker(station.getId(), station.getLocation());
+                    emptyMarkers.add(statMarker);
             }
             
             overlays.add(new StationOverlay(this, tapNotifier, emptyMarker, emptyMarkers));
             return overlays;
     }
 	
-	private void setSelectedStation(final String name, final int free, final int bikes, double lat, double lng) 
+	private void setSelectedStation(Station station) 
 	{
-		selectedLat = lat;
-		selectedLng = lng;
+		selectedStationId = station.getId();
 		
 		final Float distance;
 		if (myLocation != null)
 		{
-			Location loc = new Location("");
-			loc.setLatitude(lat);
-			loc.setLongitude(lng);
-			distance = myLocation.distanceTo(loc);
+			distance = myLocation.distanceTo(station.getLocation());
 		}
 		else
 		{
 			distance = null;
 		}
 		
-		setDetailsText(name, free, bikes, distance);
+		setDetailsText(station.getName(), station.getFreeSpaces(), station.getAvailableBikes(), distance);
 		
 		if (!detailDisplayed)
 		{
@@ -386,14 +380,9 @@ public class StationMapActivity extends SherlockMapActivity
     {
 		super.onSaveInstanceState(outState);
 		
-		outState.putAll(data);
-		if (selectedLat != null) {
-			outState.putDouble("lat", selectedLat);
-		}
-		
-		if (selectedLng != null) {
-			outState.putDouble("lng", selectedLng);
-		}
+		outState.putParcelableArrayList("stations", stations);
+		if (selectedStationId > 0)
+			outState.putInt("stationId", selectedStationId);
 		
 		outState.putBoolean("detailDisplayed", detailDisplayed);
 	}

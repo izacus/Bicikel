@@ -1,45 +1,26 @@
 package si.virag.bicikelj.station_map;
 
+import android.location.Location;
+
 public class StationMarker
 {
-	private double latitude;
-	private double longtitude;
-	private String description;
-	private int free;
-	private int bikes;
+	private int id;
+	private Location location;	
 	
-	public StationMarker(double latitude, double longtitude, String description, int free, int bikes)
+	public StationMarker(int id, Location location)
 	{
 		super();
-		this.latitude = latitude;
-		this.longtitude = longtitude;
-		this.description = description;
-		this.free = free;
-		this.bikes = bikes;
+		this.location = location;
+		this.id = id;
 	}
 
-	public int getFree()
+	public int getId()
 	{
-		return free;
+		return id;
 	}
-
-	public int getBikes()
+	
+	public Location getLocation()
 	{
-		return bikes;
-	}
-
-	public double getLatitude()
-	{
-		return latitude;
-	}
-
-	public double getLongtitude()
-	{
-		return longtitude;
-	}
-
-	public String getDescription()
-	{
-		return description;
+		return location;
 	}
 }
