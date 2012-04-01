@@ -2,7 +2,6 @@ package si.virag.bicikelj.stations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import si.virag.bicikelj.R;
@@ -278,33 +277,10 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	}
 	
 	
-	private static Bundle packStationData(List<Station> data)
+	private static Bundle packStationData(ArrayList<Station> data)
 	{
-		int stationNum = data.size();
-		
-		double[] lngs = new double[stationNum];
-		double[] lats = new double[stationNum];
-		String[] names = new String[stationNum];
-		int[] frees = new int[stationNum];
-		int[] fulls = new int[stationNum];
-		
-		for (int i = 0; i < stationNum; i++)
-		{
-			Station station = data.get(i);
-			lngs[i] = station.getLocation().getLongitude();
-			lats[i] = station.getLocation().getLatitude();
-			names[i] = station.getName();
-			frees[i] = station.getFreeSpaces();
-			fulls[i] = station.getAvailableBikes();
-		}
-		
 		Bundle targetBundle = new Bundle();
-		targetBundle.putDoubleArray("lats", lats);
-		targetBundle.putDoubleArray("lngs", lngs);
-		targetBundle.putStringArray("names", names);
-		targetBundle.putIntArray("frees", frees);
-		targetBundle.putIntArray("fulls", fulls);
-		
+		targetBundle.putParcelableArrayList("stations", data);
 		return targetBundle;
 	}
 }
