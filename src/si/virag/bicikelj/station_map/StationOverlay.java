@@ -55,8 +55,8 @@ public class StationOverlay extends ItemizedOverlay<OverlayItem>
 		
 		Bundle tapped = new Bundle();
 		tapped.putString("name", items.get(index).getTitle());
-		tapped.putString("numBikes", bikeNumber == 0 ? "-" : String.valueOf(bikeNumber));
-		tapped.putString("freeSpaces", freeNumber == 0 ? "-" : String.valueOf(freeNumber));
+		tapped.putInt("numBikes", bikeNumber);
+		tapped.putInt("freeSpaces", freeNumber);
 		tapped.putDouble("lat", markers.get(index).getLatitude());
 		tapped.putDouble("lng", markers.get(index).getLongtitude());
 		Message msg = new Message();
