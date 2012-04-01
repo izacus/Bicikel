@@ -1,9 +1,11 @@
 package si.virag.bicikelj.data;
 
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class Station
+public class Station implements Parcelable
 {
 	private int id;
 	private String name;
@@ -128,6 +130,59 @@ public class Station
 	{
 		return (int) (location.hashCode() + name.hashCode());
 	}
+
+	
+	/**
+	 * 
+	 * Implementation of Parcelable methods
+	 */
+	
+	public static final Parcelable.Creator<Station> CREATOR = new Parcelable.Creator<Station>() 
+	{
+		@Override
+		public Station createFromParcel(Parcel source) {
+			int id = source.readInt();
+			String name = source.readString();
+			String address = source.readString();
+			String fullAddress = source.readString();
+			double lat = source.readDouble();
+			double lng = source.readDouble();
+			boolean open = source.readByte() == 1;
+			int free = source.readInt();
+			int bikes = source.readInt();
+			int total = source.readInt();
+			
+			Station station = new Station(id, name, address, fullAddress, lat, lng, open);
+			station.setFreeSpaces(free);
+			station.setAvailableBikes(bikes);
+			station.setTotalSpaces(total);
+			return station;
+		}
+
+		@Override
+		public Station[] newArray(int size) {
+			return new Station[size];
+		}
+	};
 	
 	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) 
+	{
+		dest.writeInt(id);
+		dest.writeString(name);
+		dest.writeString(address);
+		dest.writeString(fullAddress);
+		dest.writeDouble(location.getLatitude());
+		dest.writeDouble(location.getLongitude());
+		dest.writeByte((byte) (open ? 1 : 0));
+		dest.writeInt(freeSpaces);
+		dest.writeInt(availableBikes);
+		dest.writeInt(totalSpaces);
+	}
 }
