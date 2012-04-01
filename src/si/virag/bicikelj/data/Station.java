@@ -42,6 +42,12 @@ public class Station implements Parcelable
 	
 	public void setDistance(Location currentLocation)
 	{
+		if (location == null || currentLocation == null)
+		{
+			distance = null;
+			return;
+		}
+		
 		distance = location.distanceTo(currentLocation);
 		Log.d(this.toString(), "Distance " + distance);
 	}

@@ -390,10 +390,8 @@ public class StationMapActivity extends SherlockMapActivity
 	private static Location E6ToLocation(int latitudeE6, int longtitudeE6)
     {
             Location loc = new Location("");
-            
             loc.setLatitude((double)latitudeE6 / (double)1E6);
             loc.setLongitude((double)longtitudeE6 / (double)1E6);
-            
             return loc;
     }
 
