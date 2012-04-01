@@ -15,9 +15,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
@@ -29,9 +29,6 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.Animator.AnimatorListener;
-import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
 public class StationMapActivity extends SherlockMapActivity 
@@ -57,6 +54,8 @@ public class StationMapActivity extends SherlockMapActivity
     
     private Location myLocation;
     
+    private Bundle data;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,7 +65,19 @@ public class StationMapActivity extends SherlockMapActivity
 		
 		prepareInterface();
 		
-        Bundle extras = getIntent().getExtras();
+        Bundle extras;
+        
+        if (savedInstanceState == null)
+        {
+        	extras = getIntent().getExtras();
+        }
+        else
+        {
+        	extras = savedInstanceState;
+        }
+        
+        this.data = extras;
+        
         double[] longtitudes = extras.getDoubleArray("lngs");
         double[] latitudes = extras.getDoubleArray("lats");
         String[] names = extras.getStringArray("names");
@@ -85,6 +96,15 @@ public class StationMapActivity extends SherlockMapActivity
         	{
         		selectedLat = savedInstanceState.getDouble("lat");
         		selectedLng = savedInstanceState.getDouble("lng");
+        		
+        		// Set label again
+        		for (int i = 0; i < longtitudes.length; i++)
+        		{
+        			if ((longtitudes[i] - selectedLng < 0.0000001) && (latitudes[i] - selectedLat < 0.0000001))
+        			{
+        				setSelectedStation(names[i], free[i], bikes[i], selectedLat, selectedLng);
+        			}
+        		}
         	}
         }
         
@@ -95,8 +115,8 @@ public class StationMapActivity extends SherlockMapActivity
 	    {
         	detailDisplayed = true;
         	setSelectedStation(names[0], 
-        					   free[0] == 0 ? "-" : String.valueOf(free[0]), 
-        					   bikes[0] == 0 ? "-" : String.valueOf(bikes[0]), 
+        					   free[0], 
+        					   bikes[0], 
         					   latitudes[0], 
         					   longtitudes[0]);
         	
@@ -177,6 +197,7 @@ public class StationMapActivity extends SherlockMapActivity
 	
 	
 	
+	
 	@Override
 	public void onBackPressed() 
 	{
@@ -230,8 +251,8 @@ public class StationMapActivity extends SherlockMapActivity
                     		
                             Bundle data = msg.getData();
                             String name = data.getString("name");
-                            String free = data.getString("freeSpaces");
-                            String bikes = data.getString("numBikes");
+                            int free = data.getInt("freeSpaces");
+                            int bikes = data.getInt("numBikes");
                             double lat = data.getDouble("lat");
                             double lng = data.getDouble("lng");
                             
@@ -306,7 +327,7 @@ public class StationMapActivity extends SherlockMapActivity
             return overlays;
     }
 	
-	private void setSelectedStation(final String name, final String free, final String bikes, double lat, double lng) 
+	private void setSelectedStation(final String name, final int free, final int bikes, double lat, double lng) 
 	{
 		selectedLat = lat;
 		selectedLng = lng;
@@ -324,82 +345,25 @@ public class StationMapActivity extends SherlockMapActivity
 			distance = null;
 		}
 		
+		setDetailsText(name, free, bikes, distance);
+		
 		if (!detailDisplayed)
 		{
-			setDetailsText(name, free, bikes, distance);
 			// Pop-in details
 			ObjectAnimator animator = ObjectAnimator.ofFloat(detail, "translationY", 0);
 	        animator.setInterpolator(new DecelerateInterpolator());
 			animator.start();
 		}
-		else 
-		{
-			tapDisabled = true;
-			final AnimatorSet fadeIn = new AnimatorSet();
-			final ObjectAnimator fadeInText = ObjectAnimator.ofFloat(detailName, "alpha", 0, 255);
-			final ObjectAnimator fadeInFree = ObjectAnimator.ofFloat(detailFree, "alpha", 0, 255);
-			final ObjectAnimator fadeInFull = ObjectAnimator.ofFloat(detailFull, "alpha", 0, 255);
-			final ObjectAnimator fadeInDistance = ObjectAnimator.ofFloat(detailDistance, "alpha", 0, 255);
-			fadeIn.setInterpolator(new AccelerateInterpolator());
-			fadeIn.play(fadeInText).with(fadeInFree);
-			fadeIn.play(fadeInFree).with(fadeInFull);
-			fadeIn.play(fadeInFull).with(fadeInDistance);
-			
-			final AnimatorSet fadeOut = new AnimatorSet();
-			final ObjectAnimator fadeOutText = ObjectAnimator.ofFloat(detailName, "alpha", 255, 0);
-			final ObjectAnimator fadeOutFree = ObjectAnimator.ofFloat(detailFree, "alpha", 255, 0);
-			final ObjectAnimator fadeOutFull = ObjectAnimator.ofFloat(detailFull, "alpha", 255, 0);
-			final ObjectAnimator fadeOutDistance = ObjectAnimator.ofFloat(detailDistance, "alpha", 255, 0);
-			fadeOut.setInterpolator(new AccelerateInterpolator());
-			fadeOut.play(fadeOutText).with(fadeOutFree);
-			fadeOut.play(fadeOutFree).with(fadeOutFull);
-			fadeOut.play(fadeOutFull).with(fadeOutDistance);
-			
-			fadeOut.addListener(new AnimatorListener() 
-			{
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					setDetailsText(name, free, bikes, distance);
-					fadeIn.start();
-				}
-
-				@Override
-				public void onAnimationStart(Animator animation) {}
-
-				@Override
-				public void onAnimationCancel(Animator animation) {}
-
-				@Override
-				public void onAnimationRepeat(Animator animation) {}
-			});
-			
-			fadeIn.addListener(new AnimatorListener() {
-				
-				@Override
-				public void onAnimationStart(Animator animation) {}
-				
-				@Override
-				public void onAnimationRepeat(Animator animation) {}
-				
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					tapDisabled = false;
-				}
-				
-				@Override
-				public void onAnimationCancel(Animator animation) {}
-			});
-			
-			fadeOut.start();
-		}
 		
 		detailDisplayed = true;
 	}
 
-	private void setDetailsText(String name, String free, String bikes, Float distance) {
+	private void setDetailsText(String name, int free, int bikes, Float distance) {
+		Log.d(this.toString(), "Setting text to " + name + " F:" + free + " B:" + bikes);
+		
 		detailName.setText(name);
-		detailFull.setText(bikes);
-		detailFree.setText(free);
+		detailFull.setText(bikes == 0 ? "-" : String.valueOf(bikes));
+		detailFree.setText(free == 0 ? "-" : String.valueOf(free));
 		
 		if (distance != null)
 		{
@@ -421,6 +385,8 @@ public class StationMapActivity extends SherlockMapActivity
 	protected void onSaveInstanceState(Bundle outState) 
     {
 		super.onSaveInstanceState(outState);
+		
+		outState.putAll(data);
 		if (selectedLat != null) {
 			outState.putDouble("lat", selectedLat);
 		}
@@ -430,7 +396,6 @@ public class StationMapActivity extends SherlockMapActivity
 		}
 		
 		outState.putBoolean("detailDisplayed", detailDisplayed);
-			
 	}
 
 	private static Location E6ToLocation(int latitudeE6, int longtitudeE6)
