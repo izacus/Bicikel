@@ -40,13 +40,10 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	private static final int STATION_LOADER_ID = 0;
 	
 	private StationListAdapter adapter = null;
-	
-	private GPSManager gpsManager;
 
+	private GPSManager gpsManager;
 	private Location location;
-	
 	private MenuItem searchActionView;
-	
 	private StationInfo data;
 	
 	@Override
@@ -55,8 +52,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
 		gpsManager = new GPSManager();
-		
-		
 		adapter = new StationListAdapter(getActivity(), R.layout.stationlist_item, new ArrayList<Station>());
 		this.setListAdapter(adapter);
 		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
@@ -68,6 +63,9 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	{
 		super.onPause();
 		gpsManager.cancelSearch();
+		
+		if (searchActionView.isActionViewExpanded())
+			searchActionView.collapseActionView();
 	}
 
 	@Override
