@@ -121,7 +121,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo data) 
 	{
 		this.data = data;
-		
 		// Update data in-place when already available
 		adapter.updateData(data);
 		
