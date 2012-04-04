@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Bicikel</string>
-    <string name="app_ver">1.2</string>
-    <string name="app_about">Pripombe in poročila o težavah na jernej@virag.si</string>
-    
+    <string name="app_version">1.3</string>
+    <string name="stationlist_loading">Nalagam&#8230;</string>
+    <string name="stationlist_load_error">Trenutnega stanja postaj ni bilo mogoče dobiti.\n\n    Če imate vklopljen internet je težava pri nas :(</string>
     <string name="bikes">koles</string>
-    <string name="free">mest</string>
-    
-    <string name="loading">Nalagam&#8230;</string>
-    <string name="connection_error">Podatkov ni bilo mogoče naložiti,\n prosimo preverite internetno povezavo.</string>
-    
-    <string name="show_directions">Pokaži pot do postaje</string>
-        
-    <string name="search_hint">Iskanje po postajah</string>
+    <string name="free">prostih</string>
     
     <string name="menu_refresh">Osveži</string>
-    <string name="menu_about">O aplikaciji</string>
-    <string name="about_legal">Pravno</string>
+    <string name="menu_map">Vse postaje</string>
+    <string name="menu_search">Iskanje</string>
+    <string name="menu_directions">Pokaži pot</string>
     
-    <string name="analytics_id">UA-23654648-1</string>
-    <string name="maps_apikey">0oTmqtEHq-Anwh0B0qhK2NkelsH8--CfjRsU1Qw</string>
+    <string name="hint_search">Iskanje</string>
     
-    <!-- Content description strings -->
-    <string name="cd_map_button">Pokaži zemljevid</string>
-    <string name="cd_search_button">Išči</string>
+    <string name="maps_api_key">0oTmqtEHq-An3DcAKXE1_o1SlbcfSjmTLMkl0jQ</string>
+    <string name="flurry_api_key">Q53F2VT86YLQ3UCHXI7T</string>
 </resources>
