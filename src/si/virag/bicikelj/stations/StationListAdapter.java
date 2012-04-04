@@ -79,6 +79,11 @@ public class StationListAdapter extends BaseAdapter
 	
 	public void updateData(StationInfo info)
 	{
+		if (info == null) {
+			this.items.clear();
+			return;
+		}
+		
 		if (info.getStations().size() != this.getCount())
 		{
 			this.items = info.getStations();
