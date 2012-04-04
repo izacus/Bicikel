@@ -21,7 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.TextView;
+import android.widget.TextSwitcher;
 
 import com.actionbarsherlock.app.SherlockMapActivity;
 import com.actionbarsherlock.view.Menu;
@@ -35,7 +35,7 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.nineoldandroids.animation.ObjectAnimator;
 
-public class StationMapActivity extends SherlockMapActivity 
+public class StationMapActivity extends SherlockMapActivity
 {
     private static final int MAP_CENTER_LAT = 46051367;
     private static final int MAP_CENTER_LNG = 14506542;
@@ -45,10 +45,10 @@ public class StationMapActivity extends SherlockMapActivity
 	
     // Detail displays
     private View detail;
-    private TextView detailFull;
-    private TextView detailFree;
-    private TextView detailDistance;
-    private TextView detailName;
+    private TextSwitcher detailFull;
+    private TextSwitcher detailFree;
+    private TextSwitcher detailDistance;
+    private TextSwitcher detailName;
     private boolean detailDisplayed = false;
     // Disable tap while animating
     private boolean tapDisabled = false;
@@ -203,10 +203,10 @@ public class StationMapActivity extends SherlockMapActivity
 	private void prepareInterface() {
 		mapView = (MapView)findViewById(R.id.map_view);
 		detail = findViewById(R.id.maps_detail);
-		detailFull = (TextView)findViewById(R.id.maps_num_full);
-		detailFree = (TextView)findViewById(R.id.maps_num_free);
-		detailName = (TextView)findViewById(R.id.maps_name);
-		detailDistance = (TextView)findViewById(R.id.maps_distance);
+		detailFull = (TextSwitcher)findViewById(R.id.maps_num_full);		
+		detailFree = (TextSwitcher)findViewById(R.id.maps_num_free);
+		detailName = (TextSwitcher)findViewById(R.id.maps_name);		
+		detailDistance = (TextSwitcher)findViewById(R.id.maps_distance);
 	}	
 	
 	@Override
@@ -463,7 +463,5 @@ public class StationMapActivity extends SherlockMapActivity
 		FlurryAgent.setUseHttps(true);	// Don't send users data in plain text
 		FlurryAgent.setReportLocation(false);	// Don't report users location for stats, not needed
 		FlurryAgent.onStartSession(this, getString(R.string.flurry_api_key));
-	}
-	
-	
+	}	
 }
