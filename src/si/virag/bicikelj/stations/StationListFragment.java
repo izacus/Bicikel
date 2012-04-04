@@ -27,6 +27,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
@@ -45,6 +47,8 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	private Location location;
 	private MenuItem searchActionView;
 	private StationInfo data;
+	
+	private boolean error = false;
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) 
@@ -123,6 +127,11 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		this.data = data;
 		// Update data in-place when already available
 		adapter.updateData(data);
+		
+		if (data == null) {
+			showError();
+			return;
+		}
 		
 		if (location != null)
 		{
@@ -223,27 +232,38 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (this.data == null)
 		{
-			return false;
+			if (error && item.getItemId() == R.id.menu_refresh) {
+				refresh();
+				return true;
+			}
+			
+			return true;
 		}
 		
 		switch (item.getItemId())
 		{
 			case R.id.menu_refresh:
-				this.adapter.clearData();
-				this.adapter.notifyDataSetChanged();
-				this.data = null;
-				getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
-				FlurryAgent.logEvent("StationListRefresh");
+				refresh();
 				break;
 			case R.id.menu_map:
 				showFullMap();
 				FlurryAgent.logEvent("FullMap");
 				break;
 			default:
-				break;
+				return false;
 		}
 		
-		return super.onOptionsItemSelected(item);
+		return true;
+	}
+	
+	private void refresh()
+	{
+		clearError();
+		this.adapter.clearData();
+		this.adapter.notifyDataSetChanged();
+		this.data = null;
+		getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
+		FlurryAgent.logEvent("StationListRefresh");
 	}
 	
 	@Override
@@ -262,6 +282,23 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		intent.putExtras(packStationData(station));
 		startActivity(intent);
 	}
+	
+	private void showError() {
+		this.error = true;
+		TextView text = (TextView) getActivity().findViewById(R.id.stationlist_loading_text);
+		ProgressBar progress = (ProgressBar) getActivity().findViewById(R.id.stationlist_loading_progress);
+		progress.setVisibility(View.GONE);
+		text.setText(R.string.stationlist_load_error);
+	}
+	
+	private void clearError() {
+		this.error = false;
+		TextView text = (TextView) getActivity().findViewById(R.id.stationlist_loading_text);
+		ProgressBar progress = (ProgressBar) getActivity().findViewById(R.id.stationlist_loading_progress);
+		progress.setVisibility(View.VISIBLE);
+		text.setText(R.string.stationlist_loading);
+	}
+	
 	
 	private void showFullMap()
 	{
