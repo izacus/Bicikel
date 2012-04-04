@@ -12,6 +12,7 @@ import si.virag.bicikelj.util.DisplayUtils;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
@@ -23,6 +24,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockMapActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.flurry.android.FlurryAgent;
 import com.google.android.maps.GeoPoint;
@@ -54,6 +57,8 @@ public class StationMapActivity extends SherlockMapActivity
     private ArrayList<Station> stations;
     private int selectedStationId = - 1;
     
+    private MenuItem directionsItem = null;
+    
     private Station getStationById(int id)
     {
     	for (Station station : stations)
@@ -66,6 +71,22 @@ public class StationMapActivity extends SherlockMapActivity
     }
     
     
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) 
+	{
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.menu_maps, menu);
+		
+		directionsItem = menu.findItem(R.id.menu_directions);
+		
+		if (this.selectedStationId < 0) {
+			directionsItem.setVisible(false);
+		}
+		
+		return true;
+	}
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -186,10 +207,7 @@ public class StationMapActivity extends SherlockMapActivity
 		detailFree = (TextView)findViewById(R.id.maps_num_free);
 		detailName = (TextView)findViewById(R.id.maps_name);
 		detailDistance = (TextView)findViewById(R.id.maps_distance);
-	}
-	
-	
-	
+	}	
 	
 	@Override
 	public void onBackPressed() 
@@ -208,9 +226,39 @@ public class StationMapActivity extends SherlockMapActivity
 				Intent intent = new Intent(this, MainActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
+				
+			case R.id.menu_directions:
+				FlurryAgent.logEvent("ShowDirectionsTap");
+				showDirections();
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void showDirections()
+	{
+		if (selectedStationId < 0)
+			return;
+		
+		Station selectedStation = getStationById(selectedStationId);
+		
+		Uri mapsUri;
+		if (myLocation == null)
+		{
+			mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&daddr=" + selectedStation.getLocation().getLatitude() + "," + selectedStation.getLocation().getLongitude());
+		}
+		else
+		{
+            mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&saddr=" + myLocation.getLatitude() + ", " + 
+            				    myLocation.getLongitude() + "&daddr=" + selectedStation.getLocation().getLatitude() + "," + 
+            				    selectedStation.getLocation().getLongitude());
+		}
+		
+        Log.i(this.toString(), "Opening maps with " + mapsUri);
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, mapsUri);
+        // This prevents app selection pop-up
+        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+        startActivity(intent);
 	}
 	
     @Override
@@ -350,6 +398,10 @@ public class StationMapActivity extends SherlockMapActivity
 		}
 		
 		detailDisplayed = true;
+		
+		if (directionsItem != null) {
+			directionsItem.setVisible(true);
+		}
 	}
 
 	private void setDetailsText(String name, int free, int bikes, Float distance) {
