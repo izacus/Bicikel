@@ -3,6 +3,7 @@
     <string name="app_name">Bicikel</string>
     <string name="app_version">1.3</string>
     <string name="stationlist_loading">Nalagam&#8230;</string>
+    <string name="stationlist_load_error">Trenutnega stanja postaj ni bilo mogoče dobiti.\n\n    Če imate vklopljen internet je težava pri nas :(</string>
     <string name="bikes">koles</string>
     <string name="free">prostih</string>
     
