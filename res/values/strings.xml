@@ -9,8 +9,10 @@
     <string name="menu_refresh">Osveži</string>
     <string name="menu_map">Vse postaje</string>
     <string name="menu_search">Iskanje</string>
+    <string name="menu_directions">Pokaži pot</string>
+    
+    <string name="hint_search">Iskanje</string>
     
     <string name="maps_api_key">0oTmqtEHq-An3DcAKXE1_o1SlbcfSjmTLMkl0jQ</string>
     <string name="flurry_api_key">Q53F2VT86YLQ3UCHXI7T</string>
-    <string name="hint_search">Iskanje</string>
 </resources>
