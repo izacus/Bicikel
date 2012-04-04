@@ -226,10 +226,11 @@ public class StationMapActivity extends SherlockMapActivity
 				Intent intent = new Intent(this, MainActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
-				
+				return true;
 			case R.id.menu_directions:
 				FlurryAgent.logEvent("ShowDirectionsTap");
 				showDirections();
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -401,6 +402,7 @@ public class StationMapActivity extends SherlockMapActivity
 		
 		if (directionsItem != null) {
 			directionsItem.setVisible(true);
+			invalidateOptionsMenu();
 		}
 	}
 
