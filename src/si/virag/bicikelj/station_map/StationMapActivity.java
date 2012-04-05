@@ -337,7 +337,7 @@ public class StationMapActivity extends SherlockMapActivity
             
             
             // Full station markers
-            Drawable fullMarker = getResources().getDrawable(R.drawable.cycling); // TODO: fix for color 
+            Drawable fullMarker = getResources().getDrawable(R.drawable.cycling_free); 
             fullMarker.setBounds(0, 0, fullMarker.getIntrinsicWidth(), fullMarker.getIntrinsicHeight());
             
             List<StationMarker> fullMarkers = new ArrayList<StationMarker>();
@@ -355,7 +355,7 @@ public class StationMapActivity extends SherlockMapActivity
             overlays.add(new StationOverlay(this, tapNotifier, fullMarker, fullMarkers));
             
             // Empty station markers
-            Drawable emptyMarker = getResources().getDrawable(R.drawable.cycling); // TODO: fix for color
+            Drawable emptyMarker = getResources().getDrawable(R.drawable.cycling_full);
             emptyMarker.setBounds(0, 0, emptyMarker.getIntrinsicWidth(), emptyMarker.getIntrinsicHeight());
             
             List<StationMarker> emptyMarkers = new ArrayList<StationMarker>();
