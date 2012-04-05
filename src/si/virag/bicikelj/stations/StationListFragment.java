@@ -272,7 +272,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		super.onListItemClick(l, v, position, id);
 		
 		ArrayList<Station> station = new ArrayList<Station>();
-		station.add(data.getStations().get(position));
+		station.add(adapter.getItem(position));
 		//
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("Station", data.getStations().get(position).getName());
