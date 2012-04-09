@@ -103,8 +103,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		{
 			adapter.updateLocation(location);
 		}
-		
-		adapter.notifyDataSetChanged();
 	}
 	
 	@Override
@@ -137,9 +135,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		{
 			FlurryAgent.logEvent("LocationRetrievedBeforeLoad");
 			adapter.updateLocation(location);
-		}
-		
-		adapter.notifyDataSetChanged();
+		}	
 	}
 
 	@Override
@@ -260,7 +256,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	{
 		clearError();
 		this.adapter.clearData();
-		this.adapter.notifyDataSetChanged();
 		this.data = null;
 		getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
 		FlurryAgent.logEvent("StationListRefresh");
