@@ -87,6 +87,7 @@ public class StationListAdapter extends BaseAdapter
 		if (info.getStations().size() != this.getCount())
 		{
 			this.items = info.getStations();
+			this.notifyDataSetChanged();
 			return;
 		}
 		
@@ -102,6 +103,8 @@ public class StationListAdapter extends BaseAdapter
 				}
 			}
 		}
+		
+		this.notifyDataSetChanged();
 	}
 	
 	public void updateLocation(Location location)
@@ -119,11 +122,15 @@ public class StationListAdapter extends BaseAdapter
 				return lhs.getDistance().compareTo(rhs.getDistance());
 			}
 		});
+		
+		this.notifyDataSetChanged();
 	}
 	
 	public void clearData()
 	{
 		this.items.clear();
+		this.notifyDataSetInvalidated();
+		this.notifyDataSetChanged();
 	}
 
 	@Override
