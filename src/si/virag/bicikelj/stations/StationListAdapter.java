@@ -61,9 +61,9 @@ public class StationListAdapter extends BaseAdapter
 		try
 		{
 			Station station = getItem(position);
-			viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "-" : String.valueOf(station.getAvailableBikes()));
-			viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "-" : String.valueOf(station.getFreeSpaces()));
-			viewHolder.stationName.setText(getItem(position).getName().replaceAll("-", "\n"));
+			viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "Ø" : String.valueOf(station.getAvailableBikes()));
+			viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "Ø" : String.valueOf(station.getFreeSpaces()));
+			viewHolder.stationName.setText(getItem(position).getName().replaceAll("Ø", "\n"));
 		}
 		catch (IndexOutOfBoundsException e)
 		{
