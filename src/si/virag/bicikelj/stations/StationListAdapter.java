@@ -57,11 +57,18 @@ public class StationListAdapter extends BaseAdapter
 		{
 			viewHolder = (StationViewHolder)view.getTag();
 		}
-		Station station = getItem(position);
 		
-		viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "-" : String.valueOf(station.getAvailableBikes()));
-		viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "-" : String.valueOf(station.getFreeSpaces()));
-		viewHolder.stationName.setText(getItem(position).getName().replaceAll("-", "\n"));
+		try
+		{
+			Station station = getItem(position);
+			viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "-" : String.valueOf(station.getAvailableBikes()));
+			viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "-" : String.valueOf(station.getFreeSpaces()));
+			viewHolder.stationName.setText(getItem(position).getName().replaceAll("-", "\n"));
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			return null;
+		}
 		
 		if (getItem(position).getDistance() != null)
 		{
@@ -80,13 +87,14 @@ public class StationListAdapter extends BaseAdapter
 	public void updateData(StationInfo info)
 	{
 		if (info == null) {
-			this.items.clear();
+			this.clearData();
 			return;
 		}
 		
 		if (info.getStations().size() != this.getCount())
 		{
 			this.items = info.getStations();
+			this.notifyDataSetInvalidated();
 			this.notifyDataSetChanged();
 			return;
 		}
