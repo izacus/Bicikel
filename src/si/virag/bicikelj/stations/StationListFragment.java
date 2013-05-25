@@ -280,9 +280,12 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	
 	private void showError() {
 		this.error = true;
-		TextView text = (TextView) getActivity().findViewById(R.id.stationlist_loading_text);
+		TextView text = (TextView) getActivity().findViewById(R.id.stationlist_loading_error);
+        text.setVisibility(View.VISIBLE);
+        TextView loadingText = (TextView) getActivity().findViewById(R.id.stationlist_loading_text);
+        loadingText.setVisibility(View.INVISIBLE);
 		ProgressBar progress = (ProgressBar) getActivity().findViewById(R.id.stationlist_loading_progress);
-		progress.setVisibility(View.GONE);
+		progress.setVisibility(View.INVISIBLE);
 		text.setText(R.string.stationlist_load_error);
 	}
 	
@@ -291,7 +294,9 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		TextView text = (TextView) getActivity().findViewById(R.id.stationlist_loading_text);
 		ProgressBar progress = (ProgressBar) getActivity().findViewById(R.id.stationlist_loading_progress);
 		progress.setVisibility(View.VISIBLE);
-		text.setText(R.string.stationlist_loading);
+		text.setVisibility(View.VISIBLE);
+        TextView errorText = (TextView) getActivity().findViewById(R.id.stationlist_loading_error);
+        errorText.setVisibility(View.INVISIBLE);
 	}
 	
 	

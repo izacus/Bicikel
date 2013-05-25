@@ -21,6 +21,16 @@
 	          android:layout_width="wrap_content"
 	          android:layout_height="wrap_content"
 	          android:text="@string/stationlist_loading"/>
+
+          <TextView
+              android:id="@+id/stationlist_loading_error"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_centerInParent="true"
+              android:text="@string/stationlist_load_error"
+              android:gravity="center"
+              android:visibility="invisible"
+              />
           
        	  <ProgressBar
 			  android:id = "@+id/stationlist_loading_progress"
