@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stationlist_loading">Nalagam&#8230;</string>
+    <string name="stationlist_load_error">Trenutnega stanja postaj ni bilo mogoče dobiti. :(\n\n      Poskusite čez trenutek.</string>
+    <string name="bikes">koles</string>
+    <string name="free">prostih</string>
+    
+    <string name="menu_refresh">Osveži</string>
+    <string name="menu_map">Vse postaje</string>
+    <string name="menu_search">Iskanje</string>
+    <string name="menu_directions">Pokaži pot</string>
+    
+    <string name="hint_search">Iskanje</string>
+</resources>
