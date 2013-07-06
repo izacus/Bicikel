@@ -6,7 +6,8 @@
     <string name="stationlist_load_error">Current station status could not be loaded.\n\n:(\n\nTry again in a moment.</string>
     <string name="bikes">bikes</string>
     <string name="free">free</string>
-    
+    <string name="map_hint">Bikes: <font color="red"><b>%s</b></font> Free: <font color="green"><b>%s</b></font></string>
+
     <string name="menu_refresh">Refresh</string>
     <string name="menu_map">All stations</string>
     <string name="menu_search">Search</string>

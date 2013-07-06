@@ -67,7 +67,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	{
 		super.onPause();
 		gpsManager.cancelSearch();
-		
+
 		if (searchActionView.isActionViewExpanded())
 			searchActionView.collapseActionView();
 	}
