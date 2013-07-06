@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.app.Dialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
@@ -265,7 +268,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	public void onListItemClick(ListView l, View v, int position, long id) 
 	{
 		super.onListItemClick(l, v, position, id);
-		
+
 		ArrayList<Station> station = new ArrayList<Station>();
 		station.add(adapter.getItem(position));
 		//
@@ -273,6 +276,9 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		params.put("Station", data.getStations().get(position).getName());
 		FlurryAgent.logEvent("StationListTap", params);
 		//
+        if (!checkPlayServices())
+            return;
+
 		Intent intent = new Intent(getActivity(), StationMapActivity.class);
 		intent.putExtras(packStationData(station));
 		startActivity(intent);
@@ -302,6 +308,9 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	
 	private void showFullMap()
 	{
+        if (!checkPlayServices())
+            return;
+
 		if (this.data == null)
 			return;
 		
@@ -310,7 +319,24 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		startActivity(intent);
 	}
 	
-	
+	private boolean checkPlayServices()
+    {
+        int error = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
+
+        if (error == ConnectionResult.SUCCESS)
+            return true;
+
+        if (GooglePlayServicesUtil.isUserRecoverableError(error))
+        {
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(error, getActivity(), 0);
+            errorDialog.show();
+            return false;
+        }
+
+        return false;
+    }
+
+
 	private static Bundle packStationData(ArrayList<Station> data)
 	{
 		Bundle targetBundle = new Bundle();
