@@ -91,10 +91,11 @@ public class StationMapActivity extends ActionBarActivity implements GooglePlayS
     }
 	
 	@Override
-	public void onBackPressed() 
+	public void onBackPressed()
 	{
 		super.onBackPressed();
-	}
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) 
@@ -105,6 +106,7 @@ public class StationMapActivity extends ActionBarActivity implements GooglePlayS
 				Intent intent = new Intent(this, MainActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 				return true;
 			case R.id.menu_directions:
 				showDirections(stations.get(0));
@@ -157,6 +159,8 @@ public class StationMapActivity extends ActionBarActivity implements GooglePlayS
             }
         }
 	}
+
+
 
     private void setupMap()
     {

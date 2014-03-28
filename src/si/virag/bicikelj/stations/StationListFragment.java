@@ -263,6 +263,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		Intent intent = new Intent(getActivity(), StationMapActivity.class);
 		intent.putExtras(packStationData(station));
 		startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 	
 	private void showError() {
