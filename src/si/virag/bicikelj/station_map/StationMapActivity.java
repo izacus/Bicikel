@@ -132,7 +132,6 @@ public class StationMapActivity extends ActionBarActivity implements GooglePlayS
             				    selectedStation.getLocation().getLongitude());
 		}
 		
-        Log.i(this.toString(), "Opening maps with " + mapsUri);
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW, mapsUri);
         // This prevents app selection pop-up
         intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
@@ -195,6 +194,12 @@ public class StationMapActivity extends ActionBarActivity implements GooglePlayS
 
         map.setInfoWindowAdapter(new InformationAdapter());
         map.setOnInfoWindowClickListener(this);
+
+        if (stations.size() == 1)
+        {
+            markerMap.keySet().iterator().next().showInfoWindow();
+        }
+
     }
 
     private void createMarkers()
