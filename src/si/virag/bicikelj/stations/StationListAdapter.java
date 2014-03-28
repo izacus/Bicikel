@@ -117,6 +117,9 @@ public class StationListAdapter extends BaseAdapter
 	
 	public void updateLocation(Location location)
 	{
+        if (location == null)
+            return;
+
 		for (Station station : items)
 		{
 			station.setDistance(location);

@@ -21,20 +21,20 @@
       <dependency>
           <groupId>android.support</groupId>
           <artifactId>compatibility-v4</artifactId>
-          <version>19.0.1</version>
+          <version>19.1.0</version>
       </dependency>
 
       <dependency>
           <groupId>android.support</groupId>
           <artifactId>compatibility-v7-appcompat</artifactId>
-          <version>19.0.1</version>
+          <version>19.1.0</version>
           <type>apklib</type>
       </dependency>
 
       <dependency>
           <groupId>android.support</groupId>
           <artifactId>compatibility-v7-appcompat</artifactId>
-          <version>19.0.1</version>
+          <version>19.1.0</version>
           <type>jar</type>
       </dependency>
 
@@ -53,13 +53,13 @@
       <dependency>
           <groupId>com.google.android.gms</groupId>
           <artifactId>google-play-services</artifactId>
-          <version>15.0.0</version>
+          <version>16.0.0</version>
           <type>apklib</type>
       </dependency>
       <dependency>
           <groupId>com.google.android.gms</groupId>
           <artifactId>google-play-services</artifactId>
-          <version>15.0.0</version>
+          <version>16.0.0</version>
           <type>jar</type>
       </dependency>
   </dependencies>

@@ -7,6 +7,7 @@ import java.util.Map;
 import android.app.Dialog;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -16,7 +17,6 @@ import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.station_map.StationMapActivity;
-import si.virag.bicikelj.util.GPSManager;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
 import android.content.Context;
 import android.content.Intent;
@@ -35,10 +35,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class StationListFragment extends ListFragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks
+public class StationListFragment extends ListFragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks, SwipeRefreshLayout.OnRefreshListener
 {
 	private static final int STATION_LOADER_ID = 0;
-	
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 	private StationListAdapter adapter = null;
 	private MenuItem searchActionView;
 	private StationInfo data;
@@ -82,7 +84,18 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 							 ViewGroup container,
 							 Bundle savedInstanceState) 
 	{
-		return inflater.inflate(R.layout.stationlist_fragment, container);
+		View v = inflater.inflate(R.layout.stationlist_fragment, container);
+        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.stationlist_swipe);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorScheme(R.color.station_green,
+                                          R.color.station_red,
+                                          R.color.station_green,
+                                          R.color.station_red
+                );
+
+        swipeRefreshLayout.setRefreshing(true);
+
+        return v;
 	}
 
 	@Override
@@ -94,6 +107,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	@Override
 	public void onLoadFinished(Loader<StationInfo> loader, StationInfo data) 
 	{
+        swipeRefreshLayout.setRefreshing(false);
 		this.data = data;
 		// Update data in-place when already available
 		adapter.updateData(data);
@@ -227,8 +241,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	
 	private void refresh()
 	{
-		clearError();
-		this.adapter.clearData();
+        swipeRefreshLayout.setRefreshing(true);
 		this.data = null;
 		getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
 	}
@@ -262,17 +275,6 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		progress.setVisibility(View.INVISIBLE);
 		text.setText(R.string.stationlist_load_error);
 	}
-	
-	private void clearError() {
-		this.error = false;
-		TextView text = (TextView) getActivity().findViewById(R.id.stationlist_loading_text);
-		ProgressBar progress = (ProgressBar) getActivity().findViewById(R.id.stationlist_loading_progress);
-		progress.setVisibility(View.VISIBLE);
-		text.setVisibility(View.VISIBLE);
-        TextView errorText = (TextView) getActivity().findViewById(R.id.stationlist_loading_error);
-        errorText.setVisibility(View.INVISIBLE);
-	}
-	
 	
 	private void showFullMap()
 	{
@@ -323,5 +325,11 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
     public void onDisconnected()
     {
 
+    }
+
+    @Override
+    public void onRefresh()
+    {
+        refresh();
     }
 }
