@@ -9,7 +9,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.flurry.android.FlurryAgent;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -103,7 +102,6 @@ public class StationMapActivity extends SherlockFragmentActivity
 	public void onBackPressed() 
 	{
 		super.onBackPressed();
-		FlurryAgent.logEvent("MapBackButtonTap");
 	}
 
 	@Override
@@ -112,13 +110,11 @@ public class StationMapActivity extends SherlockFragmentActivity
 		switch (item.getItemId())
 		{
 			case android.R.id.home:
-				FlurryAgent.logEvent("MapBackHomeTap");
 				Intent intent = new Intent(this, MainActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intent);
 				return true;
 			case R.id.menu_directions:
-				FlurryAgent.logEvent("ShowDirectionsTap");
 				showDirections();
 				return true;
 			default:
@@ -228,15 +224,11 @@ public class StationMapActivity extends SherlockFragmentActivity
 	protected void onStop() 
 	{
 		super.onStop();
-		FlurryAgent.onEndSession(this);
 	}
 
 	@Override
 	protected void onStart() 
 	{
 		super.onStart();
-		FlurryAgent.setUseHttps(true);	// Don't send users data in plain text
-		FlurryAgent.setReportLocation(false);	// Don't report users location for stats, not needed
-		FlurryAgent.onStartSession(this, getString(R.string.flurry_api_key));
 	}	
 }

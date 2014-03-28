@@ -38,7 +38,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnActionExpandListener;
-import com.flurry.android.FlurryAgent;
 
 public class StationListFragment extends SherlockListFragment implements LoaderCallbacks<StationInfo>
 {
@@ -87,7 +86,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 			{
 				if (msg.what != GPSManager.GPS_LOCATION_OK)
 				{
-					FlurryAgent.logEvent("LocationNotAvailable");
 					Log.w(this.toString(), "Can't get current location.");
 					return;
 				}
@@ -136,7 +134,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		
 		if (location != null)
 		{
-			FlurryAgent.logEvent("LocationRetrievedBeforeLoad");
 			adapter.updateLocation(location);
 		}	
 	}
@@ -246,7 +243,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 				break;
 			case R.id.menu_map:
 				showFullMap();
-				FlurryAgent.logEvent("FullMap");
 				break;
 			default:
 				return false;
@@ -261,7 +257,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		this.adapter.clearData();
 		this.data = null;
 		getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
-		FlurryAgent.logEvent("StationListRefresh");
 	}
 	
 	@Override
@@ -274,7 +269,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		//
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("Station", data.getStations().get(position).getName());
-		FlurryAgent.logEvent("StationListTap", params);
 		//
         if (!checkPlayServices())
             return;
