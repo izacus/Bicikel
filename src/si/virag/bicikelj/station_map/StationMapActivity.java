@@ -7,6 +7,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -14,14 +15,8 @@ import android.text.Spanned;
 import android.text.style.*;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Display;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdate;
@@ -38,7 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationMapActivity extends SherlockFragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks, GoogleMap.OnInfoWindowClickListener
+public class StationMapActivity extends ActionBarActivity implements GooglePlayServicesClient.ConnectionCallbacks, GoogleMap.OnInfoWindowClickListener
 {
     private static final double MAP_CENTER_LAT = 46.051367;
     private static final double MAP_CENTER_LNG = 14.506542;
@@ -52,16 +47,14 @@ public class StationMapActivity extends SherlockFragmentActivity implements Goog
 
 
     private MenuItem directionsItem = null;
-
     
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
+	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu_maps, menu);
 		
 		directionsItem = menu.findItem(R.id.menu_directions);
-		
 		if (stations.size() > 1)
         {
 			directionsItem.setVisible(false);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Bicikel" parent="Theme.Sherlock.Light.DarkActionBar"></style>   
+    <style name="Theme.Bicikel" parent="Theme.AppCompat.Light.DarkActionBar" />
     <style name="StationList.Numbers" parent="@android:style/TextAppearance.Large">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">23sp</item>
@@ -19,7 +19,7 @@
         <item name="android:textColor">#000</item>
         <item name="android:textAllCaps">true</item>
     </style>
-    <style name="StationList.Labels" parent="@android:style/TextAppearance.Small"></style>
+    <style name="StationList.Labels" parent="@android:style/TextAppearance.Small" />
     <style name="StationList.Distance" parent="@android:style/TextAppearance.Small">
         <item name="android:textColor">#888</item>
     </style>

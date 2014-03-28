@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Dialog;
+import android.support.v4.app.ListFragment;
+import android.support.v4.view.MenuItemCompat;
+import android.view.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -26,22 +29,13 @@ import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.MenuItem.OnActionExpandListener;
-
-public class StationListFragment extends SherlockListFragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks
+public class StationListFragment extends ListFragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks
 {
 	private static final int STATION_LOADER_ID = 0;
 	
@@ -84,7 +78,7 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
     }
 
     @Override
-	public View onCreateView(LayoutInflater inflater, 
+	public View onCreateView(LayoutInflater inflater,
 							 ViewGroup container,
 							 Bundle savedInstanceState) 
 	{
@@ -120,15 +114,16 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
 		inflater.inflate(R.menu.menu_stationlist, menu);
 		
 		final MenuItem searchItem = menu.findItem(R.id.menu_search);
 		this.searchActionView = searchItem;
-		final EditText searchBox = (EditText) searchItem.getActionView().findViewById(R.id.search_box);
-		searchItem.setOnActionExpandListener(new OnActionExpandListener() {
-			
+
+        final EditText searchBox = (EditText) MenuItemCompat.getActionView(searchItem).findViewById(R.id.search_box);
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener()
+        {
 			@Override
 			public boolean onMenuItemActionExpand(MenuItem item) 
 			{
@@ -169,13 +164,14 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 	{
 		if (this.searchActionView != null)
 		{
-			if (this.searchActionView.isActionViewExpanded()) {
-				this.searchActionView.collapseActionView();
-			}
-			else
-			{
-				this.searchActionView.expandActionView();
-			}
+            if (MenuItemCompat.isActionViewExpanded(searchActionView))
+            {
+                MenuItemCompat.collapseActionView(searchActionView);
+            }
+            else
+            {
+                MenuItemCompat.expandActionView(searchActionView);
+            }
 		}
 	}
 	

@@ -1,11 +1,10 @@
 package si.virag.bicikelj;
 
+import android.support.v7.app.ActionBarActivity;
 import si.virag.bicikelj.stations.StationListFragment;
 import android.os.Bundle;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
-public class MainActivity extends SherlockFragmentActivity 
+public class MainActivity extends ActionBarActivity
 {
     /** Called when the activity is first created. */
     @Override

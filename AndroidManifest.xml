@@ -25,7 +25,9 @@
 
     <application
         android:icon="@drawable/icon"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:allowBackup="true"
+        >
         
         <uses-library android:name="com.google.android.maps" />
         
@@ -38,7 +40,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".station_map.StationMapActivity" android:theme="@style/Theme.Bicikel"></activity>
+
+        <activity android:name=".station_map.StationMapActivity" android:theme="@style/Theme.Bicikel" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
