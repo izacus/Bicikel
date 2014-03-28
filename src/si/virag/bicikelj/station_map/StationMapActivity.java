@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationMapActivity extends SherlockFragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks
+public class StationMapActivity extends SherlockFragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks, GoogleMap.OnInfoWindowClickListener
 {
     private static final double MAP_CENTER_LAT = 46.051367;
     private static final double MAP_CENTER_LNG = 14.506542;
@@ -114,7 +114,7 @@ public class StationMapActivity extends SherlockFragmentActivity implements Goog
 				startActivity(intent);
 				return true;
 			case R.id.menu_directions:
-				//showDirections();
+				showDirections(stations.get(0));
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -197,6 +197,7 @@ public class StationMapActivity extends SherlockFragmentActivity implements Goog
         createMarkers();
 
         map.setInfoWindowAdapter(new InformationAdapter());
+        map.setOnInfoWindowClickListener(this);
     }
 
     private void createMarkers()
@@ -249,6 +250,16 @@ public class StationMapActivity extends SherlockFragmentActivity implements Goog
     public void onDisconnected()
     {
 
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker)
+    {
+        Station s = markerMap.get(marker);
+        if (s == null)
+            return;
+
+        showDirections(s);
     }
 
     private final class InformationAdapter implements GoogleMap.InfoWindowAdapter
