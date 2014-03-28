@@ -73,6 +73,6 @@ public class StationInfo
 	
 	private static String filterSanitize(String text)
 	{
-		return text.trim().toUpperCase().replace('È', 'C').replace('Š','S').replace('Ž', 'Z');
+		return text.trim().toUpperCase().replace('ÄŒ', 'C').replace('Å ','S').replace('Å½', 'Z');
 	}
 }

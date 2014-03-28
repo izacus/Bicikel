@@ -142,6 +142,9 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 			@Override
 			public boolean onMenuItemActionCollapse(MenuItem item) {
 				adapter.updateData(data);
+                if (locationClient != null)
+                    adapter.updateLocation(locationClient.getLastLocation());
+
 				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
 				return true;
@@ -194,6 +197,9 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		{
 			adapter.updateData(data);
 		}
+
+        if (locationClient != null)
+            adapter.updateLocation(locationClient.getLastLocation());
 	}
 	
 	@Override
