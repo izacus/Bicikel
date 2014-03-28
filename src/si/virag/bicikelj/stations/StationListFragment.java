@@ -6,7 +6,9 @@ import java.util.Map;
 
 import android.app.Dialog;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
@@ -39,74 +41,49 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnActionExpandListener;
 
-public class StationListFragment extends SherlockListFragment implements LoaderCallbacks<StationInfo>
+public class StationListFragment extends SherlockListFragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks
 {
 	private static final int STATION_LOADER_ID = 0;
 	
 	private StationListAdapter adapter = null;
-
-	private GPSManager gpsManager;
-	private Location location;
 	private MenuItem searchActionView;
 	private StationInfo data;
 	
 	private boolean error = false;
-	
-	@Override
+    private LocationClient locationClient = null;
+
+    @Override
 	public void onActivityCreated(Bundle savedInstanceState) 
 	{
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		gpsManager = new GPSManager();
 		adapter = new StationListAdapter(getActivity(), R.layout.stationlist_item, new ArrayList<Station>());
 		this.setListAdapter(adapter);
 		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
+
+        if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()) == ConnectionResult.SUCCESS)
+        {
+            locationClient = new LocationClient(getActivity(), this, null);
+        }
 	}
 
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        if (locationClient != null)
+            locationClient.connect();
+    }
 
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		gpsManager.cancelSearch();
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        if (locationClient != null)
+            locationClient.disconnect();
+    }
 
-		if (searchActionView.isActionViewExpanded())
-			searchActionView.collapseActionView();
-	}
-
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		gpsManager.findCurrentLocation(getActivity(), new Handler() 
-		{
-
-			@Override
-			public void handleMessage(Message msg)
-			{
-				if (msg.what != GPSManager.GPS_LOCATION_OK)
-				{
-					Log.w(this.toString(), "Can't get current location.");
-					return;
-				}
-				
-				location = gpsManager.getCurrentLocation();
-				gpsManager.cancelSearch();
-				refreshAdapterLocation();
-			}
-			
-		});
-	}
-
-	public void refreshAdapterLocation()
-	{
-		if (adapter != null && location != null)
-		{
-			adapter.updateLocation(location);
-		}
-	}
-	
-	@Override
+    @Override
 	public View onCreateView(LayoutInflater inflater, 
 							 ViewGroup container,
 							 Bundle savedInstanceState) 
@@ -126,16 +103,14 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		this.data = data;
 		// Update data in-place when already available
 		adapter.updateData(data);
-		
-		if (data == null) {
+
+        if (locationClient != null)
+            adapter.updateLocation(locationClient.getLastLocation());
+
+        if (data == null) {
 			showError();
 			return;
 		}
-		
-		if (location != null)
-		{
-			adapter.updateLocation(location);
-		}	
 	}
 
 	@Override
@@ -167,7 +142,6 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 			@Override
 			public boolean onMenuItemActionCollapse(MenuItem item) {
 				adapter.updateData(data);
-				refreshAdapterLocation();				
 				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
 				return true;
@@ -215,12 +189,10 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 			else
 				adapter.updateData(data);
 			
-			refreshAdapterLocation();
 		}
 		else
 		{
 			adapter.updateData(data);
-			refreshAdapterLocation();
 		}
 	}
 	
@@ -337,4 +309,17 @@ public class StationListFragment extends SherlockListFragment implements LoaderC
 		targetBundle.putParcelableArrayList("stations", data);
 		return targetBundle;
 	}
+
+    @Override
+    public void onConnected(Bundle bundle)
+    {
+        if (adapter != null)
+            adapter.updateLocation(locationClient.getLastLocation());
+    }
+
+    @Override
+    public void onDisconnected()
+    {
+
+    }
 }
