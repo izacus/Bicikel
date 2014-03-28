@@ -7,10 +7,10 @@
     </style>
     
     <style name="StationList.Numbers.Free" parent="@style/StationList.Numbers">
-        <item name="android:textColor">#669900</item>
+        <item name="android:textColor">@color/station_green</item>
     </style> 
     <style name="StationList.Numbers.Full" parent="@style/StationList.Numbers">
-        <item name="android:textColor">#CC0000</item>
+        <item name="android:textColor">@color/station_red</item>
     </style>
     
     <style name="StationList.Name" parent="@android:style/TextAppearance.Small">

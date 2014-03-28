@@ -4,7 +4,8 @@
     <string name="stationlist_load_error">Trenutnega stanja postaj ni bilo mogoče dobiti.\n\n:(\n\nPoskusite čez trenutek.</string>
     <string name="bikes">koles</string>
     <string name="free">prostih</string>
-    <string name="map_hint">Koles: <font color="red"><b>%s</b></font> Prostih: <font color="green"><b>%s</b></font></string>
+    <string name="map_hint_bikes">Koles:</string>
+    <string name="map_hint_free">Prostih:</string>
     <string name="menu_refresh">Osveži</string>
     <string name="menu_map">Vse postaje</string>
     <string name="menu_search">Iskanje</string>

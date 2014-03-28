@@ -1,54 +1,58 @@
 package si.virag.bicikelj.station_map;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.*;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
+import si.virag.bicikelj.util.DisplayUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class StationMapActivity extends SherlockFragmentActivity
+public class StationMapActivity extends SherlockFragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks
 {
     private static final double MAP_CENTER_LAT = 46.051367;
     private static final double MAP_CENTER_LNG = 14.506542;
 
     private SupportMapFragment mapFragment;
 	private GoogleMap map;
-
-    // Disable tap while animating
-    private Location myLocation;
+    private LocationClient locationClient;
     
     private ArrayList<Station> stations;
-    private int selectedStationId = - 1;
-    
+    private Map<Marker, Station> markerMap;
+
+
     private MenuItem directionsItem = null;
-    
-    private Station getStationById(int id)
-    {
-    	for (Station station : stations)
-    	{
-    		if (station.getId() == id)
-    			return station;
-    	}
-    	
-    	return null;
-    }
-    
+
     
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) 
@@ -58,7 +62,8 @@ public class StationMapActivity extends SherlockFragmentActivity
 		
 		directionsItem = menu.findItem(R.id.menu_directions);
 		
-		if (this.selectedStationId < 0) {
+		if (stations.size() > 1)
+        {
 			directionsItem.setVisible(false);
 		}
 		
@@ -67,7 +72,8 @@ public class StationMapActivity extends SherlockFragmentActivity
 
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+    {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map_view);
 		getSupportActionBar().setHomeButtonEnabled(true);
@@ -87,15 +93,8 @@ public class StationMapActivity extends SherlockFragmentActivity
         }
 
         this.stations = extras.getParcelableArrayList("stations");
-
-        // Restore state
-        if (savedInstanceState != null)
-        {
-        	if (savedInstanceState.containsKey("stationId"))
-        	{
-        		selectedStationId = savedInstanceState.getInt("stationId");
-        	}
-        }
+        locationClient = new LocationClient(this, this, null);
+        this.markerMap = new HashMap<Marker, Station>();
     }
 	
 	@Override
@@ -115,21 +114,18 @@ public class StationMapActivity extends SherlockFragmentActivity
 				startActivity(intent);
 				return true;
 			case R.id.menu_directions:
-				showDirections();
+				//showDirections();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
 	}
 	
-	private void showDirections()
+	private void showDirections(Station selectedStation)
 	{
-		if (selectedStationId < 0)
-			return;
-		
-		Station selectedStation = getStationById(selectedStationId);
-		
 		Uri mapsUri;
+
+        Location myLocation = locationClient.getLastLocation();
 		if (myLocation == null)
 		{
 			mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&daddr=" + selectedStation.getLocation().getLatitude() + "," + selectedStation.getLocation().getLongitude());
@@ -171,7 +167,7 @@ public class StationMapActivity extends SherlockFragmentActivity
 
     private void setupMap()
     {
-        map.setMyLocationEnabled(true);
+        map.getUiSettings().setCompassEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setAllGesturesEnabled(true);
 
@@ -183,29 +179,37 @@ public class StationMapActivity extends SherlockFragmentActivity
         }
         else
         {
-            update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 15.0f);
+            update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
+
+            map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener()
+            {
+                @Override
+                public void onMyLocationChange(Location location)
+                {
+                    map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+                    map.setOnMyLocationChangeListener(null);
+                }
+            });
         }
 
-        map.animateCamera(update);
+        map.setMyLocationEnabled(true);
+        map.moveCamera(update);
         createMarkers();
+
+        map.setInfoWindowAdapter(new InformationAdapter());
     }
 
     private void createMarkers()
     {
         for (Station station : stations)
         {
-            String stationString = getString(R.string.map_hint, station.getAvailableBikes(), station.getFreeSpaces()); //+ station.getAvailableBikes() + " " + getString(R.string.free) + ": " + station.getFreeSpaces();
+            BitmapDescriptor marker = BitmapDescriptorFactory.defaultMarker(((float) station.getAvailableBikes() / (float)station.getTotalSpaces()) * 120.0f );
+            Marker m = map.addMarker(new MarkerOptions()
+                          .position(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()))
+                          .flat(true)
+                          .icon(marker));
 
-            int bikeIcon = R.drawable.cycling;
-            if (station.getAvailableBikes() == 0)
-                bikeIcon = R.drawable.cycling_free;
-            else if (station.getFreeSpaces() == 0)
-                bikeIcon = R.drawable.cycling_full;
-
-            map.addMarker(new MarkerOptions().position(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()))
-                                             .title(station.getName())
-                                             .snippet(stationString)
-                                             .icon(BitmapDescriptorFactory.fromResource(bikeIcon)));
+            markerMap.put(m, station);
         }
     }
 	
@@ -213,22 +217,104 @@ public class StationMapActivity extends SherlockFragmentActivity
 	protected void onSaveInstanceState(Bundle outState) 
     {
 		super.onSaveInstanceState(outState);
-		
 		outState.putParcelableArrayList("stations", stations);
-		if (selectedStationId > 0)
-			outState.putInt("stationId", selectedStationId);
-		
 	}
 
-	@Override
-	protected void onStop() 
-	{
-		super.onStop();
-	}
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        locationClient.connect();
+    }
 
-	@Override
-	protected void onStart() 
-	{
-		super.onStart();
-	}	
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        locationClient.disconnect();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle)
+    {
+        Location loc = locationClient.getLastLocation();
+        if (loc == null)
+            return;
+
+        for (Station s : stations)
+            s.setDistance(loc);
+    }
+
+    @Override
+    public void onDisconnected()
+    {
+
+    }
+
+    private final class InformationAdapter implements GoogleMap.InfoWindowAdapter
+    {
+
+        @Override
+        public View getInfoWindow(Marker marker)
+        {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker)
+        {
+            TextView tv = new TextView(StationMapActivity.this);
+            tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            Station s = markerMap.get(marker);
+            if (s == null)
+                return tv;
+
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14.0f);
+            SpannableStringBuilder ssb = new SpannableStringBuilder();
+            ssb.append(s.getName());
+            ssb.setSpan(new StyleSpan(Typeface.BOLD), 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.append("\n");
+
+            int startOfNumberHint = ssb.length();
+
+            // Bikes hint text
+            ssb.append(getString(R.string.map_hint_bikes));
+            ssb.append(" ");
+            String bikesStr = String.valueOf(s.getAvailableBikes());
+            ssb.append(bikesStr);
+            ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.station_red)), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Free hint text
+            ssb.append(" ");
+            ssb.append(getString(R.string.map_hint_free));
+            ssb.append(" ");
+            String freeStr = String.valueOf(s.getFreeSpaces());
+            ssb.append(freeStr);
+            ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.station_green)), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12.0f, getResources().getDisplayMetrics())),
+                        startOfNumberHint,
+                        ssb.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            if (s.getDistance() != null)
+            {
+                ssb.append("\n");
+                String distanceString = DisplayUtils.formatDistance(s.getDistance());
+                ssb.append(distanceString);
+                ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10.0f, getResources().getDisplayMetrics())),
+                        ssb.length() - distanceString.length(),
+                        ssb.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new ForegroundColorSpan(Color.GRAY), ssb.length() - distanceString.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE), ssb.length() - distanceString.length(), ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+
+            tv.setText(ssb);
+            return tv;
+        }
+    }
 }
