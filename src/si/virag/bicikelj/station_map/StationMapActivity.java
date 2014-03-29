@@ -20,7 +20,9 @@ public class StationMapActivity extends ActionBarActivity
 
         StationMapFragment fragment = new StationMapFragment();
         Bundle arguments = new Bundle();
-        arguments.putParcelableArrayList("stations", getIntent().getExtras().getParcelableArrayList("stations"));
+
+        if (getIntent().hasExtra("focusOnStation"))
+            arguments.putInt("focusOnStation", getIntent().getIntExtra("focusOnStation", 0));
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction().add(R.id.map_container, fragment, "MapFragment").commit();
     }

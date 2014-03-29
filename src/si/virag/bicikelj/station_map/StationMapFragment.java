@@ -1,5 +1,6 @@
 package si.virag.bicikelj.station_map;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -14,6 +15,7 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.AlignmentSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.*;
 import android.widget.TextView;
@@ -45,32 +47,21 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
     private Map<Marker, Station> markerMap;
 
 
-    private MenuItem directionsItem = null;
+    private int focusStationId = -1;
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_maps, menu);
-
-        directionsItem = menu.findItem(R.id.menu_directions);
-        if (stations.size() > 1)
-        {
-            directionsItem.setVisible(false);
-        }
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
+        if (getArguments() != null && getArguments().containsKey("focusOnStation"))
+        {
+            this.focusStationId = getArguments().getInt("focusOnStation");
+        }
+        else if (savedInstanceState != null && savedInstanceState.containsKey("focusOnStationId"))
+            this.focusStationId = savedInstanceState.getInt("focusOnStationId");
 
-        if (getArguments() != null)
-            this.stations = getArguments().getParcelableArrayList("stations");
-        else
-            this.stations = new ArrayList<Station>();
-
+        this.stations = new ArrayList<Station>();
         locationClient = new LocationClient(getActivity(), this, null);
         this.markerMap = new HashMap<Marker, Station>();
     }
@@ -91,9 +82,6 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                return true;
-            case R.id.menu_directions:
-                showDirections(stations.get(0));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -119,7 +107,15 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW, mapsUri);
         // This prevents app selection pop-up
         intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-        startActivity(intent);
+
+        try
+        {
+            startActivity(intent);
+        }
+        catch (ActivityNotFoundException e)
+        {
+            Log.e("Bicikelj", "Google maps is not installed!");
+        }
     }
 
     @Override
@@ -133,32 +129,40 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
     public void onResume()
     {
         super.onResume();
-        EventBus.getDefault().register(this);
-
         if (map == null)
         {
             map = getMap();
-            if (map != null)
-            {
-                setupMap();
-            }
         }
+
+        EventBus.getDefault().registerSticky(this);
     }
 
     private void setupMap()
     {
+        map.clear();
         map.getUiSettings().setCompassEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setAllGesturesEnabled(true);
+        map.setMyLocationEnabled(true);
+        map.setInfoWindowAdapter(new InformationAdapter());
+        map.setOnInfoWindowClickListener(this);
 
         CameraUpdate update;
         createMarkers();
 
-        if (stations != null && stations.size() == 1)
+        if (focusStationId > 0)
         {
-            Station station = stations.get(0);
+            Station station = null;
+            for (Station s : stations)
+            {
+                if (s.getId() == focusStationId)
+                {
+                    station = s;
+                    break;
+                }
+            }
+
             update = CameraUpdateFactory.newLatLngZoom(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()), 16.0f);
-            markerMap.keySet().iterator().next().showInfoWindow();
         }
         else
         {
@@ -173,13 +177,11 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
                     map.setOnMyLocationChangeListener(null);
                 }
             });
+
         }
 
-        map.setMyLocationEnabled(true);
         map.moveCamera(update);
-
-        map.setInfoWindowAdapter(new InformationAdapter());
-        map.setOnInfoWindowClickListener(this);
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     private void createMarkers()
@@ -196,6 +198,9 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
                     .icon(marker));
 
             markerMap.put(m, station);
+
+            if (station.getId() == focusStationId)
+                m.showInfoWindow();
         }
     }
 
@@ -238,6 +243,13 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
             return;
 
         showDirections(s);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putInt("focusOnStationId", focusStationId);
     }
 
     public void onEventMainThread(StationDataUpdatedEvent data)
@@ -286,7 +298,7 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
             if (s == null)
                 return tv;
 
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14.0f);
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16.0f);
             SpannableStringBuilder ssb = new SpannableStringBuilder();
             ssb.append(s.getName());
             ssb.setSpan(new StyleSpan(Typeface.BOLD), 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -311,7 +323,7 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
             ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.station_green)), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12.0f, getResources().getDisplayMetrics())),
+            ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14.0f, getResources().getDisplayMetrics())),
                     startOfNumberHint,
                     ssb.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -321,7 +333,7 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
                 ssb.append("\n");
                 String distanceString = DisplayUtils.formatDistance(s.getDistance());
                 ssb.append(distanceString);
-                ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10.0f, getResources().getDisplayMetrics())),
+                ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 11.0f, getResources().getDisplayMetrics())),
                         ssb.length() - distanceString.length(),
                         ssb.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

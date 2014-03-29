@@ -1,10 +1,7 @@
 package si.virag.bicikelj.stations;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import android.app.Dialog;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,6 +18,7 @@ import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.events.FocusOnStationEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
+import si.virag.bicikelj.util.GPSUtil;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
 import android.content.Context;
 import android.content.Intent;
@@ -127,7 +125,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 			return;
 		}
 
-        EventBus.getDefault().post(new StationDataUpdatedEvent(data.getStations()));
+        EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
 	}
 
 	@Override
@@ -217,7 +215,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 			adapter.updateData(data);
 		}
 
-        if (locationClient != null)
+        if (locationClient != null && locationClient.isConnected())
             adapter.updateLocation(locationClient.getLastLocation());
 	}
 	
@@ -262,21 +260,20 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 
 
 
-        if (!checkPlayServices())
+        if (!GPSUtil.checkPlayServices(getActivity()))
             return;
 
 
+        Station s = adapter.getItem(position);
+
         if (isTablet)
         {
-            EventBus.getDefault().post(new FocusOnStationEvent(adapter.getItem(position).getId()));
+            EventBus.getDefault().post(new FocusOnStationEvent(s.getId()));
         }
         else
         {
-            ArrayList<Station> station = new ArrayList<Station>();
-            station.add(adapter.getItem(position));
-
             Intent intent = new Intent(getActivity(), StationMapActivity.class);
-            intent.putExtras(packStationData(station));
+            intent.putExtra("focusOnStation", s.getId());
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
@@ -296,7 +293,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	
 	private void showFullMap()
 	{
-        if (!checkPlayServices())
+        if (!GPSUtil.checkPlayServices(getActivity()))
             return;
 
 		if (this.data == null)
@@ -305,27 +302,11 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		Intent intent = new Intent(getActivity(), StationMapActivity.class);
 		intent.putExtras(packStationData(data.getStations()));
 		startActivity(intent);
-	}
-	
-	private boolean checkPlayServices()
-    {
-        int error = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
-
-        if (error == ConnectionResult.SUCCESS)
-            return true;
-
-        if (GooglePlayServicesUtil.isUserRecoverableError(error))
-        {
-            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(error, getActivity(), 0);
-            errorDialog.show();
-            return false;
-        }
-
-        return false;
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
 
-	private static Bundle packStationData(ArrayList<Station> data)
+    private static Bundle packStationData(ArrayList<Station> data)
 	{
 		Bundle targetBundle = new Bundle();
 		targetBundle.putParcelableArrayList("stations", data);

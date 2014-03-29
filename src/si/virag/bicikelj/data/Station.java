@@ -24,8 +24,13 @@ public class Station implements Parcelable
 	// Current distance
 	private Float distance = null;
 
-	public Station(int id, String name, String address, String fullAddress,
-			double latitude, double longtitude, boolean open)
+	public Station(int id,
+                   String name,
+                   String address,
+                   String fullAddress,
+			       double latitude,
+                   double longtitude,
+                   boolean open)
 	{
 		super();
 		this.id = id;
@@ -151,12 +156,12 @@ public class Station implements Parcelable
         dest.writeString(this.name);
         dest.writeString(this.address);
         dest.writeString(this.fullAddress);
-        dest.writeParcelable(this.location, 0);
+        //dest.writeParcelable(this.location, 0);
         dest.writeByte(open ? (byte) 1 : (byte) 0);
         dest.writeInt(this.totalSpaces);
         dest.writeInt(this.freeSpaces);
         dest.writeInt(this.availableBikes);
-        dest.writeValue(this.distance);
+        dest.writeFloat(this.distance == null ? -1.0f : this.distance);
     }
 
     private Station(Parcel in)
@@ -165,12 +170,14 @@ public class Station implements Parcelable
         this.name = in.readString();
         this.address = in.readString();
         this.fullAddress = in.readString();
-        this.location = in.readParcelable(Location.class.getClassLoader());
+        //this.location = in.readParcelable(Location.class.getClassLoader());
         this.open = in.readByte() != 0;
         this.totalSpaces = in.readInt();
         this.freeSpaces = in.readInt();
         this.availableBikes = in.readInt();
-        this.distance = (Float) in.readValue(Float.class.getClassLoader());
+
+        float d = in.readFloat();
+        this.distance = d < 0 ? null : d;
     }
 
     public static Creator<Station> CREATOR = new Creator<Station>()
