@@ -137,58 +137,52 @@ public class Station implements Parcelable
 		return (int) (location.hashCode() + name.hashCode());
 	}
 
-	
-	/**
-	 * 
-	 * Implementation of Parcelable methods
-	 */
-	
-	public static final Parcelable.Creator<Station> CREATOR = new Parcelable.Creator<Station>() 
-	{
-		@Override
-		public Station createFromParcel(Parcel source) {
-			int id = source.readInt();
-			String name = source.readString();
-			String address = source.readString();
-			String fullAddress = source.readString();
-			double lat = source.readDouble();
-			double lng = source.readDouble();
-			boolean open = source.readByte() == 1;
-			int free = source.readInt();
-			int bikes = source.readInt();
-			int total = source.readInt();
-			
-			Station station = new Station(id, name, address, fullAddress, lat, lng, open);
-			station.setFreeSpaces(free);
-			station.setAvailableBikes(bikes);
-			station.setTotalSpaces(total);
-			return station;
-		}
 
-		@Override
-		public Station[] newArray(int size) {
-			return new Station[size];
-		}
-	};
-	
-	
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags) 
-	{
-		dest.writeInt(id);
-		dest.writeString(name);
-		dest.writeString(address);
-		dest.writeString(fullAddress);
-		dest.writeDouble(location.getLatitude());
-		dest.writeDouble(location.getLongitude());
-		dest.writeByte((byte) (open ? 1 : 0));
-		dest.writeInt(freeSpaces);
-		dest.writeInt(availableBikes);
-		dest.writeInt(totalSpaces);
-	}
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.address);
+        dest.writeString(this.fullAddress);
+        dest.writeParcelable(this.location, 0);
+        dest.writeByte(open ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.totalSpaces);
+        dest.writeInt(this.freeSpaces);
+        dest.writeInt(this.availableBikes);
+        dest.writeValue(this.distance);
+    }
+
+    private Station(Parcel in)
+    {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.address = in.readString();
+        this.fullAddress = in.readString();
+        this.location = in.readParcelable(Location.class.getClassLoader());
+        this.open = in.readByte() != 0;
+        this.totalSpaces = in.readInt();
+        this.freeSpaces = in.readInt();
+        this.availableBikes = in.readInt();
+        this.distance = (Float) in.readValue(Float.class.getClassLoader());
+    }
+
+    public static Creator<Station> CREATOR = new Creator<Station>()
+    {
+        public Station createFromParcel(Parcel source)
+        {
+            return new Station(source);
+        }
+
+        public Station[] newArray(int size)
+        {
+            return new Station[size];
+        }
+    };
 }
