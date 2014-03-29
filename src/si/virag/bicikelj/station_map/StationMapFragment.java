@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -34,6 +35,9 @@ import si.virag.bicikelj.util.DisplayUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class StationMapFragment extends SupportMapFragment implements GooglePlayServicesClient.ConnectionCallbacks, GoogleMap.OnInfoWindowClickListener
 {
@@ -148,7 +152,6 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
         map.setOnInfoWindowClickListener(this);
 
         CameraUpdate update;
-        createMarkers();
 
         if (focusStationId > 0)
         {
@@ -182,6 +185,15 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
 
         map.moveCamera(update);
         getActivity().supportInvalidateOptionsMenu();
+
+        new Handler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                createMarkers();
+            }
+        }, 300);
     }
 
     private void createMarkers()

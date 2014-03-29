@@ -12,12 +12,20 @@ public class GPSUtil
 {
     public static final int GPS_FAIL_DIALOG_REQUEST_CODE = 9584;
 
+    private static boolean hasPlayServices = false;
+
     public static boolean checkPlayServices(Activity context)
     {
+        if (hasPlayServices)
+            return true;
+
         int error = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
 
         if (error == ConnectionResult.SUCCESS)
+        {
+            hasPlayServices = true;
             return true;
+        }
 
         if (GooglePlayServicesUtil.isUserRecoverableError(error))
         {
