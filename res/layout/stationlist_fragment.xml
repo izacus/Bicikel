@@ -10,13 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
+
         <ListView android:id="@id/android:list"
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:paddingLeft="16dp"
                   android:paddingRight="16dp"
-                  android:cacheColorHint="@android:color/white"
                   android:scrollbarStyle="outsideOverlay" />
+
     </android.support.v4.widget.SwipeRefreshLayout>
     
     <RelativeLayout android:id="@id/android:empty"
