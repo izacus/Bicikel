@@ -13,17 +13,18 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import de.greenrobot.event.EventBus;
+import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.events.FocusOnStationEvent;
+import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.text.Editable;
@@ -48,11 +49,16 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	private boolean error = false;
     private LocationClient locationClient = null;
 
+    private boolean isTablet;
+
     @Override
 	public void onActivityCreated(Bundle savedInstanceState) 
 	{
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
+
+        isTablet = ((MainActivity)getActivity()).isTabletLayout();
+
 		adapter = new StationListAdapter(getActivity(), R.layout.stationlist_item, new ArrayList<Station>());
 		this.setListAdapter(adapter);
 		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
@@ -115,10 +121,13 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
         if (locationClient != null && locationClient.isConnected())
             adapter.updateLocation(locationClient.getLastLocation());
 
-        if (data == null) {
+        if (data == null)
+        {
 			showError();
 			return;
 		}
+
+        EventBus.getDefault().post(new StationDataUpdatedEvent(data.getStations()));
 	}
 
 	@Override
@@ -251,19 +260,27 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 	{
 		super.onListItemClick(l, v, position, id);
 
-		ArrayList<Station> station = new ArrayList<Station>();
-		station.add(adapter.getItem(position));
-		//
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("Station", data.getStations().get(position).getName());
-		//
+
+
         if (!checkPlayServices())
             return;
 
-		Intent intent = new Intent(getActivity(), StationMapActivity.class);
-		intent.putExtras(packStationData(station));
-		startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+        if (isTablet)
+        {
+            EventBus.getDefault().post(new FocusOnStationEvent(adapter.getItem(position).getId()));
+        }
+        else
+        {
+            ArrayList<Station> station = new ArrayList<Station>();
+            station.add(adapter.getItem(position));
+
+            Intent intent = new Intent(getActivity(), StationMapActivity.class);
+            intent.putExtras(packStationData(station));
+            startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        }
+
 	}
 	
 	private void showError() {

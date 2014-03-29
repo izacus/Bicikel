@@ -21,9 +21,12 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+import de.greenrobot.event.EventBus;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
+import si.virag.bicikelj.events.FocusOnStationEvent;
+import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.util.DisplayUtils;
 
 import java.util.ArrayList;
@@ -63,7 +66,11 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
 
-        this.stations = getArguments().getParcelableArrayList("stations");
+        if (getArguments() != null)
+            this.stations = getArguments().getParcelableArrayList("stations");
+        else
+            this.stations = new ArrayList<Station>();
+
         locationClient = new LocationClient(getActivity(), this, null);
         this.markerMap = new HashMap<Marker, Station>();
     }
@@ -119,12 +126,14 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
     public void onPause()
     {
         super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
+        EventBus.getDefault().register(this);
 
         if (map == null)
         {
@@ -136,8 +145,6 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
         }
     }
 
-
-
     private void setupMap()
     {
         map.getUiSettings().setCompassEnabled(true);
@@ -145,10 +152,13 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
         map.getUiSettings().setAllGesturesEnabled(true);
 
         CameraUpdate update;
-        if (stations.size() == 1)
+        createMarkers();
+
+        if (stations != null && stations.size() == 1)
         {
             Station station = stations.get(0);
             update = CameraUpdateFactory.newLatLngZoom(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()), 16.0f);
+            markerMap.keySet().iterator().next().showInfoWindow();
         }
         else
         {
@@ -167,20 +177,16 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
 
         map.setMyLocationEnabled(true);
         map.moveCamera(update);
-        createMarkers();
 
         map.setInfoWindowAdapter(new InformationAdapter());
         map.setOnInfoWindowClickListener(this);
-
-        if (stations.size() == 1)
-        {
-            markerMap.keySet().iterator().next().showInfoWindow();
-        }
-
     }
 
     private void createMarkers()
     {
+        if (stations == null)
+            return;
+
         for (Station station : stations)
         {
             BitmapDescriptor marker = BitmapDescriptorFactory.defaultMarker(((float) station.getAvailableBikes() / (float) station.getTotalSpaces()) * 120.0f);
@@ -211,7 +217,7 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
     public void onConnected(Bundle bundle)
     {
         Location loc = locationClient.getLastLocation();
-        if (loc == null)
+        if (loc == null || stations == null)
             return;
 
         for (Station s : stations)
@@ -232,6 +238,34 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
             return;
 
         showDirections(s);
+    }
+
+    public void onEventMainThread(StationDataUpdatedEvent data)
+    {
+        this.stations = data.getStations();
+        setupMap();
+    }
+
+    public void onEventMainThread(FocusOnStationEvent focusData)
+    {
+        Marker targetMarker = null;
+        Station targetStation = null;
+        for (Map.Entry<Marker, Station> s : markerMap.entrySet())
+        {
+            if (s.getValue().getId() == focusData.getId())
+            {
+                targetStation = s.getValue();
+                targetMarker = s.getKey();
+                break;
+            }
+        }
+
+        if (targetStation == null || targetMarker == null)
+            return;
+
+        targetMarker.showInfoWindow();
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(targetStation.getLocation().getLatitude(), targetStation.getLocation().getLongitude()), 16.0f);
+        map.animateCamera(update);
     }
 
     private final class InformationAdapter implements GoogleMap.InfoWindowAdapter

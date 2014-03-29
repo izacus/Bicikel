@@ -41,31 +41,6 @@
             />
 
     </LinearLayout>
-    
-    <LinearLayout 
-        android:id="@+id/stationlist_free"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:orientation="vertical"
-        android:layout_marginLeft="8dp"
-        >
-        <TextView
-            android:id="@+id/stationlist_num_free"
-            android:layout_width="match_parent" 
-            android:layout_height="28dp"
-            android:gravity="center"
-            style="@style/StationList.Numbers.Free"
-            />
-        
-        <TextView
-            android:id="@+id/stationlist_label_free"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:gravity="center"
-            style="@style/StationList.Labels"
-            android:text="@string/free"
-            />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/stationlist_full"
@@ -89,6 +64,31 @@
             android:gravity="center"
             style="@style/StationList.Labels"
             android:text="@string/bikes"
+            />
+    </LinearLayout>
+
+    <LinearLayout 
+        android:id="@+id/stationlist_free"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:orientation="vertical"
+        android:layout_marginLeft="8dp"
+        >
+        <TextView
+            android:id="@+id/stationlist_num_free"
+            android:layout_width="match_parent" 
+            android:layout_height="28dp"
+            android:gravity="center"
+            style="@style/StationList.Numbers.Free"
+            />
+        
+        <TextView
+            android:id="@+id/stationlist_label_free"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:gravity="center"
+            style="@style/StationList.Labels"
+            android:text="@string/free"
             />
     </LinearLayout>
     
