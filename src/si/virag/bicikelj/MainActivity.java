@@ -2,10 +2,10 @@ package si.virag.bicikelj;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
-import android.os.Bundle;
 import si.virag.bicikelj.util.GPSUtil;
 
 public class MainActivity extends ActionBarActivity
@@ -29,18 +29,6 @@ public class MainActivity extends ActionBarActivity
             setupMapFragment();
         }
     }
-
-	@Override
-	protected void onStart() 
-	{
-		super.onStart();
-	}
-
-	@Override
-	protected void onStop() 
-	{
-		super.onStop();
-	}
 
 	@Override
 	public boolean onSearchRequested() 

@@ -1,13 +1,5 @@
 package si.virag.bicikelj.stations;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import si.virag.bicikelj.R;
-import si.virag.bicikelj.data.Station;
-import si.virag.bicikelj.data.StationInfo;
-import si.virag.bicikelj.util.DisplayUtils;
 import android.app.Activity;
 import android.location.Location;
 import android.view.LayoutInflater;
@@ -15,6 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import si.virag.bicikelj.R;
+import si.virag.bicikelj.data.Station;
+import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.util.DisplayUtils;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class StationListAdapter extends BaseAdapter
 {	
@@ -26,7 +26,7 @@ public class StationListAdapter extends BaseAdapter
 		public TextView distance;
 	}
 	
-	private Activity context;
+	private final Activity context;
 	private List<Station> items;
 	
 	public StationListAdapter(Activity context, int textViewResourceId, List<Station> items)

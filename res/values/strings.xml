@@ -12,9 +12,7 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_map">All stations</string>
     <string name="menu_search">Search</string>
-    <string name="menu_directions">Directions</string>
-    
+
     <string name="hint_search">Search</string>
     
-    <string name="maps_api_key">0oTmqtEHq-Anwh0B0qhK2NkelsH8--CfjRsU1Qw</string>
 </resources>

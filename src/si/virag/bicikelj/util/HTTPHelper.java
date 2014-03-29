@@ -1,10 +1,17 @@
 package si.virag.bicikelj.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import android.os.Build;
+import android.util.Log;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -16,25 +23,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
-import android.os.Build;
-import android.util.Log;
-
 public class HTTPHelper
 {
 	static
 	{
 	    // HTTP connection reuse which was buggy pre-froyo
-	    if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO) {
+	    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
 	        System.setProperty("http.keepAlive", "false");
 	    }
 	}
@@ -43,11 +37,8 @@ public class HTTPHelper
 	{
 		// There's a bug in SimpleDateFormatter library so we're parsing dates
 		// manually
-		SimpleDateFormat formatter = new SimpleDateFormat(
-				"yyyy-MM-dd'T'hh:mm:ssz");
-		Date result = formatter.parse(date);
-
-		return result;
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssz");
+		return formatter.parse(date);
 	}
 
 	/**
@@ -67,10 +58,18 @@ public class HTTPHelper
 
 		for (String key : params.keySet())
 		{
-			paramString.append(URLEncoder.encode(key));
-			paramString.append("=");
-			paramString.append(URLEncoder.encode(params.get(key)));
-			paramString.append("&");
+            try
+            {
+                paramString.append(URLEncoder.encode(key, "UTF-8"));
+                paramString.append("=");
+                paramString.append(URLEncoder.encode(params.get(key), "UTF-8"));
+                paramString.append("&");
+
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                throw new RuntimeException("No UTF-8 support on device!");
+            }
 		}
 
 		// Delete the last amperstand
@@ -93,12 +92,13 @@ public class HTTPHelper
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		StringBuilder sb = new StringBuilder();
 
-		String line = null;
+		String line;
 		try
 		{
 			while ((line = reader.readLine()) != null)
 			{
-				sb.append(line + "\n");
+				sb.append(line);
+                sb.append("\n");
 			}
 		}
 		catch (IOException e)
@@ -128,7 +128,7 @@ public class HTTPHelper
 	/**
 	 * Makes a GET request to a server and reads response
 	 * 
-	 * @param url
+	 * @param urlString
 	 *            URL of the resource on server
 	 * @param params
 	 *            Parameters to be appended to URL

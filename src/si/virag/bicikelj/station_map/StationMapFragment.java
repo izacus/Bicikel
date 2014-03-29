@@ -18,11 +18,16 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.*;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import de.greenrobot.event.EventBus;
 import si.virag.bicikelj.MainActivity;
@@ -35,9 +40,6 @@ import si.virag.bicikelj.util.DisplayUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class StationMapFragment extends SupportMapFragment implements GooglePlayServicesClient.ConnectionCallbacks, GoogleMap.OnInfoWindowClickListener
 {
@@ -68,12 +70,6 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
         this.stations = new ArrayList<Station>();
         locationClient = new LocationClient(getActivity(), this, null);
         this.markerMap = new HashMap<Marker, Station>();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
-        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

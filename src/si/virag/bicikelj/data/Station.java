@@ -1,21 +1,19 @@
 package si.virag.bicikelj.data;
 
 import android.location.Location;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 
-public class Station implements Parcelable
+public class Station
 {
-	private int id;
-	private String name;
+	private final int id;
+	private final String name;
 	// Location
-	private String address;
-	private String fullAddress;
-	private Location location;
+	private final String address;
+	private final String fullAddress;
+	private final Location location;
 	
 	// Is it open?
-	private boolean open;
+	private final boolean open;
 	// Current status
 	private int totalSpaces;
 	private int freeSpaces;
@@ -125,13 +123,15 @@ public class Station implements Parcelable
 	@Override
 	public String toString()
 	{
-		Log.d("Station", "Returning " + this.name);
 		return this.name;
 	}
 
 	@Override
 	public boolean equals(Object o)
 	{
+        if (!(o instanceof Station))
+            return false;
+
 		Station s = (Station)o;
 		return (s.hashCode() == this.hashCode());
 	}
@@ -139,57 +139,6 @@ public class Station implements Parcelable
 	@Override
 	public int hashCode()
 	{
-		return (int) (location.hashCode() + name.hashCode());
+		return location.hashCode() + name.hashCode();
 	}
-
-
-    @Override
-    public int describeContents()
-    {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
-        dest.writeInt(this.id);
-        dest.writeString(this.name);
-        dest.writeString(this.address);
-        dest.writeString(this.fullAddress);
-        //dest.writeParcelable(this.location, 0);
-        dest.writeByte(open ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.totalSpaces);
-        dest.writeInt(this.freeSpaces);
-        dest.writeInt(this.availableBikes);
-        dest.writeFloat(this.distance == null ? -1.0f : this.distance);
-    }
-
-    private Station(Parcel in)
-    {
-        this.id = in.readInt();
-        this.name = in.readString();
-        this.address = in.readString();
-        this.fullAddress = in.readString();
-        //this.location = in.readParcelable(Location.class.getClassLoader());
-        this.open = in.readByte() != 0;
-        this.totalSpaces = in.readInt();
-        this.freeSpaces = in.readInt();
-        this.availableBikes = in.readInt();
-
-        float d = in.readFloat();
-        this.distance = d < 0 ? null : d;
-    }
-
-    public static Creator<Station> CREATOR = new Creator<Station>()
-    {
-        public Station createFromParcel(Parcel source)
-        {
-            return new Station(source);
-        }
-
-        public Station[] newArray(int size)
-        {
-            return new Station[size];
-        }
-    };
 }

@@ -9,7 +9,5 @@
     <string name="menu_refresh">Osveži</string>
     <string name="menu_map">Vse postaje</string>
     <string name="menu_search">Iskanje</string>
-    <string name="menu_directions">Pokaži pot</string>
-    
     <string name="hint_search">Iskanje</string>
 </resources>

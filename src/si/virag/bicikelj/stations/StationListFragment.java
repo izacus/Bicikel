@@ -1,11 +1,22 @@
 package si.virag.bicikelj.stations;
 
-import java.util.ArrayList;
-
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -20,19 +31,8 @@ import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.util.GPSUtil;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class StationListFragment extends ListFragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks, SwipeRefreshLayout.OnRefreshListener
 {
@@ -300,18 +300,9 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 			return;
 		
 		Intent intent = new Intent(getActivity(), StationMapActivity.class);
-		intent.putExtras(packStationData(data.getStations()));
 		startActivity(intent);
         getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
-
-
-    private static Bundle packStationData(ArrayList<Station> data)
-	{
-		Bundle targetBundle = new Bundle();
-		targetBundle.putParcelableArrayList("stations", data);
-		return targetBundle;
-	}
 
     @Override
     public void onConnected(Bundle bundle)

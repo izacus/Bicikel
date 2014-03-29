@@ -2,7 +2,6 @@ package si.virag.bicikelj.station_map;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.View;
 import si.virag.bicikelj.R;
 
 public class StationMapActivity extends ActionBarActivity

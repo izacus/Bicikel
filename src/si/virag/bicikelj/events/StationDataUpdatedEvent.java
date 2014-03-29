@@ -3,7 +3,6 @@ package si.virag.bicikelj.events;
 import si.virag.bicikelj.data.Station;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jernej on 29/03/14.

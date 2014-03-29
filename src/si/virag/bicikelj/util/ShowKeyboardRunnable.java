@@ -4,10 +4,10 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-public class ShowKeyboardRunnable implements Runnable {
-	
-	View view;
-	Context context;
+public class ShowKeyboardRunnable implements Runnable
+{
+	final View view;
+	final Context context;
 	
 	public ShowKeyboardRunnable(Context context, View view)
 	{

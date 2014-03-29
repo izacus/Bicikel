@@ -1,15 +1,15 @@
 package si.virag.bicikelj.data;
 
+import android.location.Location;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import android.location.Location;
-
 public class StationInfo
 {
-	private long timeUpdated;
-	private ArrayList<Station> stations;
+	private final long timeUpdated;
+	private final ArrayList<Station> stations;
 	
 	private boolean disancesValid = false;
 	
