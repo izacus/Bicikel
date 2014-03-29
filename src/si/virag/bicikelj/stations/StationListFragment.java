@@ -112,7 +112,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		// Update data in-place when already available
 		adapter.updateData(data);
 
-        if (locationClient != null)
+        if (locationClient != null && locationClient.isConnected())
             adapter.updateLocation(locationClient.getLastLocation());
 
         if (data == null) {
