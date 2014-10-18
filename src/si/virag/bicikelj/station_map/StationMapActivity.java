@@ -1,11 +1,13 @@
 package si.virag.bicikelj.station_map;
 
-import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import si.virag.bicikelj.R;
 
 public class StationMapActivity extends ActionBarActivity
 {
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
