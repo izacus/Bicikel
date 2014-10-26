@@ -3,11 +3,14 @@ package si.virag.bicikelj.stations;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -34,11 +37,12 @@ import si.virag.bicikelj.util.ShowKeyboardRunnable;
 
 import java.util.ArrayList;
 
-public class StationListFragment extends ListFragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks, SwipeRefreshLayout.OnRefreshListener
+public class StationListFragment extends Fragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks, SwipeRefreshLayout.OnRefreshListener
 {
 	private static final int STATION_LOADER_ID = 0;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+	private RecyclerView listView;
 
 	private StationListAdapter adapter = null;
 	private MenuItem searchActionView;
@@ -49,7 +53,13 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 
     private boolean isTablet;
 
-    @Override
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		adapter = new StationListAdapter(new ArrayList<Station>());
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState) 
 	{
 		super.onActivityCreated(savedInstanceState);
@@ -57,8 +67,6 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 
         isTablet = ((MainActivity)getActivity()).isTabletLayout();
 
-		adapter = new StationListAdapter(getActivity(), R.layout.stationlist_item, new ArrayList<Station>());
-		this.setListAdapter(adapter);
 		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
 
         if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()) == ConnectionResult.SUCCESS)
@@ -89,6 +97,11 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 							 Bundle savedInstanceState) 
 	{
 		View v = inflater.inflate(R.layout.stationlist_fragment, container);
+		listView = (RecyclerView) v.findViewById(R.id.stationlist_list);
+		listView.setAdapter(adapter);
+		listView.setHasFixedSize(true);
+		listView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorScheme(R.color.station_green,
@@ -115,6 +128,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		this.data = data;
 		// Update data in-place when already available
 		adapter.updateData(data);
+		getActivity().findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
 
         if (locationClient != null && locationClient.isConnected())
             adapter.updateLocation(locationClient.getLastLocation());
@@ -253,7 +267,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
 		getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
 	}
 	
-	@Override
+/*	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) 
 	{
 		super.onListItemClick(l, v, position, id);
@@ -278,7 +292,7 @@ public class StationListFragment extends ListFragment implements LoaderCallbacks
             getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
 
-	}
+	} */
 	
 	private void showError() {
 		this.error = true;

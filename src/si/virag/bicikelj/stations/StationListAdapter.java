@@ -2,6 +2,8 @@ package si.virag.bicikelj.stations;
 
 import android.app.Activity;
 import android.location.Location;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,71 +18,31 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class StationListAdapter extends BaseAdapter
+public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationViewHolder>
 {	
-	private static class StationViewHolder
+	public static class StationViewHolder extends RecyclerView.ViewHolder
 	{
 		public TextView bikeNum;
 		public TextView freeSpaces;
 		public TextView stationName;
 		public TextView distance;
+
+		public StationViewHolder(View view) {
+			super(view);
+
+			bikeNum = (TextView) view.findViewById(R.id.stationlist_num_full);
+			freeSpaces = (TextView) view.findViewById(R.id.stationlist_num_free);
+			stationName = (TextView) view.findViewById(R.id.stationlist_name);
+			distance = (TextView) view.findViewById(R.id.stationlist_distance);
+		}
 	}
 	
-	private final Activity context;
 	private List<Station> items;
 	
-	public StationListAdapter(Activity context, int textViewResourceId, List<Station> items)
+	public StationListAdapter(List<Station> items)
 	{
-		this.context = context;
 		this.items = items;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
-	{
-		View view = convertView;
-		StationViewHolder viewHolder;
-		
-		if (view == null)
-		{
-            LayoutInflater li = context.getLayoutInflater();
-            view = li.inflate(R.layout.stationlist_item, null);
-            
-            viewHolder = new StationViewHolder();
-    		viewHolder.bikeNum = (TextView) view.findViewById(R.id.stationlist_num_full);
-    		viewHolder.freeSpaces = (TextView) view.findViewById(R.id.stationlist_num_free);
-    		viewHolder.stationName = (TextView) view.findViewById(R.id.stationlist_name);
-    		viewHolder.distance = (TextView) view.findViewById(R.id.stationlist_distance);
-    		view.setTag(viewHolder);
-		}
-		else
-		{
-			viewHolder = (StationViewHolder)view.getTag();
-		}
-		
-		try
-		{
-			Station station = getItem(position);
-			viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "Ø" : String.valueOf(station.getAvailableBikes()));
-			viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "Ø" : String.valueOf(station.getFreeSpaces()));
-			viewHolder.stationName.setText(getItem(position).getName().replaceAll("Ø", "\n"));
-		}
-		catch (IndexOutOfBoundsException e)
-		{
-			return null;
-		}
-		
-		if (getItem(position).getDistance() != null)
-		{
-			viewHolder.distance.setText(DisplayUtils.formatDistance(getItem(position).getDistance()));
-			viewHolder.distance.setVisibility(View.VISIBLE);
-		}
-		else
-		{
-			viewHolder.distance.setVisibility(View.GONE);
-		}
-		
-		return view;
+		setHasStableIds(true);
 	}
 
 	
@@ -91,22 +53,22 @@ public class StationListAdapter extends BaseAdapter
 			return;
 		}
 		
-		if (info.getStations().size() != this.getCount())
+		if (info.getStations().size() != this.getItemCount())
 		{
 			this.items = info.getStations();
-			this.notifyDataSetInvalidated();
 			this.notifyDataSetChanged();
 			return;
 		}
 		
 		for (Station station : info.getStations())
 		{
-			for (int i = 0; i < this.getCount(); i++)
+			for (int i = 0; i < this.getItemCount(); i++)
 			{
-				if (getItem(i).getId() == station.getId())
+				Station s = items.get(i);
+				if (s.getId() == station.getId())
 				{
-					getItem(i).setFreeSpaces(station.getFreeSpaces());
-					getItem(i).setAvailableBikes(station.getAvailableBikes());
+					s.setFreeSpaces(station.getFreeSpaces());
+					s.setAvailableBikes(station.getAvailableBikes());
 					break;
 				}
 			}
@@ -140,29 +102,44 @@ public class StationListAdapter extends BaseAdapter
 	public void clearData()
 	{
 		this.items.clear();
-		this.notifyDataSetInvalidated();
 		this.notifyDataSetChanged();
 	}
 
 	@Override
-	public int getCount() 
-	{
-		return this.items.size();
+	public StationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_item, parent, false);
+		StationViewHolder viewHolder = new StationViewHolder(view);
+		return viewHolder;
 	}
 
 	@Override
-	public Station getItem(int position) 
-	{
-		if (position < 0 && position >= this.items.size())
-			throw new IndexOutOfBoundsException();
-		return this.items.get(position);
+	public void onBindViewHolder(StationViewHolder viewHolder, int position) {
+		Station station = items.get(position);
+		viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "Ø" : String.valueOf(station.getAvailableBikes()));
+		viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "Ø" : String.valueOf(station.getFreeSpaces()));
+		viewHolder.stationName.setText(station.getName().replaceAll("Ø", "\n"));
+
+		if (station.getDistance() != null)
+		{
+			viewHolder.distance.setText(DisplayUtils.formatDistance(station.getDistance()));
+			viewHolder.distance.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			viewHolder.distance.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
 	public long getItemId(int position) 
 	{
-		if (position < 0 && position >= this.items.size())
-			throw new IndexOutOfBoundsException();
 		return this.items.get(position).getId();
+	}
+
+
+
+	@Override
+	public int getItemCount() {
+		return items.size();
 	}
 }
