@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Bicikel" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowBackground">@color/window_background</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
     </style>
+
     <style name="StationList.Numbers" parent="@android:style/TextAppearance.Large">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">23sp</item>
     </style>
     
     <style name="StationList.Numbers.Free" parent="@style/StationList.Numbers">
-        <item name="android:textColor">@color/station_green</item>
+        <item name="android:textColor">@color/primary_dark</item>
     </style> 
     <style name="StationList.Numbers.Full" parent="@style/StationList.Numbers">
-        <item name="android:textColor">@color/station_red</item>
+        <item name="android:textColor">@color/secondary</item>
     </style>
     
     <style name="StationList.Name" parent="@android:style/TextAppearance.Small">

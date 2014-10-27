@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="48dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    android:baselineAligned="false"
     android:orientation="horizontal"
     >
+
+    <FrameLayout android:layout_width="wrap_content" android:layout_height="match_parent">
+            <TextView android:layout_width="48dp"
+                      android:layout_height="48dp"
+                      android:layout_gravity="center_vertical"
+                      android:fontFamily="sans-serif-thin"
+                      android:gravity="center"
+                      android:textColor="@android:color/white"
+                      android:textSize="24dp"
+                      android:background="@color/material_blue_grey_800"
+
+                      android:text="SN"
+                      tools:text="SN"
+                    />
+    </FrameLayout>
+
 
     <LinearLayout
         android:id="@+id/stationlist_namecontainer"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:minHeight="48dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
@@ -24,73 +40,85 @@
             android:id="@+id/stationlist_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:layout_marginRight="8dp"
             android:maxLines="2"
             android:gravity="center_vertical|left"
             android:ellipsize="end"
             style="@style/StationList.Name"
+
+            tools:text = "Station name"
             />
 
         <TextView
             android:id="@+id/stationlist_distance"
             android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="4dp"
+            android:layout_height="wrap_content"
             style="@style/StationList.Distance"
+            tools:text = "999.9km"
             />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/stationlist_full"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginLeft="8dp"
-        android:orientation="vertical"
-        >
-        <TextView
-            android:id="@+id/stationlist_num_full"
-            android:layout_width="match_parent"
-            android:layout_height="28dp"
-            android:gravity="center"
-            style="@style/StationList.Numbers.Full"
-            />
+    <FrameLayout android:layout_width="wrap_content"
+                 android:layout_height="match_parent"
+                 android:layout_marginLeft="8dp">
 
-        <TextView
-            android:id="@+id/stationlist_label_full"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:gravity="center"
-            style="@style/StationList.Labels"
-            android:text="@string/bikes"
-            />
-    </LinearLayout>
+        <LinearLayout
+                android:id="@+id/stationlist_full"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                >
+            <TextView
+                    android:id="@+id/stationlist_num_full"
+                    android:layout_width="match_parent"
+                    android:layout_height="28dp"
+                    android:gravity="center"
+                    style="@style/StationList.Numbers.Full"
+                    tools:text="99"
+                    />
 
-    <LinearLayout 
-        android:id="@+id/stationlist_free"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:orientation="vertical"
-        android:layout_marginLeft="8dp"
-        >
-        <TextView
-            android:id="@+id/stationlist_num_free"
-            android:layout_width="match_parent" 
-            android:layout_height="28dp"
-            android:gravity="center"
-            style="@style/StationList.Numbers.Free"
-            />
-        
-        <TextView
-            android:id="@+id/stationlist_label_free"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:gravity="center"
-            style="@style/StationList.Labels"
-            android:text="@string/free"
-            />
-    </LinearLayout>
+            <TextView
+                    android:id="@+id/stationlist_label_full"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    style="@style/StationList.Labels"
+                    android:text="@string/bikes"
+                    />
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout android:layout_width="wrap_content"
+                 android:layout_height="match_parent"
+                 android:layout_marginLeft="8dp">
+
+        <LinearLayout
+            android:id="@+id/stationlist_free"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:id="@+id/stationlist_num_free"
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:gravity="center"
+                style="@style/StationList.Numbers.Free"
+                tools:text="99"
+                />
+
+            <TextView
+                android:id="@+id/stationlist_label_free"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:gravity="center"
+                style="@style/StationList.Labels"
+                android:text="@string/free"
+                />
+        </LinearLayout>
+
+    </FrameLayout>
     
 </LinearLayout>

@@ -104,10 +104,10 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorScheme(R.color.station_green,
-                                          R.color.station_red,
-                                          R.color.station_green,
-                                          R.color.station_red
+        swipeRefreshLayout.setColorScheme(R.color.primary,
+                                          R.color.primary_dark,
+                                          R.color.secondary,
+                                          R.color.primary_dark
                 );
 
         swipeRefreshLayout.setRefreshing(true);

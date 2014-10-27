@@ -319,7 +319,7 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
             ssb.append(" ");
             String bikesStr = String.valueOf(s.getAvailableBikes());
             ssb.append(bikesStr);
-            ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.station_red)), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.secondary)), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Free hint text
@@ -328,7 +328,7 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
             ssb.append(" ");
             String freeStr = String.valueOf(s.getFreeSpaces());
             ssb.append(freeStr);
-            ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.station_green)), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary_dark)), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14.0f, getResources().getDisplayMetrics())),

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="window_background">#f0f0f0</color>
-    <color name="station_green">#669900</color>
-    <color name="station_red">#CC0000</color>
+    <color name="primary">#0a7e07</color>
+    <color name="primary_dark">#0d5302</color>
+    <color name="secondary">#c41411</color>
 </resources>
