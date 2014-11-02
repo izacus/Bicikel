@@ -1,13 +1,14 @@
 package si.virag.bicikelj.stations;
 
-import android.app.Activity;
+import android.content.Context;
 import android.location.Location;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.Adapter;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
@@ -19,28 +20,32 @@ import java.util.Comparator;
 import java.util.List;
 
 public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationViewHolder>
-{	
+{
+
 	public static class StationViewHolder extends RecyclerView.ViewHolder
 	{
-		public TextView bikeNum;
-		public TextView freeSpaces;
-		public TextView stationName;
-		public TextView distance;
+		public final TextView free;
+		public final TextView bikes;
+		public final TextView stationName;
+		public final TextView distance;
 
 		public StationViewHolder(View view) {
 			super(view);
 
-			bikeNum = (TextView) view.findViewById(R.id.stationlist_num_full);
-			freeSpaces = (TextView) view.findViewById(R.id.stationlist_num_free);
+			bikes = (TextView)view.findViewById(R.id.stationlist_bikes);
+			free = (TextView)view.findViewById(R.id.stationlist_free);
+
 			stationName = (TextView) view.findViewById(R.id.stationlist_name);
 			distance = (TextView) view.findViewById(R.id.stationlist_distance);
 		}
 	}
-	
+
+	private final Context ctx;
 	private List<Station> items;
 	
-	public StationListAdapter(List<Station> items)
+	public StationListAdapter(Context ctx, List<Station> items)
 	{
+		this.ctx = ctx;
 		this.items = items;
 		setHasStableIds(true);
 	}
@@ -108,6 +113,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	@Override
 	public StationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_item, parent, false);
+		((TextView)view.findViewById(R.id.stationlist_bikes_icon)).setText("\uD83D\uDEB2");
+		((TextView)view.findViewById(R.id.stationlist_free_icon)).setText("\uD83D\uDEA9");
+
 		StationViewHolder viewHolder = new StationViewHolder(view);
 		return viewHolder;
 	}
@@ -115,8 +123,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	@Override
 	public void onBindViewHolder(StationViewHolder viewHolder, int position) {
 		Station station = items.get(position);
-		viewHolder.bikeNum.setText(station.getAvailableBikes() == 0 ? "Ø" : String.valueOf(station.getAvailableBikes()));
-		viewHolder.freeSpaces.setText(station.getFreeSpaces() == 0 ? "Ø" : String.valueOf(station.getFreeSpaces()));
+		viewHolder.bikes.setText(getFormattedNumber(station.getAvailableBikes()));
+		viewHolder.free.setText(getFormattedNumber(station.getFreeSpaces()));
+
 		viewHolder.stationName.setText(station.getName().replaceAll("Ø", "\n"));
 
 		if (station.getDistance() != null)
@@ -141,5 +150,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	@Override
 	public int getItemCount() {
 		return items.size();
+	}
+
+	private static String getFormattedNumber(int number) {
+		return number == 0 ? " Ø" : (number < 10 ? " " + String.valueOf(number) : String.valueOf(number));
 	}
 }

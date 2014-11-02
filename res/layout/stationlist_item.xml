@@ -1,51 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="12dp"
-    android:paddingBottom="12dp"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
+    android:layout_height="wrap_content"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:minHeight="72dp"
     android:orientation="horizontal"
-    >
+    android:background="?selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context=".MainActivity">
 
-    <FrameLayout android:layout_width="wrap_content" android:layout_height="match_parent">
-            <TextView android:layout_width="48dp"
-                      android:layout_height="48dp"
-                      android:layout_gravity="center_vertical"
-                      android:fontFamily="sans-serif-thin"
-                      android:gravity="center"
-                      android:textColor="@android:color/white"
-                      android:textSize="24dp"
-                      android:background="@color/material_blue_grey_800"
+    <TextView
+        android:id="@+id/stationlist_picture"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:fontFamily="sans-serif-thin"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="20dp"
+        android:background="@color/material_blue_grey_800"
 
-                      android:text="SN"
-                      tools:text="SN"
-                    />
-    </FrameLayout>
+        android:text="SN"
+        tools:text="SN"
+        />
+
+    <LinearLayout
+        android:id="@+id/stationlist_number_container"
+        android:layout_width="62dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/stationlist_bikes"
+                android:layout_width="36dp"
+                android:layout_height="match_parent"
+                android:gravity="right|center_vertical"
+                style="@style/StationList.Numbers.Full"
+                />
+
+            <TextView
+                android:id="@+id/stationlist_bikes_icon"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="18dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginBottom="4dp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="62dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/stationlist_free"
+                android:layout_width="36dp"
+                android:layout_height="match_parent"
+                android:textSize="22sp"
+                android:textColor="@color/primary"
+                android:gravity="right|center_vertical"
+                style="@style/StationList.Numbers.Free"
+                />
+
+            <TextView
+                android:id="@+id/stationlist_free_icon"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="16dp"
+                android:layout_marginLeft="6dp"
+
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 
     <LinearLayout
-        android:id="@+id/stationlist_namecontainer"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="8dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:orientation="vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@id/stationlist_picture"
+        android:layout_toLeftOf="@id/stationlist_number_container"
         >
 
         <TextView
             android:id="@+id/stationlist_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="2"
-            android:gravity="center_vertical|left"
-            android:ellipsize="end"
             style="@style/StationList.Name"
-
-            tools:text = "Station name"
+            tools:text="Station name"
             />
 
         <TextView
@@ -53,72 +116,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/StationList.Distance"
-            tools:text = "999.9km"
+            tools:text = "9.999,99km"
             />
 
     </LinearLayout>
 
-    <FrameLayout android:layout_width="wrap_content"
-                 android:layout_height="match_parent"
-                 android:layout_marginLeft="8dp">
 
-        <LinearLayout
-                android:id="@+id/stationlist_full"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                >
-            <TextView
-                    android:id="@+id/stationlist_num_full"
-                    android:layout_width="match_parent"
-                    android:layout_height="28dp"
-                    android:gravity="center"
-                    style="@style/StationList.Numbers.Full"
-                    tools:text="99"
-                    />
-
-            <TextView
-                    android:id="@+id/stationlist_label_full"
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:gravity="center"
-                    style="@style/StationList.Labels"
-                    android:text="@string/bikes"
-                    />
-        </LinearLayout>
-    </FrameLayout>
-
-    <FrameLayout android:layout_width="wrap_content"
-                 android:layout_height="match_parent"
-                 android:layout_marginLeft="8dp">
-
-        <LinearLayout
-            android:id="@+id/stationlist_free"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            >
-            <TextView
-                android:id="@+id/stationlist_num_free"
-                android:layout_width="match_parent"
-                android:layout_height="28dp"
-                android:gravity="center"
-                style="@style/StationList.Numbers.Free"
-                tools:text="99"
-                />
-
-            <TextView
-                android:id="@+id/stationlist_label_free"
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:gravity="center"
-                style="@style/StationList.Labels"
-                android:text="@string/free"
-                />
-        </LinearLayout>
-
-    </FrameLayout>
     
-</LinearLayout>
+</RelativeLayout>

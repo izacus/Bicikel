@@ -32,6 +32,7 @@ import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.events.FocusOnStationEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
+import si.virag.bicikelj.util.DividerItemDecoration;
 import si.virag.bicikelj.util.GPSUtil;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
 
@@ -56,7 +57,7 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new StationListAdapter(new ArrayList<Station>());
+		adapter = new StationListAdapter(getActivity(), new ArrayList<Station>());
 	}
 
 	@Override
@@ -101,6 +102,7 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		listView.setAdapter(adapter);
 		listView.setHasFixedSize(true);
 		listView.setLayoutManager(new LinearLayoutManager(getActivity()));
+		listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
