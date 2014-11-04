@@ -13,6 +13,7 @@ import android.widget.TextView;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.ui.CircleLetterView;
 import si.virag.bicikelj.util.DisplayUtils;
 
 import java.util.Collections;
@@ -28,12 +29,14 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 		public final TextView bikes;
 		public final TextView stationName;
 		public final TextView distance;
+        public final CircleLetterView circle;
 
-		public StationViewHolder(View view) {
+        public StationViewHolder(View view) {
 			super(view);
 
 			bikes = (TextView)view.findViewById(R.id.stationlist_bikes);
 			free = (TextView)view.findViewById(R.id.stationlist_free);
+            circle = (CircleLetterView)view.findViewById(R.id.stationlist_circle);
 
 			stationName = (TextView) view.findViewById(R.id.stationlist_name);
 			distance = (TextView) view.findViewById(R.id.stationlist_distance);
@@ -122,8 +125,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 		Station station = items.get(position);
 		viewHolder.bikes.setText(getFormattedNumber(station.getAvailableBikes()));
 		viewHolder.free.setText(getFormattedNumber(station.getFreeSpaces()));
-
 		viewHolder.stationName.setText(station.getName());
+        viewHolder.circle.setText(station.getAbbreviation());
+        viewHolder.circle.setColor(DisplayUtils.getColorFromString(station.getName()));
 
 		if (station.getDistance() != null)
 		{

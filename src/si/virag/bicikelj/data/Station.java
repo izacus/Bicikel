@@ -23,8 +23,9 @@ public class Station
 	
 	// Current distance
 	private Float distance = null;
+    private String abbreviation;
 
-	public Station(int id,
+    public Station(int id,
                    String name,
                    String address,
                    String fullAddress,
@@ -37,7 +38,8 @@ public class Station
 		this.name = DisplayUtils.getProcessedStationName(name);
 		this.address = address;
 		this.fullAddress = fullAddress;
-		
+		this.abbreviation = DisplayUtils.extractLetters(this.name).toUpperCase();
+
 		location = new Location("");
 		location.setLatitude(latitude);
 		location.setLongitude(longtitude);
@@ -143,4 +145,8 @@ public class Station
 	{
 		return location.hashCode() + name.hashCode();
 	}
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
 }
