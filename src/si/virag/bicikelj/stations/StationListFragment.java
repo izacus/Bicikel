@@ -239,19 +239,11 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (this.data == null)
 		{
-			if (error && item.getItemId() == R.id.menu_refresh) {
-				refresh();
-				return true;
-			}
-			
 			return true;
 		}
 		
 		switch (item.getItemId())
 		{
-			case R.id.menu_refresh:
-				refresh();
-				break;
 			case R.id.menu_map:
 				showFullMap();
 				break;

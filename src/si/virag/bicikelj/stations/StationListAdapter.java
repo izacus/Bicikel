@@ -113,9 +113,6 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	@Override
 	public StationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_item, parent, false);
-		((TextView)view.findViewById(R.id.stationlist_bikes_icon)).setText("\uD83D\uDEB2");
-		((TextView)view.findViewById(R.id.stationlist_free_icon)).setText("\uD83D\uDEA9");
-
 		StationViewHolder viewHolder = new StationViewHolder(view);
 		return viewHolder;
 	}

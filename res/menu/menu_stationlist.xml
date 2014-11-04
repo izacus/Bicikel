@@ -12,9 +12,5 @@
           android:icon="@drawable/ic_action_compass"
           android:title="@string/menu_map"
           app:showAsAction="always" />
-    
-    <item android:id="@+id/menu_refresh"
-          android:icon="@drawable/ic_action_reload"
-          android:title="@string/menu_refresh"
-          app:showAsAction="ifRoom" />
+
 </menu>
