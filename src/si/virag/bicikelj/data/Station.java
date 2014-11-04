@@ -3,6 +3,8 @@ package si.virag.bicikelj.data;
 import android.location.Location;
 import android.util.Log;
 
+import si.virag.bicikelj.util.DisplayUtils;
+
 public class Station
 {
 	private final int id;
@@ -32,7 +34,7 @@ public class Station
 	{
 		super();
 		this.id = id;
-		this.name = name;
+		this.name = DisplayUtils.getProcessedStationName(name);
 		this.address = address;
 		this.fullAddress = fullAddress;
 		
@@ -72,7 +74,7 @@ public class Station
 
 	public String getName()
 	{
-		return name.replaceAll("-", "\n");
+		return name;
 	}
 
 	public String getAddress()

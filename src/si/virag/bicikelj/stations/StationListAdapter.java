@@ -123,7 +123,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 		viewHolder.bikes.setText(getFormattedNumber(station.getAvailableBikes()));
 		viewHolder.free.setText(getFormattedNumber(station.getFreeSpaces()));
 
-		viewHolder.stationName.setText(station.getName().replaceAll("Ø", "\n"));
+		viewHolder.stationName.setText(station.getName());
 
 		if (station.getDistance() != null)
 		{
@@ -150,6 +150,6 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	}
 
 	private static String getFormattedNumber(int number) {
-		return number == 0 ? " Ø" : (number < 10 ? " " + String.valueOf(number) : String.valueOf(number));
+		return number == 0 ? " Ø" : String.valueOf(number);
 	}
 }
