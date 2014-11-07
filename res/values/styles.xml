@@ -34,4 +34,8 @@
     	<item name="android:inAnimation">@android:anim/slide_in_left</item>
     	<item name="android:outAnimation">@android:anim/slide_out_right</item>    
     </style>
+
+    <style name="StationList.Header" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">#424242</item>
+    </style>
 </resources>

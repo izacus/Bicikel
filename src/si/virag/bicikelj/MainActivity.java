@@ -1,7 +1,11 @@
 package si.virag.bicikelj;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import si.virag.bicikelj.station_map.StationMapFragment;
@@ -17,8 +21,17 @@ public class MainActivity extends ActionBarActivity
     public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.logo);
+
         // Fragments use actionbar to show loading status
         setContentView(R.layout.main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+            setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon, getResources().getColor(R.color.primary)));
+        }
 
         isTablet = (findViewById(R.id.map_container) != null);
         if (isTablet)

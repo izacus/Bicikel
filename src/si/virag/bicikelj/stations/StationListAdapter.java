@@ -10,9 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import de.greenrobot.event.EventBus;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
+import si.virag.bicikelj.events.ListItemSelectedEvent;
 import si.virag.bicikelj.ui.CircleLetterView;
 import si.virag.bicikelj.util.DisplayUtils;
 
@@ -23,8 +26,7 @@ import java.util.List;
 public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationViewHolder>
 {
 
-	public static class StationViewHolder extends RecyclerView.ViewHolder
-	{
+	public class StationViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 		public final TextView free;
 		public final TextView bikes;
 		public final TextView stationName;
@@ -40,15 +42,20 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 
 			stationName = (TextView) view.findViewById(R.id.stationlist_name);
 			distance = (TextView) view.findViewById(R.id.stationlist_distance);
+            view.findViewById(R.id.stationlist_item).setOnClickListener(this);
 		}
-	}
 
-	private final Context ctx;
+        @Override
+        public void onClick(View v) {
+            Station s = items.get(getPosition());
+            EventBus.getDefault().post(new ListItemSelectedEvent(s.getId()));
+        }
+    }
+
 	private List<Station> items;
 	
-	public StationListAdapter(Context ctx, List<Station> items)
+	public StationListAdapter(List<Station> items)
 	{
-		this.ctx = ctx;
 		this.items = items;
 		setHasStableIds(true);
 	}

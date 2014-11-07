@@ -30,6 +30,7 @@ import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.events.FocusOnStationEvent;
+import si.virag.bicikelj.events.ListItemSelectedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.util.DividerItemDecoration;
@@ -51,13 +52,13 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 	
 	private boolean error = false;
     private LocationClient locationClient = null;
-
     private boolean isTablet;
 
-	@Override
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new StationListAdapter(getActivity(), new ArrayList<Station>());
+		adapter = new StationListAdapter(new ArrayList<Station>());
 	}
 
 	@Override
@@ -67,7 +68,6 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		setHasOptionsMenu(true);
 
         isTablet = ((MainActivity)getActivity()).isTabletLayout();
-
 		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
 
         if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()) == ConnectionResult.SUCCESS)
@@ -80,6 +80,7 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
     public void onStart()
     {
         super.onStart();
+        EventBus.getDefault().register(this);
         if (locationClient != null)
             locationClient.connect();
     }
@@ -88,6 +89,7 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
     public void onStop()
     {
         super.onStop();
+        EventBus.getDefault().unregister(this);
         if (locationClient != null)
             locationClient.disconnect();
     }
@@ -329,5 +331,22 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
     public void onRefresh()
     {
         refresh();
+    }
+
+    public void onEventMainThread(ListItemSelectedEvent e) {
+        if (!GPSUtil.checkPlayServices(getActivity()))
+            return;
+
+        if (isTablet)
+        {
+            EventBus.getDefault().post(new FocusOnStationEvent(e.stationId));
+        }
+        else
+        {
+            Intent intent = new Intent(getActivity(), StationMapActivity.class);
+            intent.putExtra("focusOnStation", e.stationId);
+            startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        }
     }
 }
