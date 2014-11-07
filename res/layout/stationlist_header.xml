@@ -4,11 +4,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#BDBDBD">
+    android:padding="8dp"
+    android:elevation="0dp"
+    android:background="#EFEFEF"
+    >
 
     <TextView
+        android:id="@+id/stationlist_header_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         tools:text="ListHeader"
         style="@style/StationList.Header"
         />
