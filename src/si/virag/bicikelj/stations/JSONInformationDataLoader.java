@@ -29,14 +29,11 @@ public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 	@Override
 	public StationInfo loadInBackground()
 	{
-		Log.i(this.toString(), "Loading station data from server...");
-		
 		String response;
 		
 		try
 		{
 			response = HTTPHelper.httpGet(STATION_LIST_URL);
-			Log.d(this.toString(), "Data received.");
 		}
 		catch (IOException e)
 		{
@@ -81,8 +78,7 @@ public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 				{
 					info.addStation(station);
 				}
-				
-				Log.d(this.toString(), "Station " + station.getName() + " added.");
+
 			}
 			
 			this.cachedResults = info;

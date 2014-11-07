@@ -10,4 +10,56 @@
     <string name="menu_map">Vse postaje</string>
     <string name="menu_search">Iskanje</string>
     <string name="hint_search">Iskanje</string>
+
+    <string name="data_is">Podatki so stari</string>
+
+
+    <plurals name="fuzzydatetime__seconds_ago">
+        <item quantity="one">%d sekundo</item>
+        <item quantity="two">%d sekundi</item>
+        <item quantity="few">%d sekunde</item>
+        <item quantity="other"> %d sekund</item>
+    </plurals>
+
+    <plurals name="fuzzydatetime__minutes_ago">
+        <item quantity="one">%d minuto</item>
+        <item quantity="two">%d minuti</item>
+        <item quantity="few">%d minute</item>
+        <item quantity="other">%d minut</item>
+    </plurals>
+
+    <plurals name="fuzzydatetime__hours_ago">
+        <item quantity="one">%d uro</item>
+        <item quantity="two">%d uri</item>
+        <item quantity="few">%d ure</item>
+        <item quantity="other">%d ur</item>
+    </plurals>
+
+    <plurals name="fuzzydatetime__days_ago">
+        <item quantity="one">%d dan</item>
+        <item quantity="two">%d dni</item>
+        <item quantity="few">%d dni</item>
+        <item quantity="other">%d dni</item>
+    </plurals>
+
+    <plurals name="fuzzydatetime__weeks_ago">
+        <item quantity="one">%d teden</item>
+        <item quantity="two">%d tedna</item>
+        <item quantity="few">%d tedne</item>
+        <item quantity="other">%d tednov</item>
+    </plurals>
+
+    <plurals name="fuzzydatetime__months_ago">
+        <item quantity="one">%d mesec</item>
+        <item quantity="two">%d mesca</item>
+        <item quantity="few">%d mesece</item>
+        <item quantity="other">%d mesecev</item>
+    </plurals>
+
+    <plurals name="fuzzydatetime__years_ago">
+        <item quantity="one">%d leto</item>
+        <item quantity="two">%d leti</item>
+        <item quantity="few">%d leta</item>
+        <item quantity="other">%d leti</item>
+    </plurals>
 </resources>

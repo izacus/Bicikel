@@ -25,6 +25,8 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import de.greenrobot.event.EventBus;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
@@ -34,10 +36,12 @@ import si.virag.bicikelj.events.ListItemSelectedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.util.DividerItemDecoration;
+import si.virag.bicikelj.util.FuzzyDateTimeFormatter;
 import si.virag.bicikelj.util.GPSUtil;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class StationListFragment extends Fragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks, SwipeRefreshLayout.OnRefreshListener
 {
@@ -144,6 +148,8 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		}
 
         EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
+        Style style = new Style.Builder(Style.INFO).setBackgroundColorValue(getResources().getColor(R.color.primary_dark)).build();
+        Crouton.makeText(getActivity(), getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(getActivity(), data.getTimeUpdated()), style).show();
 	}
 
 	@Override
@@ -262,33 +268,6 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		this.data = null;
 		getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
 	}
-	
-/*	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) 
-	{
-		super.onListItemClick(l, v, position, id);
-
-
-
-        if (!GPSUtil.checkPlayServices(getActivity()))
-            return;
-
-
-        Station s = adapter.getItem(position);
-
-        if (isTablet)
-        {
-            EventBus.getDefault().post(new FocusOnStationEvent(s.getId()));
-        }
-        else
-        {
-            Intent intent = new Intent(getActivity(), StationMapActivity.class);
-            intent.putExtra("focusOnStation", s.getId());
-            startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        }
-
-	} */
 	
 	private void showError() {
 		this.error = true;
