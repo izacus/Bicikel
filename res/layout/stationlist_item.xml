@@ -12,8 +12,9 @@
     android:minHeight="72dp"
     android:background="?selectableItemBackground"
     android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:descendantFocusability="blocksDescendants"
     tools:context=".MainActivity">
 
     <FrameLayout

@@ -23,7 +23,7 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.logo);
+        getSupportActionBar().setLogo(R.drawable.logo_padded);
 
         // Fragments use actionbar to show loading status
         setContentView(R.layout.main);

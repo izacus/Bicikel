@@ -36,13 +36,15 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         public StationViewHolder(View view) {
 			super(view);
 
-			bikes = (TextView)view.findViewById(R.id.stationlist_bikes);
+            View topView = view.findViewById(R.id.stationlist_item);
+            topView.setOnClickListener(this);
+
+            bikes = (TextView)view.findViewById(R.id.stationlist_bikes);
 			free = (TextView)view.findViewById(R.id.stationlist_free);
             circle = (CircleLetterView)view.findViewById(R.id.stationlist_circle);
 
 			stationName = (TextView) view.findViewById(R.id.stationlist_name);
 			distance = (TextView) view.findViewById(R.id.stationlist_distance);
-            view.findViewById(R.id.stationlist_item).setOnClickListener(this);
 		}
 
         @Override
