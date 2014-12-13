@@ -161,7 +161,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     }
 
     private static String getFormattedNumber(int number) {
-		return number == 0 ? " Ø" : String.valueOf(number);
+		return number == 0 ? "Ø" : String.valueOf(number);
 	}
 
 
