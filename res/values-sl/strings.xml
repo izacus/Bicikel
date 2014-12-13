@@ -12,6 +12,11 @@
     <string name="hint_search">Iskanje</string>
 
     <string name="data_is">Podatki so stari</string>
+    <string name="stationlist_header_favorites">Priljubljene postaje</string>
+    <string name="stationlist_hint_favorites">Postajo dodate na seznam z dolgim pritiskom.</string>
+    <string name="stationlist_header_other_stations">Ostale postaje</string>
+    <string name="stationlist_menu_add_favorites">Odstrani s priljubljenih</string>
+    <string name="stationlist_menu_remove_favorites">Dodaj med priljubljene</string>
 
 
     <plurals name="fuzzydatetime__seconds_ago">

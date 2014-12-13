@@ -3,6 +3,7 @@
     <style name="Theme.Bicikel" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/secondary</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
@@ -40,6 +41,11 @@
 
     <style name="StationList.Header" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#DD333333</item>
+    </style>
+
+    <style name="StationList.Text" parent="@android:style/TextAppearance.Small">
+        <item name="android:textSize">12sp</item>
         <item name="android:textColor">#DD333333</item>
     </style>
 </resources>

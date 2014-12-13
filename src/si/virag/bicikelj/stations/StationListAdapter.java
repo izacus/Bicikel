@@ -1,11 +1,8 @@
 package si.virag.bicikelj.stations;
 
-import android.graphics.Color;
+import android.content.Context;
 import android.location.Location;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -29,13 +26,17 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_STATION = 1;
+    private static final int TYPE_TEXT = 2;
+
     private final FavoritesManager favManager;
+    private final Context ctx;
 
     private List<Station> stations;
     private List<StationListItem> items;
 	
-	public StationListAdapter(FavoritesManager fm, List<Station> items)
+	public StationListAdapter(Context ctx, FavoritesManager fm, List<Station> items)
 	{
+        this.ctx = ctx;
 		setHasStableIds(true);
         setItems(items);
         this.favManager = fm;
@@ -44,12 +45,20 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	private void setItems(List<Station> items) {
         this.stations = items;
         this.items = new ArrayList<>();
-        this.items.add(new StationListHeader("Priljubljene postaje"));
+        this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_favorites)));
+        int favoriteCount = 0;
         for (Station s : items) {
-            if (favManager.isFavorite(s.getId()))
+            if (favManager.isFavorite(s.getId())) {
                 this.items.add(new StationListStation(s));
+                favoriteCount ++;
+            }
         }
-        this.items.add(new StationListHeader("Ostale postaje"));
+
+        if (favoriteCount == 0) {
+            this.items.add(new StationListText(ctx.getString(R.string.stationlist_hint_favorites)));
+        }
+
+        this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_other_stations)));
         for (Station s : items) {
             if (!favManager.isFavorite(s.getId()))
                 this.items.add(new StationListStation(s));
@@ -123,6 +132,10 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_header, parent, false);
             StationListHeaderHolder viewHolder = new StationListHeaderHolder(view);
             return viewHolder;
+        } else if (viewType == TYPE_TEXT) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_text, parent, false);
+            StationListTextHolder viewHolder = new StationListTextHolder(view);
+            return viewHolder;
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_item, parent, false);
             StationListStationHolder viewHolder = new StationListStationHolder(view);
@@ -134,8 +147,11 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	public void onBindViewHolder(StationListHolder holder, int position) {
         StationListItem item = items.get(position);
         if (item instanceof StationListHeader) {
-            StationListHeaderHolder viewHolder = (StationListHeaderHolder)holder;
+            StationListHeaderHolder viewHolder = (StationListHeaderHolder) holder;
             viewHolder.text.setText(((StationListHeader) item).text);
+        } else if (item instanceof StationListText) {
+            StationListTextHolder viewHolder = (StationListTextHolder) holder;
+            viewHolder.text.setText(((StationListText) item).text);
         } else {
             StationListStationHolder viewHolder = (StationListStationHolder)holder;
             Station station = ((StationListStation)item).station;
@@ -172,6 +188,8 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     public int getItemViewType(int position) {
         if (items.get(position) instanceof StationListHeader) {
             return TYPE_HEADER;
+        } else if (items.get(position) instanceof StationListText) {
+            return TYPE_TEXT;
         }
 
         return TYPE_STATION;
@@ -209,6 +227,19 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         @Override
         public long getId() {
             return text.hashCode();
+        }
+    }
+
+    private static class StationListText implements StationListItem {
+        public final String text;
+
+        private StationListText(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public long getId() {
+            return "t".hashCode() + text.hashCode();
         }
     }
 
@@ -252,7 +283,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             final StationListItem s = items.get(getPosition());
             if (s instanceof StationListStation) {
-                String text = favManager.isFavorite(s.getId()) ? "Odstrani s priljubljenih" : "Dodaj med priljubljene";
+                String text = favManager.isFavorite(s.getId()) ? ctx.getString(R.string.stationlist_menu_add_favorites) : ctx.getString(R.string.stationlist_menu_remove_favorites);
                 MenuItem item = menu.add(text);
 
                 item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -276,6 +307,16 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         public StationListHeaderHolder(View itemView) {
             super(itemView);
             text = (TextView) itemView.findViewById(R.id.stationlist_header_text);
+        }
+    }
+
+    public class StationListTextHolder extends StationListHolder {
+        public final TextView text;
+
+
+        public StationListTextHolder(View itemView) {
+            super(itemView);
+            text = (TextView) itemView.findViewById(R.id.stationlist_text);
         }
     }
 }

@@ -65,7 +65,7 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		super.onCreate(savedInstanceState);
 
         fm = new FavoritesManager(getActivity());
-		adapter = new StationListAdapter(fm, new ArrayList<Station>());
+		adapter = new StationListAdapter(getActivity(), fm, new ArrayList<Station>());
 	}
 
 	@Override

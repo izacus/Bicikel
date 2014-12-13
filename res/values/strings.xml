@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Bicikel</string>
-    <string name="app_version">1.4</string>
+    <string name="app_name" translatable="false">Bicikel</string>
+    <string name="app_version" translatable="false">1.4</string>
     <string name="stationlist_loading">Loading&#8230;</string>
     <string name="stationlist_load_error">Current station status could not be loaded.\n\n:(\n\nTry again in a moment.</string>
     <string name="bikes">bikes</string>
@@ -16,6 +16,11 @@
     <string name="hint_search">Search</string>
 
     <string name="data_is">Data is</string>
+    <string name="stationlist_header_favorites">Favorites</string>
+    <string name="stationlist_hint_favorites">You can add station to favorites by long tapping.</string>
+    <string name="stationlist_header_other_stations">Other</string>
+    <string name="stationlist_menu_add_favorites">Remove from favorites</string>
+    <string name="stationlist_menu_remove_favorites">Add to favorites</string>
 
     <plurals name="fuzzydatetime__seconds_ago">
         <item quantity="one">one second old</item>
