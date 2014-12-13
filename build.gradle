@@ -54,9 +54,4 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:6.5.+'
     compile 'com.google.android.gms:play-services-location:6.5.+'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-
-    compile('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
-        // exclusion is not neccessary, but generally a good idea.
-        exclude group: 'com.google.android', module: 'support-v4'
-    }
 }

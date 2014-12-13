@@ -2,6 +2,7 @@ package si.virag.bicikelj.util;
 
 import android.app.Activity;
 import android.app.Dialog;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 

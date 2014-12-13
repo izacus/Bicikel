@@ -1,6 +1,5 @@
 package si.virag.bicikelj.util;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 

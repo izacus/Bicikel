@@ -26,15 +26,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.greenrobot.event.EventBus;
 import si.virag.bicikelj.MainActivity;
@@ -44,10 +52,6 @@ import si.virag.bicikelj.events.FocusOnStationEvent;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.util.DisplayUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener
 {

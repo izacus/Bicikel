@@ -3,9 +3,6 @@ package si.virag.bicikelj.util;
 import android.content.Context;
 import android.content.res.Resources;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import si.virag.bicikelj.R;
 
 public class FuzzyDateTimeFormatter {

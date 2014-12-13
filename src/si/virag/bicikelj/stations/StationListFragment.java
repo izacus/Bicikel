@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
@@ -15,15 +14,21 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
 import de.greenrobot.event.EventBus;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
@@ -38,9 +43,6 @@ import si.virag.bicikelj.util.FavoritesManager;
 import si.virag.bicikelj.util.FuzzyDateTimeFormatter;
 import si.virag.bicikelj.util.GPSUtil;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 public class StationListFragment extends Fragment implements LoaderCallbacks<StationInfo>, SwipeRefreshLayout.OnRefreshListener
 {
@@ -146,11 +148,8 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		}
 
         EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
-        Style style = new Style.Builder(Style.INFO)
-                               .setBackgroundColorValue(getResources()
-                               .getColor(R.color.primary_dark))
-                               .build();
-        Crouton.makeText(getActivity(), getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(getActivity(), data.getTimeUpdated()), style).show();
+
+        Toast.makeText(getActivity(), getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(getActivity(), data.getTimeUpdated()), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
