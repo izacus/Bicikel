@@ -8,6 +8,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -22,11 +23,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import de.greenrobot.event.EventBus;
@@ -34,6 +34,7 @@ import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.events.FocusOnStationEvent;
+import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.util.DisplayUtils;
 
@@ -41,13 +42,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationMapFragment extends SupportMapFragment implements GooglePlayServicesClient.ConnectionCallbacks, GoogleMap.OnInfoWindowClickListener
+public class StationMapFragment extends SupportMapFragment implements GoogleMap.OnInfoWindowClickListener
 {
     private static final double MAP_CENTER_LAT = 46.051367;
     private static final double MAP_CENTER_LNG = 14.506542;
 
+    @Nullable
     private GoogleMap map;
-    private LocationClient locationClient;
+
+    @Nullable
+    private Location location;
 
     private ArrayList<Station> stations;
     private Map<Marker, Station> markerMap;
@@ -67,9 +71,8 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
         else if (savedInstanceState != null && savedInstanceState.containsKey("focusOnStationId"))
             this.focusStationId = savedInstanceState.getInt("focusOnStationId");
 
-        this.stations = new ArrayList<Station>();
-        locationClient = new LocationClient(getActivity(), this, null);
-        this.markerMap = new HashMap<Marker, Station>();
+        this.stations = new ArrayList<>();
+        this.markerMap = new HashMap<>();
     }
 
     @Override
@@ -92,15 +95,14 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
     {
         Uri mapsUri;
 
-        Location myLocation = locationClient.getLastLocation();
-        if (myLocation == null)
+        if (location == null)
         {
             mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&daddr=" + selectedStation.getLocation().getLatitude() + "," + selectedStation.getLocation().getLongitude());
         }
         else
         {
-            mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&saddr=" + myLocation.getLatitude() + ", " +
-                    myLocation.getLongitude() + "&daddr=" + selectedStation.getLocation().getLatitude() + "," +
+            mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&saddr=" + location.getLatitude() + ", " +
+                    location.getLongitude() + "&daddr=" + selectedStation.getLocation().getLatitude() + "," +
                     selectedStation.getLocation().getLongitude());
         }
 
@@ -129,16 +131,21 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
     public void onResume()
     {
         super.onResume();
-        if (map == null)
-        {
-            map = getMap();
-        }
+        getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+                setupMap();
+            }
+        });
 
         EventBus.getDefault().registerSticky(this);
     }
 
     private void setupMap()
     {
+        if (map == null) return;
+
         map.clear();
         map.getUiSettings().setCompassEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
@@ -213,37 +220,6 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
     }
 
     @Override
-    public void onStart()
-    {
-        super.onStart();
-        locationClient.connect();
-    }
-
-    @Override
-    public void onStop()
-    {
-        super.onStop();
-        locationClient.disconnect();
-    }
-
-    @Override
-    public void onConnected(Bundle bundle)
-    {
-        Location loc = locationClient.getLastLocation();
-        if (loc == null || stations == null)
-            return;
-
-        for (Station s : stations)
-            s.setDistance(loc);
-    }
-
-    @Override
-    public void onDisconnected()
-    {
-
-    }
-
-    @Override
     public void onInfoWindowClick(Marker marker)
     {
         Station s = markerMap.get(marker);
@@ -258,6 +234,13 @@ public class StationMapFragment extends SupportMapFragment implements GooglePlay
     {
         super.onSaveInstanceState(outState);
         outState.putInt("focusOnStationId", focusStationId);
+    }
+
+    public void onEventMainThread(LocationUpdatedEvent data) {
+        this.location = data.location;
+        if (location == null || stations == null) return;
+        for (Station s : stations)
+            s.setDistance(location);
     }
 
     public void onEventMainThread(StationDataUpdatedEvent data)

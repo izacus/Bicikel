@@ -44,6 +44,6 @@ public class StationMapActivity extends ActionBarActivity
     public void onBackPressed()
     {
         super.onBackPressed();
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        overridePendingTransition(0, R.anim.slide_out_right);
     }
 }

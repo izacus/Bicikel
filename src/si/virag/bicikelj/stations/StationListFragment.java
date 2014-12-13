@@ -2,6 +2,7 @@ package si.virag.bicikelj.stations;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
@@ -20,10 +21,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
 import de.greenrobot.event.EventBus;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -33,6 +30,7 @@ import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.events.FocusOnStationEvent;
 import si.virag.bicikelj.events.ListItemSelectedEvent;
+import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.util.DividerItemDecoration;
@@ -43,7 +41,7 @@ import si.virag.bicikelj.util.ShowKeyboardRunnable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class StationListFragment extends Fragment implements LoaderCallbacks<StationInfo>, GooglePlayServicesClient.ConnectionCallbacks, SwipeRefreshLayout.OnRefreshListener
+public class StationListFragment extends Fragment implements LoaderCallbacks<StationInfo>, SwipeRefreshLayout.OnRefreshListener
 {
 	private static final int STATION_LOADER_ID = 0;
 
@@ -55,8 +53,8 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 	private StationInfo data;
 	
 	private boolean error = false;
-    private LocationClient locationClient = null;
     private boolean isTablet;
+    private Location location;
 
 
     @Override
@@ -73,20 +71,13 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 
         isTablet = ((MainActivity)getActivity()).isTabletLayout();
 		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
-
-        if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()) == ConnectionResult.SUCCESS)
-        {
-            locationClient = new LocationClient(getActivity(), this, null);
-        }
 	}
 
     @Override
     public void onStart()
     {
         super.onStart();
-        EventBus.getDefault().register(this);
-        if (locationClient != null)
-            locationClient.connect();
+        EventBus.getDefault().registerSticky(this);
     }
 
     @Override
@@ -94,8 +85,6 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
     {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        if (locationClient != null)
-            locationClient.disconnect();
     }
 
     @Override
@@ -136,10 +125,14 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		this.data = data;
 		// Update data in-place when already available
 		adapter.updateData(data);
-		getActivity().findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
 
-        if (locationClient != null && locationClient.isConnected())
-            adapter.updateLocation(locationClient.getLastLocation());
+        MainActivity activity = (MainActivity) getActivity();
+        if (activity != null) {
+            activity.findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
+        }
+
+        if (location != null)
+            adapter.updateLocation(location);
 
         if (data == null)
         {
@@ -148,7 +141,10 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		}
 
         EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
-        Style style = new Style.Builder(Style.INFO).setBackgroundColorValue(getResources().getColor(R.color.primary_dark)).build();
+        Style style = new Style.Builder(Style.INFO)
+                               .setBackgroundColorValue(getResources()
+                               .getColor(R.color.primary_dark))
+                               .build();
         Crouton.makeText(getActivity(), getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(getActivity(), data.getTimeUpdated()), style).show();
 	}
 
@@ -182,8 +178,8 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 			@Override
 			public boolean onMenuItemActionCollapse(MenuItem item) {
 				adapter.updateData(data);
-                if (locationClient != null)
-                    adapter.updateLocation(locationClient.getLastLocation());
+                if (location != null)
+                    adapter.updateLocation(location);
 
 				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
@@ -239,8 +235,8 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 			adapter.updateData(data);
 		}
 
-        if (locationClient != null && locationClient.isConnected())
-            adapter.updateLocation(locationClient.getLastLocation());
+        if (location != null)
+           adapter.updateLocation(location);
 	}
 	
 	@Override
@@ -290,21 +286,9 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		
 		Intent intent = new Intent(getActivity(), StationMapActivity.class);
 		startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        getActivity().overridePendingTransition(R.anim.slide_in_right, 0);
     }
 
-    @Override
-    public void onConnected(Bundle bundle)
-    {
-        if (adapter != null)
-            adapter.updateLocation(locationClient.getLastLocation());
-    }
-
-    @Override
-    public void onDisconnected()
-    {
-
-    }
 
     @Override
     public void onRefresh()
@@ -327,5 +311,10 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
+    }
+
+    public void onEventMainThread(LocationUpdatedEvent event) {
+        this.location = event.location;
+        if (adapter != null) adapter.updateLocation(location);
     }
 }
