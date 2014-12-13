@@ -16,7 +16,8 @@ public class Station
 	
 	// Is it open?
 	private final boolean open;
-	// Current status
+
+    // Current status
 	private int totalSpaces;
 	private int freeSpaces;
 	private int availableBikes;
@@ -49,7 +50,7 @@ public class Station
 	
 	public void setDistance(Location currentLocation)
 	{
-		if (location == null || currentLocation == null)
+		if (currentLocation == null)
 		{
 			distance = null;
 			return;
@@ -123,7 +124,7 @@ public class Station
 	{
 		this.availableBikes = availableBikes;
 	}
-	
+
 	@Override
 	public String toString()
 	{

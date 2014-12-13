@@ -1,8 +1,14 @@
 package si.virag.bicikelj.stations;
 
+import android.graphics.Color;
 import android.location.Location;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -17,28 +23,39 @@ import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.events.ListItemSelectedEvent;
 import si.virag.bicikelj.ui.CircleLetterView;
 import si.virag.bicikelj.util.DisplayUtils;
+import si.virag.bicikelj.util.FavoritesManager;
 
 public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationListHolder>
 {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_STATION = 1;
+    private final FavoritesManager favManager;
 
-	private List<StationListItem> items;
+    private List<Station> stations;
+    private List<StationListItem> items;
 	
-	public StationListAdapter(List<Station> items)
+	public StationListAdapter(FavoritesManager fm, List<Station> items)
 	{
 		setHasStableIds(true);
         setItems(items);
+        this.favManager = fm;
 	}
 
 	private void setItems(List<Station> items) {
+        this.stations = items;
         this.items = new ArrayList<>();
-
         this.items.add(new StationListHeader("Priljubljene postaje"));
+        for (Station s : items) {
+            if (favManager.isFavorite(s.getId()))
+                this.items.add(new StationListStation(s));
+        }
         this.items.add(new StationListHeader("Ostale postaje"));
         for (Station s : items) {
-            this.items.add(new StationListStation(s));
+            if (!favManager.isFavorite(s.getId()))
+                this.items.add(new StationListStation(s));
         }
+
+        notifyDataSetChanged();
     }
 
 	public void updateData(StationInfo info)
@@ -201,7 +218,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         }
     }
 
-    public class StationListStationHolder extends StationListHolder implements View.OnClickListener {
+    public class StationListStationHolder extends StationListHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
         public final TextView free;
         public final TextView bikes;
         public final TextView stationName;
@@ -213,6 +230,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 
             View topView = view.findViewById(R.id.stationlist_item);
             topView.setOnClickListener(this);
+            topView.setOnCreateContextMenuListener(this);
 
             bikes = (TextView)view.findViewById(R.id.stationlist_bikes);
             free = (TextView)view.findViewById(R.id.stationlist_free);
@@ -227,6 +245,27 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
             StationListItem s = items.get(getPosition());
             if (s instanceof StationListStation) {
                 EventBus.getDefault().post(new ListItemSelectedEvent(((StationListStation) s).station.getId()));
+            }
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            final StationListItem s = items.get(getPosition());
+            if (s instanceof StationListStation) {
+                String text = favManager.isFavorite(s.getId()) ? "Odstrani s priljubljenih" : "Dodaj med priljubljene";
+                MenuItem item = menu.add(text);
+
+                item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (favManager.isFavorite(s.getId()))
+                            favManager.removeFavorite(s.getId());
+                        else
+                            favManager.setFavorite(s.getId());
+                        setItems(stations);
+                        return true;
+                    }
+                });
             }
         }
     }

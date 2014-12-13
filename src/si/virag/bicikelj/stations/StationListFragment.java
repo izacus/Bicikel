@@ -34,6 +34,7 @@ import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.util.DividerItemDecoration;
+import si.virag.bicikelj.util.FavoritesManager;
 import si.virag.bicikelj.util.FuzzyDateTimeFormatter;
 import si.virag.bicikelj.util.GPSUtil;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
@@ -56,11 +57,15 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
     private boolean isTablet;
     private Location location;
 
+    private FavoritesManager fm;
+
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new StationListAdapter(new ArrayList<Station>());
+
+        fm = new FavoritesManager(getActivity());
+		adapter = new StationListAdapter(fm, new ArrayList<Station>());
 	}
 
 	@Override
