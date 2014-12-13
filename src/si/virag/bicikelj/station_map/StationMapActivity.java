@@ -4,11 +4,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.readystatesoftware.systembartint.SystemBarTintManager;
+
 import si.virag.bicikelj.R;
 
 public class StationMapActivity extends ActionBarActivity
 {
 
+    private SystemBarTintManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -17,6 +20,10 @@ public class StationMapActivity extends ActionBarActivity
         setContentView(R.layout.activity_map);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        manager = new SystemBarTintManager(this);
+        manager.setStatusBarTintEnabled(true);
+        manager.setStatusBarTintResource(R.color.primary);
 
         if (savedInstanceState != null)
             return;
@@ -45,5 +52,9 @@ public class StationMapActivity extends ActionBarActivity
     {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.slide_out_right);
+    }
+
+    public SystemBarTintManager getTintManager() {
+        return manager;
     }
 }

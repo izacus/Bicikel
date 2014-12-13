@@ -18,6 +18,7 @@ import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import de.greenrobot.event.EventBus;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
@@ -47,6 +48,10 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
             Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
             setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon, getResources().getColor(R.color.primary)));
         }
+
+        SystemBarTintManager manager = new SystemBarTintManager(this);
+        manager.setStatusBarTintEnabled(true);
+        manager.setStatusBarTintResource(R.color.primary);
 
         apiClient = new GoogleApiClient.Builder(this)
                                        .addApi(LocationServices.API)

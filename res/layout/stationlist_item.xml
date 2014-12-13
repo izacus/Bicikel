@@ -90,7 +90,7 @@
     <View
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="#69000000"/>
+        android:background="#33000000"/>
 
     <LinearLayout
         android:layout_width="48dp"

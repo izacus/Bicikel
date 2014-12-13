@@ -8,7 +8,9 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -19,6 +21,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +29,13 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
+
 import de.greenrobot.event.EventBus;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
@@ -42,7 +49,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationMapFragment extends SupportMapFragment implements GoogleMap.OnInfoWindowClickListener
+public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener
 {
     private static final double MAP_CENTER_LAT = 46.051367;
     private static final double MAP_CENTER_LNG = 14.506542;
@@ -59,6 +66,9 @@ public class StationMapFragment extends SupportMapFragment implements GoogleMap.
 
     private int focusStationId = -1;
 
+    @NonNull
+    private MapView mapView;
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
@@ -73,6 +83,14 @@ public class StationMapFragment extends SupportMapFragment implements GoogleMap.
 
         this.stations = new ArrayList<>();
         this.markerMap = new HashMap<>();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.map_fragment, container, false);
+        mapView = (MapView)view.findViewById(R.id.map_map);
+        mapView.onCreate(savedInstanceState);
+        return view;
     }
 
     @Override
@@ -125,15 +143,25 @@ public class StationMapFragment extends SupportMapFragment implements GoogleMap.
     {
         super.onPause();
         EventBus.getDefault().unregister(this);
+        mapView.onPause();
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        getMapAsync(new OnMapReadyCallback() {
+        mapView.onResume();
+        mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
+                if (getActivity() instanceof StationMapActivity) {
+                    SystemBarTintManager manager = ((StationMapActivity)getActivity()).getTintManager();
+                    if (manager != null) {
+                        SystemBarTintManager.SystemBarConfig config = manager.getConfig();
+                        googleMap.setPadding(0, 0, config.getPixelInsetRight(), config.getPixelInsetBottom());
+                    }
+                }
+
                 map = googleMap;
                 setupMap();
             }
@@ -144,7 +172,8 @@ public class StationMapFragment extends SupportMapFragment implements GoogleMap.
 
     private void setupMap()
     {
-        if (map == null) return;
+        if (map == null || getActivity() == null) return;
+        MapsInitializer.initialize(getActivity());
 
         map.clear();
         map.getUiSettings().setCompassEnabled(true);
@@ -234,6 +263,13 @@ public class StationMapFragment extends SupportMapFragment implements GoogleMap.
     {
         super.onSaveInstanceState(outState);
         outState.putInt("focusOnStationId", focusStationId);
+        mapView.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     public void onEventMainThread(LocationUpdatedEvent data) {
