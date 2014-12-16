@@ -149,8 +149,8 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 
         EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
 
-/*        if (data.getTimeUpdated() != null)
-            Toast.makeText(getActivity(), getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(getActivity(), data.getTimeUpdated()), Toast.LENGTH_SHORT).show(); */
+        if (data.getTimeUpdated() != null)
+            Toast.makeText(getActivity(), getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(getActivity(), data.getTimeUpdated()), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

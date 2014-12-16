@@ -43,7 +43,7 @@ public final class ISO8601 {
         }
 
         if (sdf.get() == null)
-            sdf.set(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
+            sdf.set(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
 
         Date date = sdf.get().parse(s);
         calendar.setTime(date);

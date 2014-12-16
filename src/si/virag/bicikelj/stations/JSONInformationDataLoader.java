@@ -67,6 +67,7 @@ public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
                     try {
                         timeUpdated = ISO8601.toCalendar(stationObject.optString("timestamp"));
                         info.setTimeUpdated(timeUpdated);
+                        Log.d("Bicikelj", "Time updated: " + timeUpdated.toString());
                     } catch (ParseException e) {}
                 }
 
