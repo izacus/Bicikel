@@ -3,6 +3,8 @@ package si.virag.bicikelj.util;
 import android.content.Context;
 import android.content.res.Resources;
 
+import java.util.Calendar;
+
 import si.virag.bicikelj.R;
 
 public class FuzzyDateTimeFormatter {
@@ -15,9 +17,9 @@ public class FuzzyDateTimeFormatter {
     private final static int MONTHS  =  4 * WEEKS;
     private final static int YEARS   = 12 * MONTHS;
 
-    public static String getTimeAgo(Context context, long time) {
-        long nowSeconds = System.currentTimeMillis() / 1000l;
-        int timeDifference = (int)(nowSeconds - time);
+    public static String getTimeAgo(Context context, Calendar time) {
+        long nowSeconds = System.currentTimeMillis();
+        int timeDifference = (int)(nowSeconds - time.getTimeInMillis()) / 1000;
 
         Resources res = context.getResources();
 

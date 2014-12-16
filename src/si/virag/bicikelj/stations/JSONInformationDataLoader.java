@@ -9,11 +9,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Iterator;
 
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.util.HTTPHelper;
+import si.virag.bicikelj.util.ISO8601;
 
 public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 {
@@ -47,12 +50,10 @@ public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 		try
 		{
 			JSONObject object = new JSONObject(response);
-			
-			// Get time updated
-			long timeUpdated = object.getLong("updated");
-			
-			StationInfo info = new StationInfo(timeUpdated);
-			
+
+			StationInfo info = new StationInfo();
+            Calendar timeUpdated = null;
+
 			// Get marker array
 			JSONObject markers = object.getJSONObject("markers");
 
@@ -62,7 +63,13 @@ public class JSONInformationDataLoader extends AsyncTaskLoader<StationInfo>
 			while(markerKeys.hasNext())
 			{
 				JSONObject stationObject = markers.getJSONObject(markerKeys.next());
-				
+                if (timeUpdated == null) {
+                    try {
+                        timeUpdated = ISO8601.toCalendar(stationObject.optString("timestamp"));
+                        info.setTimeUpdated(timeUpdated);
+                    } catch (ParseException e) {}
+                }
+
 				Station station = new Station(stationObject.getInt("number"), 
 											  stationObject.getString("name"),
 											  stationObject.getString("address"),

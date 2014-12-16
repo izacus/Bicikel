@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -45,23 +47,50 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	private void setItems(List<Station> items) {
         this.stations = items;
         this.items = new ArrayList<>();
-        this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_favorites)));
-        int favoriteCount = 0;
-        for (Station s : items) {
-            if (favManager.isFavorite(s.getId())) {
-                this.items.add(new StationListStation(s));
-                favoriteCount ++;
-            }
+
+        ArrayList<Station> favorites = new ArrayList<>();
+        ArrayList<Station> others = new ArrayList<>();
+
+        for (Station item : items) {
+            if (favManager.isFavorite(item.getId()))
+                favorites.add(item);
+            else
+                others.add(item);
         }
 
-        if (favoriteCount == 0) {
+        Collections.sort(favorites, new Comparator<Station>() {
+            @Override
+            public int compare(Station lhs, Station rhs) {
+                if (lhs.getDistance() == null)
+                    return 1;
+
+                return lhs.getDistance().compareTo(rhs.getDistance());
+            }
+        });
+
+        Collections.sort(others, new Comparator<Station>() {
+            @Override
+            public int compare(Station lhs, Station rhs) {
+                if (lhs.getDistance() == null)
+                    return 1;
+
+                return lhs.getDistance().compareTo(rhs.getDistance());
+            }
+        });
+
+        this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_favorites)));
+
+        if (favorites.size() > 0) {
+            for (Station s : favorites) {
+                this.items.add(new StationListStation(s));
+            }
+        } else {
             this.items.add(new StationListText(ctx.getString(R.string.stationlist_hint_favorites)));
         }
 
         this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_other_stations)));
-        for (Station s : items) {
-            if (!favManager.isFavorite(s.getId()))
-                this.items.add(new StationListStation(s));
+        for (Station s : others) {
+            this.items.add(new StationListStation(s));
         }
 
         notifyDataSetChanged();
@@ -81,26 +110,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 			return;
 		}
 
-        // TODO: Optimize
-		for (Station station : info.getStations())
-		{
-			for (int i = 0; i < this.getItemCount(); i++)
-			{
-				StationListItem s = items.get(i);
-				if (s instanceof StationListStation)
-				{
-                    StationListStation sls = (StationListStation)s;
-                    if (sls.station.getId() == station.getId()) {
-                        sls.station.setFreeSpaces(station.getFreeSpaces());
-                        sls.station.setAvailableBikes(station.getAvailableBikes());
-                        notifyItemChanged(i);
-                    }
-					break;
-				}
-			}
-		}
-		
-		this.notifyDataSetChanged();
+        setItems(info.getStations());
 	}
 	
 	public void updateLocation(Location location)
@@ -108,21 +118,18 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         if (location == null)
             return;
 
-		for (StationListItem item : items)
+		for (Station item : stations)
 		{
-            if (item instanceof StationListStation) {
-                ((StationListStation)item).station.setDistance(location);
-            }
+            item.setDistance(location);
 		}
 
-        // TODO: Sort items
-
-        this.notifyDataSetChanged();
+        setItems(stations);
 	}
 	
 	public void clearData()
 	{
 		this.items.clear();
+        this.stations.clear();
 		this.notifyDataSetChanged();
 	}
 

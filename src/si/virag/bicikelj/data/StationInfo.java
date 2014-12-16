@@ -3,25 +3,31 @@ package si.virag.bicikelj.data;
 import android.location.Location;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
 public class StationInfo
 {
-	private final long timeUpdated;
+	private Calendar timeUpdated;
 	private final ArrayList<Station> stations;
 	
 	private boolean disancesValid = false;
 	
-	public long getTimeUpdated()
+	public Calendar getTimeUpdated()
 	{
 		return timeUpdated;
 	}
 
-	public StationInfo(long timeUpdated)
+    public StationInfo()
+    {
+        this(null);
+    }
+
+	public StationInfo(Calendar timeUpdated)
 	{
-		stations = new ArrayList<Station>();
-		this.timeUpdated = timeUpdated;
+		stations = new ArrayList<>();
+        this.timeUpdated = timeUpdated;
 	}
 	
 	public void addStation(Station station)
@@ -75,4 +81,8 @@ public class StationInfo
 	{
 		return text.trim().toUpperCase().replace('Č', 'C').replace('Š','S').replace('Ž', 'Z');
 	}
+
+    public void setTimeUpdated(Calendar timeUpdated) {
+        this.timeUpdated = timeUpdated;
+    }
 }
