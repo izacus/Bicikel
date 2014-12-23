@@ -1,6 +1,5 @@
 package si.virag.bicikelj.events;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import si.virag.bicikelj.data.Station;

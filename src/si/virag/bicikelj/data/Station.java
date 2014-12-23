@@ -8,7 +8,6 @@ import android.util.Log;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import si.virag.bicikelj.util.DisplayUtils;
 

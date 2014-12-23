@@ -4,18 +4,14 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
-import com.google.gson.internal.bind.DateTypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Date;
 
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
-import si.virag.bicikelj.util.ISO8601;
 
 public class CityBikesApiClient {
 
