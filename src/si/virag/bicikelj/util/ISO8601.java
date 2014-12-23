@@ -39,7 +39,7 @@ public final class ISO8601 {
         try {
             s = s.substring(0, 22) + s.substring(23);  // to get rid of the ":"
         } catch (IndexOutOfBoundsException e) {
-            throw new ParseException("Invalid length", 0);
+            throw new ParseException("Invalid length: " + iso8601string, 0);
         }
 
         if (sdf.get() == null)

@@ -24,8 +24,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 9
-        versionName "1.5"
+        versionCode 10
+        versionName "1.5.1"
         applicationId 'si.virag.bicikelj'
         resConfigs "sl", "en"
     }
@@ -57,6 +57,9 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.squareup.retrofit:retrofit:1.8.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'de.greenrobot:eventbus:2.2.0'
     compile 'com.android.support:appcompat-v7:21.0.3'

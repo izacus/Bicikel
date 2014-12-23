@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +24,7 @@ import si.virag.bicikelj.events.ListItemSelectedEvent;
 import si.virag.bicikelj.ui.CircleLetterView;
 import si.virag.bicikelj.util.DisplayUtils;
 import si.virag.bicikelj.util.FavoritesManager;
+import si.virag.bicikelj.util.FuzzyDateTimeFormatter;
 
 public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationListHolder>
 {
@@ -35,13 +37,15 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 
     private List<Station> stations;
     private List<StationListItem> items;
-	
-	public StationListAdapter(Context ctx, FavoritesManager fm, List<Station> items)
+    private Calendar updateTime;
+
+    public StationListAdapter(Context ctx, FavoritesManager fm, List<Station> items, Calendar updateTime)
 	{
         this.ctx = ctx;
 		setHasStableIds(true);
         setItems(items);
         this.favManager = fm;
+        this.updateTime = updateTime;
 	}
 
 	private void setItems(List<Station> items) {
@@ -78,6 +82,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
             }
         });
 
+        if (updateTime != null)
+            this.items.add(new StationListText(ctx.getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(ctx, updateTime)));
+
         this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_favorites)));
 
         if (favorites.size() > 0) {
@@ -93,6 +100,8 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
             this.items.add(new StationListStation(s));
         }
 
+        this.items.add(new StationListText(ctx.getString(R.string.source)));
+
         notifyDataSetChanged();
     }
 
@@ -102,7 +111,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 			this.clearData();
 			return;
 		}
-		
+
+        this.updateTime = info.getTimeUpdated();
+
 		if (info.getStations().size() != this.getItemCount())
 		{
             setItems(info.getStations());
@@ -238,9 +249,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     }
 
     private static class StationListText implements StationListItem {
-        public final String text;
+        public final CharSequence text;
 
-        private StationListText(String text) {
+        private StationListText(CharSequence text) {
             this.text = text;
         }
 

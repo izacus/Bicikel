@@ -1,6 +1,7 @@
 package si.virag.bicikelj.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import si.virag.bicikelj.data.Station;
 
@@ -9,14 +10,14 @@ import si.virag.bicikelj.data.Station;
  */
 public class StationDataUpdatedEvent
 {
-    private final ArrayList<Station> stations;
+    private final List<Station> stations;
 
-    public StationDataUpdatedEvent(ArrayList<Station> stations)
+    public StationDataUpdatedEvent(List<Station> stations)
     {
         this.stations = stations;
     }
 
-    public ArrayList<Station> getStations()
+    public List<Station> getStations()
     {
         return stations;
     }

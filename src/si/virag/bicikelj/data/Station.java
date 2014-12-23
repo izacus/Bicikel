@@ -1,54 +1,51 @@
 package si.virag.bicikelj.data;
 
 import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import si.virag.bicikelj.util.DisplayUtils;
 
 public class Station
 {
-	private final int id;
-	private final String name;
-	// Location
-	private final String address;
-	private final String fullAddress;
-	private final Location location;
-	
-	// Is it open?
-	private final boolean open;
+    @SerializedName("name")
+	private String name;
 
-    // Current status
-	private int totalSpaces;
-	private int freeSpaces;
-	private int availableBikes;
-	
-	// Current distance
+    @SerializedName("latitude")
+    private double lat;
+
+    @SerializedName("longitude")
+    private double lng;
+
+    @SerializedName("extra")
+    private StationExtra extra;
+
+    @SerializedName("free_bikes")
+    private int bikes;
+
+    @SerializedName("empty_slots")
+    private int free;
+
+	// Current distance - transient state
+    @Nullable
 	private Float distance = null;
+
+    @Nullable
     private String abbreviation;
 
-    public Station(int id,
-                   String name,
-                   String address,
-                   String fullAddress,
-			       double latitude,
-                   double longtitude,
-                   boolean open)
-	{
-		super();
-		this.id = id;
-		this.name = DisplayUtils.getProcessedStationName(name);
-		this.address = address;
-		this.fullAddress = fullAddress;
-		this.abbreviation = DisplayUtils.extractLetters(this.name).toUpperCase();
+    @Nullable
+    private Location location;
 
-		location = new Location("");
-		location.setLatitude(latitude);
-		location.setLongitude(longtitude);
-		
-		this.open = open;
-	}
-	
-	public void setDistance(Location currentLocation)
+    @Nullable
+    private String prettyName;
+
+    public void setDistance(Location currentLocation)
 	{
 		if (currentLocation == null)
 		{
@@ -56,10 +53,11 @@ public class Station
 			return;
 		}
 		
-		distance = location.distanceTo(currentLocation);
+		distance = getLocation().distanceTo(currentLocation);
 		Log.d(this.toString(), "Distance " + distance);
 	}
 
+    @Nullable
 	public Float getDistance()
 	{
 		return distance;
@@ -67,65 +65,57 @@ public class Station
 	
 	public Location getLocation()
 	{
+        if (location == null) {
+            location = new Location("");
+            location.setLatitude(lat);
+            location.setLongitude(lng);
+        }
+
 		return location;
 	}
 	
 	public int getId()
 	{
-		return id;
+		return extra.id;
 	}
 
 	public String getName()
 	{
-		return name;
+		if (prettyName == null)
+            prettyName = DisplayUtils.getProcessedStationName(name);
+        return prettyName;
 	}
 
 	public String getAddress()
 	{
-		return address;
-	}
-
-	public String getFullAddress()
-	{
-		return fullAddress;
+		return extra.address;
 	}
 
 	public boolean isOpen()
 	{
-		return open;
+		return extra.status.equalsIgnoreCase("open");
 	}
 
 	public int getTotalSpaces()
 	{
-		return totalSpaces;
+		return extra.totalSpaces;
 	}
 
 	public int getFreeSpaces()
 	{
-		return freeSpaces;
+		return free;
 	}
 
 	public int getAvailableBikes()
 	{
-		return availableBikes;
+		return bikes;
 	}
 
-	public void setTotalSpaces(int totalSpaces)
-	{
-		this.totalSpaces = totalSpaces;
-	}
+    public Calendar getUpdated() {
+        return extra.updated;
+    }
 
-	public void setFreeSpaces(int freeSpaces)
-	{
-		this.freeSpaces = freeSpaces;
-	}
-
-	public void setAvailableBikes(int availableBikes)
-	{
-		this.availableBikes = availableBikes;
-	}
-
-	@Override
+    @Override
 	public String toString()
 	{
 		return this.name;
@@ -147,7 +137,27 @@ public class Station
 		return location.hashCode() + name.hashCode();
 	}
 
+    @NonNull
     public String getAbbreviation() {
+        if (abbreviation == null)
+            this.abbreviation = DisplayUtils.extractLetters(this.name).toUpperCase();
         return abbreviation;
+    }
+
+    private static class StationExtra {
+        @SerializedName("address")
+        public String address;
+
+        @SerializedName("uid")
+        public int id;
+
+        @SerializedName("slots")
+        public int totalSpaces;
+
+        @SerializedName("status")
+        public String status;
+
+        @SerializedName("last_update")
+        public Calendar updated;
     }
 }

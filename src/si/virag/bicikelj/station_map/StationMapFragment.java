@@ -42,6 +42,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
@@ -64,9 +65,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     @Nullable
     private Location location;
 
-    private ArrayList<Station> stations;
+    private List<Station> stations;
     private Map<Marker, Station> markerMap;
-
 
     private int focusStationId = -1;
 

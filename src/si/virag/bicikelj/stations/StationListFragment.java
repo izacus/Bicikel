@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,11 +22,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
@@ -38,16 +38,15 @@ import si.virag.bicikelj.events.ListItemSelectedEvent;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapActivity;
+import si.virag.bicikelj.stations.api.CityBikesApi;
+import si.virag.bicikelj.stations.api.CityBikesApiClient;
 import si.virag.bicikelj.util.DividerItemDecoration;
 import si.virag.bicikelj.util.FavoritesManager;
-import si.virag.bicikelj.util.FuzzyDateTimeFormatter;
 import si.virag.bicikelj.util.GPSUtil;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
 
-public class StationListFragment extends Fragment implements LoaderCallbacks<StationInfo>, SwipeRefreshLayout.OnRefreshListener
+public class StationListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener
 {
-	private static final int STATION_LOADER_ID = 0;
-
     private SwipeRefreshLayout swipeRefreshLayout;
 	private RecyclerView listView;
 
@@ -67,7 +66,7 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		super.onCreate(savedInstanceState);
 
         fm = new FavoritesManager(getActivity());
-		adapter = new StationListAdapter(getActivity(), fm, new ArrayList<Station>());
+		adapter = new StationListAdapter(getActivity(), fm, new ArrayList<Station>(), null);
 	}
 
 	@Override
@@ -77,7 +76,7 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 		setHasOptionsMenu(true);
 
         isTablet = ((MainActivity)getActivity()).isTabletLayout();
-		getLoaderManager().initLoader(STATION_LOADER_ID, null, this);
+        refresh();
 	}
 
     @Override
@@ -119,45 +118,6 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
         return v;
 	}
 
-	@Override
-	public Loader<StationInfo> onCreateLoader(int id, Bundle args) 
-	{
-		return new JSONInformationDataLoader(getActivity());
-	}
-
-	@Override
-	public void onLoadFinished(Loader<StationInfo> loader, StationInfo data) 
-	{
-        swipeRefreshLayout.setRefreshing(false);
-		this.data = data;
-		// Update data in-place when already available
-		adapter.updateData(data);
-
-        MainActivity activity = (MainActivity) getActivity();
-        if (activity != null) {
-            activity.findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
-        }
-
-        if (location != null)
-            adapter.updateLocation(location);
-
-        if (data == null)
-        {
-			showError();
-			return;
-		}
-
-        EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
-
-        if (data.getTimeUpdated() != null)
-            Toast.makeText(getActivity(), getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(getActivity(), data.getTimeUpdated()), Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	public void onLoaderReset(Loader<StationInfo> loader) 
-	{
-		// TODO Auto-generated method stub
-	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
@@ -267,7 +227,38 @@ public class StationListFragment extends Fragment implements LoaderCallbacks<Sta
 	{
         swipeRefreshLayout.setRefreshing(true);
 		this.data = null;
-		getLoaderManager().restartLoader(STATION_LOADER_ID, null, StationListFragment.this);
+        CityBikesApi api = CityBikesApiClient.getBicikeljApi();
+        api.getStationData(new Callback<StationInfo>() {
+            @Override
+            public void success(StationInfo data, Response response) {
+                swipeRefreshLayout.setRefreshing(false);
+                StationListFragment.this.data = data;
+                // Update data in-place when already available
+                adapter.updateData(data);
+
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
+                }
+
+                if (location != null)
+                    adapter.updateLocation(location);
+
+                if (data == null)
+                {
+                    showError();
+                    return;
+                }
+
+                EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("Bicikelj", "Load failed.", error.getCause());
+                showError();
+            }
+        });
 	}
 	
 	private void showError() {

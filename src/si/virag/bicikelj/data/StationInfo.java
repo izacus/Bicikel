@@ -1,73 +1,50 @@
 package si.virag.bicikelj.data;
 
-import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StationInfo
 {
-	private Calendar timeUpdated;
-	private final ArrayList<Station> stations;
-	
-	private boolean disancesValid = false;
-	
+    @NonNull
+    @SerializedName("network")
+    private CityBikesNetwork network;
+
 	public Calendar getTimeUpdated()
 	{
-		return timeUpdated;
+		if (network.stations.size() == 0)
+            return null;
+
+        return network.stations.get(0).getUpdated();
 	}
 
-    public StationInfo()
-    {
-        this(null);
+    public StationInfo() {
+        network = new CityBikesNetwork();
+        network.stations = new ArrayList<>();
     }
 
-	public StationInfo(Calendar timeUpdated)
+    public void addStation(Station station)
 	{
-		stations = new ArrayList<>();
-        this.timeUpdated = timeUpdated;
+        network.stations.add(station);
 	}
 	
-	public void addStation(Station station)
+	public List<Station> getStations()
 	{
-		stations.add(station);
-	}
-	
-	public ArrayList<Station> getStations()
-	{
-		return stations;
-	}
-	
-	public void calculateDistances(Location currentLocation)
-	{
-		if (disancesValid)
-			return;
-		
-		for (Station station : stations)
-		{
-			station.setDistance(currentLocation);
-		}
-		
-		Collections.sort(stations, new Comparator<Station>()
-		{
-			@Override
-			public int compare(Station object1, Station object2)
-			{
-				return object1.getDistance().compareTo(object2.getDistance());
-			}
-			
-		});
-		
-		disancesValid = true;
+		return network.stations;
 	}
 
 	public StationInfo getFilteredInfo(String filterText)
 	{
-		StationInfo newInfo = new StationInfo(timeUpdated);
+		StationInfo newInfo = new StationInfo();
 		
-		for (Station station : stations)
+		for (Station station : getStations())
 		{
 			if (filterSanitize(station.getName()).contains(filterSanitize(filterText))) {
 				newInfo.addStation(station);
@@ -82,7 +59,9 @@ public class StationInfo
 		return text.trim().toUpperCase().replace('Č', 'C').replace('Š','S').replace('Ž', 'Z');
 	}
 
-    public void setTimeUpdated(Calendar timeUpdated) {
-        this.timeUpdated = timeUpdated;
+    private static class CityBikesNetwork {
+        @SerializedName("stations")
+        @NonNull
+        public List<Station> stations;
     }
 }
