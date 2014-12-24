@@ -1,18 +1,12 @@
 
 syntax: regexp
 ^res/drawable-mdpi/Thumbs\.db$
-syntax: regexp
 ^res/drawable-hdpi/Thumbs\.db$
-syntax: glob
-Thumbs.db
-syntax: regexp
 ^bin$
-syntax: regexp
 ^gen-external-apklibs$
-syntax: regexp
 ^target$
-syntax: regexp
 ^\.idea$
 syntax: glob
 *.iml
 gen-external-apklibs/*
+Thumbs.db

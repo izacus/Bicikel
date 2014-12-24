@@ -161,6 +161,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
                 if (getActivity() instanceof StationMapActivity) {
                     SystemBarTintManager manager = ((StationMapActivity)getActivity()).getTintManager();
                     if (manager != null) {
+
                         SystemBarTintManager.SystemBarConfig config = manager.getConfig();
                         googleMap.setPadding(0, 0, config.getPixelInsetRight(), config.getPixelInsetBottom());
                     }
