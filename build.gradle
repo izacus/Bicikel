@@ -28,6 +28,7 @@ android {
         versionName "1.5.1"
         applicationId 'si.virag.bicikelj'
         resConfigs "sl", "en"
+        multiDexEnabled false
     }
     sourceSets {
         main {
