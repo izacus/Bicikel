@@ -49,6 +49,13 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	}
 
 	private void setItems(List<Station> items) {
+        if (items.size() == 0) {
+            this.items = new ArrayList<>();
+            this.stations = new ArrayList<>();
+            notifyDataSetChanged();
+            return;
+        }
+
         this.stations = items;
         this.items = new ArrayList<>();
 

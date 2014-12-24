@@ -54,11 +54,11 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 	private MenuItem searchActionView;
 	private StationInfo data;
 	
-	private boolean error = false;
     private boolean isTablet;
     private Location location;
 
     private FavoritesManager fm;
+    private View emptyView;
 
 
     @Override
@@ -113,8 +113,15 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
                                           R.color.primary_dark
                 );
 
-        swipeRefreshLayout.setRefreshing(true);
+        emptyView = v.findViewById(R.id.stationlist_emptyview);
+        emptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refresh();
+            }
+        });
 
+        swipeRefreshLayout.setRefreshing(true);
         return v;
 	}
 
@@ -251,10 +258,12 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
                 }
 
                 EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
+                swipeRefreshLayout.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void failure(RetrofitError error) {
+                swipeRefreshLayout.setRefreshing(false);
                 Log.e("Bicikelj", "Load failed.", error.getCause());
                 showError();
             }
@@ -262,7 +271,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 	}
 	
 	private void showError() {
-		this.error = true;
+        swipeRefreshLayout.setVisibility(View.INVISIBLE);
+        emptyView.setVisibility(View.VISIBLE);
 		TextView text = (TextView) getActivity().findViewById(R.id.stationlist_loading_error);
         text.setVisibility(View.VISIBLE);
         TextView loadingText = (TextView) getActivity().findViewById(R.id.stationlist_loading_text);
