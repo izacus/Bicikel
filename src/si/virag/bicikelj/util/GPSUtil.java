@@ -6,9 +6,6 @@ import android.app.Dialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-/**
- * Created by jernej on 29/03/14.
- */
 public class GPSUtil
 {
     public static final int GPS_FAIL_DIALOG_REQUEST_CODE = 9584;

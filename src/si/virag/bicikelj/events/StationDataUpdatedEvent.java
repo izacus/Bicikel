@@ -4,9 +4,6 @@ import java.util.List;
 
 import si.virag.bicikelj.data.Station;
 
-/**
- * Created by jernej on 29/03/14.
- */
 public class StationDataUpdatedEvent
 {
     private final List<Station> stations;

@@ -44,7 +44,7 @@ public class Station
     @Nullable
     private String prettyName;
 
-    public void setDistance(Location currentLocation)
+    public void setDistance(@Nullable Location currentLocation)
 	{
 		if (currentLocation == null)
 		{
@@ -129,12 +129,18 @@ public class Station
 		Station s = (Station)o;
 		return (s.hashCode() == this.hashCode());
 	}
-	
-	@Override
-	public int hashCode()
-	{
-		return location.hashCode() + name.hashCode();
-	}
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = name != null ? name.hashCode() : 0;
+        temp = Double.doubleToLongBits(lat);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(lng);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 
     @NonNull
     public String getAbbreviation() {

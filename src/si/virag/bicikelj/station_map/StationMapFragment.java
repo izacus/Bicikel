@@ -201,7 +201,11 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
                 }
             }
 
-            update = CameraUpdateFactory.newLatLngZoom(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()), 16.0f);
+            if (station == null || station.getLocation() == null ) {
+                update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
+            } else {
+                update = CameraUpdateFactory.newLatLngZoom(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()), 16.0f);
+            }
         }
         else
         {
@@ -239,6 +243,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
 
         for (Station station : stations)
         {
+            if (station.getLocation() == null || map == null) continue;
+
             BitmapDescriptor marker = BitmapDescriptorFactory.defaultMarker(((float) station.getAvailableBikes() / (float) station.getTotalSpaces()) * 120.0f);
             Marker m = map.addMarker(new MarkerOptions()
                     .position(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()))
@@ -308,6 +314,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
 
         targetMarker.showInfoWindow();
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(targetStation.getLocation().getLatitude(), targetStation.getLocation().getLongitude()), 16.0f);
+        if (map == null) return;
         map.animateCamera(update);
     }
 

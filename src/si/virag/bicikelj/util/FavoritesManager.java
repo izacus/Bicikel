@@ -15,7 +15,7 @@ public class FavoritesManager {
     private static final String PREF_FAVORITES = "favorites";
     private final Context ctx;
 
-    private Set<Long> favoriteStations;
+    private final Set<Long> favoriteStations;
 
     public FavoritesManager(Context context) {
         this.ctx = context.getApplicationContext();

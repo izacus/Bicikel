@@ -48,16 +48,14 @@ import si.virag.bicikelj.util.ShowKeyboardRunnable;
 public class StationListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener
 {
     private SwipeRefreshLayout swipeRefreshLayout;
-	private RecyclerView listView;
 
-	private StationListAdapter adapter = null;
+    private StationListAdapter adapter = null;
 	private MenuItem searchActionView;
 	private StationInfo data;
 	
     private boolean isTablet;
     private Location location;
 
-    private FavoritesManager fm;
     private View emptyView;
 
 
@@ -65,7 +63,7 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        fm = new FavoritesManager(getActivity());
+        FavoritesManager fm = new FavoritesManager(getActivity());
 		adapter = new StationListAdapter(getActivity(), fm, new ArrayList<Station>(), null);
 	}
 
@@ -99,7 +97,7 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 							 Bundle savedInstanceState) 
 	{
 		View v = inflater.inflate(R.layout.stationlist_fragment, container);
-		listView = (RecyclerView) v.findViewById(R.id.stationlist_list);
+        RecyclerView listView = (RecyclerView) v.findViewById(R.id.stationlist_list);
 		listView.setAdapter(adapter);
 		listView.setHasFixedSize(true);
 		listView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -107,10 +105,10 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorScheme(R.color.primary,
-                                          R.color.primary_dark,
-                                          R.color.secondary,
-                                          R.color.primary_dark
+        swipeRefreshLayout.setColorSchemeResources(R.color.primary,
+                                                   R.color.primary_dark,
+                                                   R.color.secondary,
+                                                   R.color.primary_dark
                 );
 
         emptyView = v.findViewById(R.id.stationlist_emptyview);

@@ -155,16 +155,13 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 	public StationListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_HEADER) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_header, parent, false);
-            StationListHeaderHolder viewHolder = new StationListHeaderHolder(view);
-            return viewHolder;
+            return new StationListHeaderHolder(view);
         } else if (viewType == TYPE_TEXT) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_text, parent, false);
-            StationListTextHolder viewHolder = new StationListTextHolder(view);
-            return viewHolder;
+            return new StationListTextHolder(view);
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_item, parent, false);
-            StationListStationHolder viewHolder = new StationListStationHolder(view);
-            return viewHolder;
+            return new StationListStationHolder(view);
         }
 	}
 
@@ -227,7 +224,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 
     private interface StationListItem {
         public long getId();
-    };
+    }
 
     private static class StationListStation implements StationListItem {
         public final Station station;

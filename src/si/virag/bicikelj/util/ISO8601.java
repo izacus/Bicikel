@@ -12,7 +12,7 @@ import java.util.GregorianCalendar;
  */
 public final class ISO8601 {
 
-    private static ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<>();
+    private static final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<>();
 
     /** Transform Calendar to ISO 8601 string. */
     public static String fromCalendar(final Calendar calendar) {
