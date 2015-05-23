@@ -106,10 +106,10 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.primary,
-                                                   R.color.primary_dark,
-                                                   R.color.secondary,
-                                                   R.color.primary_dark
-                );
+                R.color.primary_dark,
+                R.color.secondary,
+                R.color.primary_dark
+        );
 
         emptyView = v.findViewById(R.id.stationlist_emptyview);
         emptyView.setOnClickListener(new View.OnClickListener() {
@@ -233,9 +233,19 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         swipeRefreshLayout.setRefreshing(true);
 		this.data = null;
         CityBikesApi api = CityBikesApiClient.getBicikeljApi();
+
+        final long loadStart = System.currentTimeMillis();
         api.getStationData(new Callback<StationInfo>() {
             @Override
             public void success(StationInfo data, Response response) {
+                if (System.currentTimeMillis() - loadStart < 1000) {
+                    try {
+                        Thread.sleep(1000 - (System.currentTimeMillis() - loadStart));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 swipeRefreshLayout.setRefreshing(false);
                 StationListFragment.this.data = data;
                 // Update data in-place when already available
