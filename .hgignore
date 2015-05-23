@@ -10,3 +10,6 @@ syntax: glob
 *.iml
 gen-external-apklibs/*
 Thumbs.db
+.gradle
+build
+local.properties
