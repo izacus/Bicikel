@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * Helper class for handling ISO 8601 strings of the following format:
@@ -17,7 +18,7 @@ public final class ISO8601 {
     /** Transform Calendar to ISO 8601 string. */
     public static String fromCalendar(final Calendar calendar) {
         if (sdf.get() == null)
-            sdf.set(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
+            sdf.set(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US));
 
         Date date = calendar.getTime();
         String formatted = sdf.get().format(date);
@@ -43,7 +44,7 @@ public final class ISO8601 {
         }
 
         if (sdf.get() == null)
-            sdf.set(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+            sdf.set(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US));
 
         Date date = sdf.get().parse(s);
         calendar.setTime(date);

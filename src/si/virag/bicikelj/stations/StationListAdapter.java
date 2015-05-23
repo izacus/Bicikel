@@ -93,7 +93,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
                     return 1;
                 if (rhs.getDistance() == null)
                     return -1;
-                
+
                 return lhs.getDistance().compareTo(rhs.getDistance());
             }
         });
@@ -232,7 +232,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 
 
     private interface StationListItem {
-        public long getId();
+        long getId();
     }
 
     private static class StationListStation implements StationListItem {
