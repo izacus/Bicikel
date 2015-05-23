@@ -72,9 +72,13 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         Collections.sort(favorites, new Comparator<Station>() {
             @Override
             public int compare(Station lhs, Station rhs) {
+                if (lhs == null) return 1;
+                if (rhs == null) return -1;
+
                 if (lhs.getDistance() == null)
                     return 1;
-
+                if (rhs.getDistance() == null)
+                    return -1;
                 return lhs.getDistance().compareTo(rhs.getDistance());
             }
         });
@@ -82,9 +86,14 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         Collections.sort(others, new Comparator<Station>() {
             @Override
             public int compare(Station lhs, Station rhs) {
+                if (lhs == null) return 1;
+                if (rhs == null) return -1;
+
                 if (lhs.getDistance() == null)
                     return 1;
-
+                if (rhs.getDistance() == null)
+                    return -1;
+                
                 return lhs.getDistance().compareTo(rhs.getDistance());
             }
         });
