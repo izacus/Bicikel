@@ -1,6 +1,7 @@
 package si.virag.bicikelj.station_map;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -59,6 +60,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     private static final double MAP_CENTER_LAT = 46.051367;
     private static final double MAP_CENTER_LNG = 14.506542;
 
+    private Context context;
+
     @Nullable
     private GoogleMap map;
 
@@ -73,6 +76,12 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     @NonNull
     private MapView mapView;
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        context = getActivity().getApplicationContext();
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
@@ -331,7 +340,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         @Override
         public View getInfoContents(Marker marker)
         {
-            TextView tv = new TextView(getActivity());
+            Context ctx = getActivity() == null ? context : getActivity();
+            TextView tv = new TextView(ctx);
             tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             Station s = markerMap.get(marker);
             if (s == null)

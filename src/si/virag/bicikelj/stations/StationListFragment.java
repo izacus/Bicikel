@@ -1,5 +1,6 @@
 package si.virag.bicikelj.stations;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -279,13 +280,16 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 	}
 	
 	private void showError() {
+        Activity activity = getActivity();
+        if (activity == null) return;
+
         swipeRefreshLayout.setVisibility(View.INVISIBLE);
         emptyView.setVisibility(View.VISIBLE);
-		TextView text = (TextView) getActivity().findViewById(R.id.stationlist_loading_error);
+		TextView text = (TextView) activity.findViewById(R.id.stationlist_loading_error);
         text.setVisibility(View.VISIBLE);
-        TextView loadingText = (TextView) getActivity().findViewById(R.id.stationlist_loading_text);
+        TextView loadingText = (TextView) activity.findViewById(R.id.stationlist_loading_text);
         loadingText.setVisibility(View.INVISIBLE);
-		ProgressBar progress = (ProgressBar) getActivity().findViewById(R.id.stationlist_loading_progress);
+		ProgressBar progress = (ProgressBar) activity.findViewById(R.id.stationlist_loading_progress);
 		progress.setVisibility(View.INVISIBLE);
 		text.setText(R.string.stationlist_load_error);
 	}
