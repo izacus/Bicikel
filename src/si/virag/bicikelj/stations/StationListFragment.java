@@ -3,16 +3,21 @@ package si.virag.bicikelj.stations;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -59,6 +65,7 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
     private View emptyView;
 
+    private int progressTopOffset;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,7 +80,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 	{
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-
+        progressTopOffset = ((MainActivity)getActivity()).tintManager.getConfig().getPixelInsetTop(true) + (int)(4.0f * getResources().getDisplayMetrics().density);
+        if (swipeRefreshLayout != null) swipeRefreshLayout.setProgressViewOffset(false, 0, progressTopOffset);
         isTablet = ((MainActivity)getActivity()).isTabletLayout();
         refresh();
 	}
@@ -106,11 +114,24 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setProgressViewOffset(false, 0, progressTopOffset);
         swipeRefreshLayout.setColorSchemeResources(R.color.primary,
                 R.color.primary_dark,
                 R.color.secondary,
                 R.color.primary_dark
         );
+
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
+                    new int[] { android.R.attr.actionBarSize });
+            int actionBarSize = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
+            params.topMargin = actionBarSize;
+            swipeRefreshLayout.setLayoutParams(params);
+        }
 
         emptyView = v.findViewById(R.id.stationlist_emptyview);
         emptyView.setOnClickListener(new View.OnClickListener() {

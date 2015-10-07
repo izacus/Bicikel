@@ -39,6 +39,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     @Nullable
     private GoogleApiClient apiClient;
+    public SystemBarTintManager tintManager;
 
     /** Called when the activity is first created. */
     @Override
@@ -63,9 +64,9 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
             setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon, getResources().getColor(R.color.primary)));
         }
 
-        SystemBarTintManager manager = new SystemBarTintManager(this);
-        manager.setStatusBarTintEnabled(true);
-        manager.setStatusBarTintResource(R.color.primary);
+        tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setStatusBarTintResource(R.color.primary);
 
         isTablet = (findViewById(R.id.map_container) != null);
         if (isTablet)
