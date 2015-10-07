@@ -1,5 +1,7 @@
 package si.virag.bicikelj;
 
+import android.*;
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.WindowManager;
@@ -19,8 +22,11 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import de.greenrobot.event.EventBus;
+import io.fabric.sdk.android.Fabric;
+import rx.Subscriber;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
@@ -30,6 +36,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private static final String LOG_TAG = "Bicikelj.MainActivity";
 
     private boolean isTablet = false;
+
+    @Nullable
     private GoogleApiClient apiClient;
 
     /** Called when the activity is first created. */
@@ -41,7 +49,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         }
 
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
+        Fabric.with(this, new Crashlytics());
+
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setLogo(R.drawable.logo_padded);
@@ -58,12 +67,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         manager.setStatusBarTintEnabled(true);
         manager.setStatusBarTintResource(R.color.primary);
 
-        apiClient = new GoogleApiClient.Builder(this)
-                                       .addApi(LocationServices.API)
-                                       .addConnectionCallbacks(this)
-                                       .addOnConnectionFailedListener(this)
-                                       .build();
-
         isTablet = (findViewById(R.id.map_container) != null);
         if (isTablet)
         {
@@ -74,7 +77,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         }
     }
 
-	@Override
+    @Override
 	public boolean onSearchRequested() 
 	{
 		StationListFragment slFragment = (StationListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
@@ -117,15 +120,38 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     @Override
     protected void onStart() {
         super.onStart();
-        apiClient.connect();
+        RxPermissions.getInstance(this)
+                .request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Boolean granted) {
+                        if (!granted) return;
+                        apiClient = new GoogleApiClient.Builder(MainActivity.this)
+                                .addApi(LocationServices.API)
+                                .addConnectionCallbacks(MainActivity.this)
+                                .addOnConnectionFailedListener(MainActivity.this)
+                                .build();
+                        apiClient.connect();
+                    }
+                });
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        apiClient.disconnect();
+        if (apiClient != null) apiClient.disconnect();
     }
-
 
     @Override
     public void onConnected(Bundle info) {

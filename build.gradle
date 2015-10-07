@@ -1,31 +1,32 @@
 buildscript {
     repositories {
-        mavenCentral()
-        maven { url 'http://download.crashlytics.com/maven' }
+        jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'com.android.tools.build:gradle:1.3.1'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
 repositories {
     mavenCentral()
-    maven { url 'http://download.crashlytics.com/maven' }
+    maven { url 'https://maven.fabric.io/public' }
+    maven { url "http://dl.bintray.com/tbruyelle/tbruyelle" }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'crashlytics'
+apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.1'
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 22
-        versionCode 13
-        versionName "1.5.2"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 14
+        versionName "1.5.3"
         applicationId 'si.virag.bicikelj'
         resConfigs "sl", "en"
         multiDexEnabled false
@@ -57,16 +58,20 @@ android {
 
 
 dependencies {
-    compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.android.support:support-v4:23.0.1'
     compile 'com.squareup.retrofit:retrofit:1.8.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'de.greenrobot:eventbus:2.2.0'
-    compile 'com.android.support:appcompat-v7:22.1.1'
-    compile 'com.android.support:recyclerview-v7:22.1.1'
-    compile 'com.google.android.gms:play-services-maps:7.3.0'
-    compile 'com.google.android.gms:play-services-location:7.3.0'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.google.android.gms:play-services-maps:8.1.0'
+    compile 'com.google.android.gms:play-services-location:8.1.0'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-    compile 'com.crashlytics.android:crashlytics:1.+'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.2.0@aar'
+    compile 'io.reactivex:rxjava:1.0.14'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
+        transitive = true;
+    }
 }
