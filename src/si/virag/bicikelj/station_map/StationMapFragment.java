@@ -193,7 +193,13 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         map.getUiSettings().setCompassEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setAllGesturesEnabled(true);
-        map.setMyLocationEnabled(true);
+
+        try {
+            map.setMyLocationEnabled(true);
+        } catch (SecurityException e) {
+            // Nothing TBD
+        }
+
         map.setInfoWindowAdapter(new InformationAdapter());
         map.setOnInfoWindowClickListener(this);
 

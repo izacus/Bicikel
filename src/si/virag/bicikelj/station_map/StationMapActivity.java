@@ -2,7 +2,7 @@ package si.virag.bicikelj.station_map;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
@@ -10,7 +10,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import si.virag.bicikelj.R;
 
-public class StationMapActivity extends ActionBarActivity
+public class StationMapActivity extends AppCompatActivity
 {
 
     private SystemBarTintManager manager;

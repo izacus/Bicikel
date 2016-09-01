@@ -1,6 +1,5 @@
 package si.virag.bicikelj;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -11,7 +10,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
 
@@ -32,7 +31,7 @@ import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
 import si.virag.bicikelj.util.GPSUtil;
 
-public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final String LOG_TAG = "Bicikelj.MainActivity";
 
     private boolean isTablet = false;
@@ -157,7 +156,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle info) {
         LocationRequest request = LocationRequest.create().setPriority(LocationRequest.PRIORITY_LOW_POWER);
-        LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, request, this);
+
+        try {
+            LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, request, this);
+        } catch (SecurityException e) {
+            Log.w(LOG_TAG, "No permission for location, skipping location updates.");
+        }
     }
 
     @Override
