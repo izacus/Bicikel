@@ -362,7 +362,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
             int startOfNumberHint = ssb.length();
 
             // Bikes hint text
-            ssb.append(getString(R.string.map_hint_bikes));
+            ssb.append(ctx.getString(R.string.map_hint_bikes));
             ssb.append(" ");
             String bikesStr = String.valueOf(s.getAvailableBikes());
             ssb.append(bikesStr);
@@ -371,7 +371,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
 
             // Free hint text
             ssb.append(" ");
-            ssb.append(getString(R.string.map_hint_free));
+            ssb.append(ctx.getString(R.string.map_hint_free));
             ssb.append(" ");
             String freeStr = String.valueOf(s.getFreeSpaces());
             ssb.append(freeStr);
