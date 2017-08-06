@@ -11,10 +11,9 @@ import java.util.Calendar;
 
 import si.virag.bicikelj.util.DisplayUtils;
 
-public class Station
-{
+public class Station {
     @SerializedName("name")
-	private String name;
+    private String name;
 
     @SerializedName("latitude")
     private double lat;
@@ -31,9 +30,9 @@ public class Station
     @SerializedName("empty_slots")
     private int free;
 
-	// Current distance - transient state
+    // Current distance - transient state
     @Nullable
-	private Float distance = null;
+    private Float distance = null;
 
     @Nullable
     private String abbreviation;
@@ -44,91 +43,78 @@ public class Station
     @Nullable
     private String prettyName;
 
-    public void setDistance(@Nullable Location currentLocation)
-	{
-		if (currentLocation == null)
-		{
-			distance = null;
-			return;
-		}
-		
-		distance = getLocation().distanceTo(currentLocation);
-		Log.d(this.toString(), "Distance " + distance);
-	}
+    public void setDistance(@Nullable Location currentLocation) {
+        if (currentLocation == null) {
+            distance = null;
+            return;
+        }
+
+        distance = getLocation().distanceTo(currentLocation);
+        Log.d(this.toString(), "Distance " + distance);
+    }
 
     @Nullable
-	public Float getDistance()
-	{
-		return distance;
-	}
-	
-	public Location getLocation()
-	{
+    public Float getDistance() {
+        return distance;
+    }
+
+    public Location getLocation() {
         if (location == null) {
             location = new Location("");
             location.setLatitude(lat);
             location.setLongitude(lng);
         }
 
-		return location;
-	}
-	
-	public int getId()
-	{
-		return extra.id;
-	}
+        return location;
+    }
 
-	public String getName()
-	{
-		if (prettyName == null)
+    public int getId() {
+        return extra.id;
+    }
+
+    public String getName() {
+        if (prettyName == null)
             prettyName = DisplayUtils.getProcessedStationName(name);
         return prettyName;
-	}
+    }
 
-	public String getAddress()
-	{
-		return extra.address;
-	}
+    public String getAddress() {
+        return extra.address;
+    }
 
-	public boolean isOpen()
-	{
-		return extra.status.equalsIgnoreCase("open");
-	}
+    public boolean isOpen() {
+        return extra.status.equalsIgnoreCase("open");
+    }
 
-	public int getTotalSpaces()
-	{
-		return extra.totalSpaces;
-	}
+    public int getTotalSpaces() {
+        return extra.totalSpaces;
+    }
 
-	public int getFreeSpaces()
-	{
-		return free;
-	}
+    public int getFreeSpaces() {
+        return free;
+    }
 
-	public int getAvailableBikes()
-	{
-		return bikes;
-	}
+    public int getAvailableBikes() {
+        return bikes;
+    }
 
     public Calendar getUpdated() {
         return extra.updated;
     }
 
     @Override
-	public String toString()
-	{
-		return this.name;
-	}
+    public String toString() {
+        return this.name;
+    }
 
-	@Override
-	public boolean equals(Object o)
-	{
+    @Override
+    public boolean equals(Object o) {
         if (!(o instanceof Station))
             return false;
 
-		Station s = (Station)o;
-		return (s.hashCode() == this.hashCode());
-	}
+        Station s = (Station) o;
+        return (s.hashCode() == this.hashCode());
+    }
 
     @Override
     public int hashCode() {

@@ -26,8 +26,7 @@ import si.virag.bicikelj.util.DisplayUtils;
 import si.virag.bicikelj.util.FavoritesManager;
 import si.virag.bicikelj.util.FuzzyDateTimeFormatter;
 
-public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationListHolder>
-{
+public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationListHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_STATION = 1;
     private static final int TYPE_TEXT = 2;
@@ -39,16 +38,15 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     private List<StationListItem> items;
     private Calendar updateTime;
 
-    public StationListAdapter(Context ctx, FavoritesManager fm, List<Station> items, Calendar updateTime)
-	{
+    public StationListAdapter(Context ctx, FavoritesManager fm, List<Station> items, Calendar updateTime) {
         this.ctx = ctx;
-		setHasStableIds(true);
+        setHasStableIds(true);
         setItems(items);
         this.favManager = fm;
         this.updateTime = updateTime;
-	}
+    }
 
-	private void setItems(List<Station> items) {
+    private void setItems(List<Station> items) {
         if (items.size() == 0) {
             this.items = new ArrayList<>();
             this.stations = new ArrayList<>();
@@ -121,47 +119,42 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         notifyDataSetChanged();
     }
 
-	public void updateData(StationInfo info)
-	{
-		if (info == null) {
-			this.clearData();
-			return;
-		}
+    public void updateData(StationInfo info) {
+        if (info == null) {
+            this.clearData();
+            return;
+        }
 
         this.updateTime = info.getTimeUpdated();
 
-		if (info.getStations().size() != this.getItemCount())
-		{
+        if (info.getStations().size() != this.getItemCount()) {
             setItems(info.getStations());
-			this.notifyDataSetChanged();
-			return;
-		}
+            this.notifyDataSetChanged();
+            return;
+        }
 
         setItems(info.getStations());
-	}
-	
-	public void updateLocation(Location location)
-	{
+    }
+
+    public void updateLocation(Location location) {
         if (location == null)
             return;
 
-		for (Station item : stations)
-		{
+        for (Station item : stations) {
             item.setDistance(location);
-		}
+        }
 
         setItems(stations);
-	}
-	
-	public void clearData()
-	{
-		this.items.clear();
-        this.stations.clear();
-		this.notifyDataSetChanged();
-	}
+    }
 
-	@Override
-	public StationListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public void clearData() {
+        this.items.clear();
+        this.stations.clear();
+        this.notifyDataSetChanged();
+    }
+
+    @Override
+    public StationListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_HEADER) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_header, parent, false);
             return new StationListHeaderHolder(view);
@@ -172,10 +165,10 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_item, parent, false);
             return new StationListStationHolder(view);
         }
-	}
+    }
 
-	@Override
-	public void onBindViewHolder(StationListHolder holder, int position) {
+    @Override
+    public void onBindViewHolder(StationListHolder holder, int position) {
         StationListItem item = items.get(position);
         if (item instanceof StationListHeader) {
             StationListHeaderHolder viewHolder = (StationListHeaderHolder) holder;
@@ -184,36 +177,32 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
             StationListTextHolder viewHolder = (StationListTextHolder) holder;
             viewHolder.text.setText(((StationListText) item).text);
         } else {
-            StationListStationHolder viewHolder = (StationListStationHolder)holder;
-            Station station = ((StationListStation)item).station;
+            StationListStationHolder viewHolder = (StationListStationHolder) holder;
+            Station station = ((StationListStation) item).station;
             viewHolder.bikes.setText(getFormattedNumber(station.getAvailableBikes()));
             viewHolder.free.setText(getFormattedNumber(station.getFreeSpaces()));
             viewHolder.stationName.setText(station.getName());
             viewHolder.circle.setText(station.getAbbreviation());
             viewHolder.circle.setColor(DisplayUtils.getColorFromString(station.getName()));
 
-            if (station.getDistance() != null)
-            {
+            if (station.getDistance() != null) {
                 viewHolder.distance.setText(DisplayUtils.formatDistance(station.getDistance()));
                 viewHolder.distance.setVisibility(View.VISIBLE);
-            }
-            else
-            {
+            } else {
                 viewHolder.distance.setVisibility(View.GONE);
             }
         }
-	}
+    }
 
-	@Override
-	public long getItemId(int position) 
-	{
-		return this.items.get(position).getId();
-	}
+    @Override
+    public long getItemId(int position) {
+        return this.items.get(position).getId();
+    }
 
-	@Override
-	public int getItemCount() {
-		return items.size();
-	}
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -227,8 +216,8 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     }
 
     private static String getFormattedNumber(int number) {
-		return number == 0 ? "Ø" : String.valueOf(number);
-	}
+        return number == 0 ? "Ø" : String.valueOf(number);
+    }
 
 
     private interface StationListItem {
@@ -294,9 +283,9 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
             topView.setOnClickListener(this);
             topView.setOnCreateContextMenuListener(this);
 
-            bikes = (TextView)view.findViewById(R.id.stationlist_bikes);
-            free = (TextView)view.findViewById(R.id.stationlist_free);
-            circle = (CircleLetterView)view.findViewById(R.id.stationlist_circle);
+            bikes = (TextView) view.findViewById(R.id.stationlist_bikes);
+            free = (TextView) view.findViewById(R.id.stationlist_free);
+            circle = (CircleLetterView) view.findViewById(R.id.stationlist_circle);
 
             stationName = (TextView) view.findViewById(R.id.stationlist_name);
             distance = (TextView) view.findViewById(R.id.stationlist_distance);

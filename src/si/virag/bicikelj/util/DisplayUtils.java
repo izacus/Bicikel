@@ -4,8 +4,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-public class DisplayUtils
-{
+public class DisplayUtils {
     private static final HashSet<String> DONT_CAPITALIZE;
     private static final HashSet<String> KEEP;
     private static final int[] COLORS = {
@@ -25,8 +24,7 @@ public class DisplayUtils
             0xDDDD2C00
     };
 
-    static
-    {
+    static {
         DONT_CAPITALIZE = new HashSet<>();
         DONT_CAPITALIZE.add("ul.");
         DONT_CAPITALIZE.add("ulica");
@@ -50,16 +48,12 @@ public class DisplayUtils
         KEEP.add("FF");
     }
 
-    public static String formatDistance(Float distance)
-    {
+    public static String formatDistance(Float distance) {
         // Using german locale, because slovene locale is not available on all devices
         // and germany uses same number format
-        if (distance < 1200)
-        {
+        if (distance < 1200) {
             return String.format(Locale.GERMAN, "%,.1f", distance) + " m";
-        }
-        else
-        {
+        } else {
             return String.format(Locale.GERMAN, "%,.2f", distance / 1000) + " km";
         }
     }
@@ -73,8 +67,7 @@ public class DisplayUtils
             String token = tokenizer.nextToken();
             if (KEEP.contains(token)) {
                 sb.append(token);
-            }
-            else {
+            } else {
                 token = token.toLowerCase();
                 if (firstToken || shouldCapitalize(token)) {
                     if (token.equals("\n")) {

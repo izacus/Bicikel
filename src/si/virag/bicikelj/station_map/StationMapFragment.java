@@ -55,8 +55,7 @@ import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.util.DisplayUtils;
 
-public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener
-{
+public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener {
     private static final double MAP_CENTER_LAT = 46.051367;
     private static final double MAP_CENTER_LNG = 14.506542;
 
@@ -84,14 +83,11 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getArguments() != null && getArguments().containsKey("focusOnStation"))
-        {
+        if (getArguments() != null && getArguments().containsKey("focusOnStation")) {
             this.focusStationId = getArguments().getInt("focusOnStation");
-        }
-        else if (savedInstanceState != null && savedInstanceState.containsKey("focusOnStationId"))
+        } else if (savedInstanceState != null && savedInstanceState.containsKey("focusOnStationId"))
             this.focusStationId = savedInstanceState.getInt("focusOnStationId");
 
         this.stations = new ArrayList<>();
@@ -101,16 +97,14 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.map_fragment, container, false);
-        mapView = (MapView)view.findViewById(R.id.map_map);
+        mapView = (MapView) view.findViewById(R.id.map_map);
         mapView.onCreate(savedInstanceState);
         return view;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -122,16 +116,12 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         }
     }
 
-    private void showDirections(Station selectedStation)
-    {
+    private void showDirections(Station selectedStation) {
         Uri mapsUri;
 
-        if (location == null)
-        {
+        if (location == null) {
             mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&daddr=" + selectedStation.getLocation().getLatitude() + "," + selectedStation.getLocation().getLongitude());
-        }
-        else
-        {
+        } else {
             mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&saddr=" + location.getLatitude() + ", " +
                     location.getLongitude() + "&daddr=" + selectedStation.getLocation().getLatitude() + "," +
                     selectedStation.getLocation().getLongitude());
@@ -141,34 +131,29 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         // This prevents app selection pop-up
         intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 
-        try
-        {
+        try {
             startActivity(intent);
-        }
-        catch (ActivityNotFoundException e)
-        {
+        } catch (ActivityNotFoundException e) {
             Log.e("Bicikelj", "Google maps is not installed!");
         }
     }
 
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
         mapView.onPause();
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         mapView.onResume();
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 if (getActivity() instanceof StationMapActivity) {
-                    SystemBarTintManager manager = ((StationMapActivity)getActivity()).getTintManager();
+                    SystemBarTintManager manager = ((StationMapActivity) getActivity()).getTintManager();
                     if (manager != null) {
 
                         SystemBarTintManager.SystemBarConfig config = manager.getConfig();
@@ -184,8 +169,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         EventBus.getDefault().registerSticky(this);
     }
 
-    private void setupMap()
-    {
+    private void setupMap() {
         if (map == null || getActivity() == null) return;
         MapsInitializer.initialize(getActivity());
 
@@ -205,33 +189,26 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
 
         CameraUpdate update;
 
-        if (focusStationId > 0)
-        {
+        if (focusStationId > 0) {
             Station station = null;
-            for (Station s : stations)
-            {
-                if (s.getId() == focusStationId)
-                {
+            for (Station s : stations) {
+                if (s.getId() == focusStationId) {
                     station = s;
                     break;
                 }
             }
 
-            if (station == null || station.getLocation() == null ) {
+            if (station == null || station.getLocation() == null) {
                 update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
             } else {
                 update = CameraUpdateFactory.newLatLngZoom(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()), 16.0f);
             }
-        }
-        else
-        {
+        } else {
             update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
 
-            map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener()
-            {
+            map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
                 @Override
-                public void onMyLocationChange(Location location)
-                {
+                public void onMyLocationChange(Location location) {
                     map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
                     map.setOnMyLocationChangeListener(null);
                 }
@@ -242,23 +219,19 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         map.moveCamera(update);
         getActivity().supportInvalidateOptionsMenu();
 
-        new Handler().postDelayed(new Runnable()
-        {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 createMarkers();
             }
         }, 300);
     }
 
-    private void createMarkers()
-    {
+    private void createMarkers() {
         if (stations == null)
             return;
 
-        for (Station station : stations)
-        {
+        for (Station station : stations) {
             if (station.getLocation() == null || map == null) continue;
 
             BitmapDescriptor marker = BitmapDescriptorFactory.defaultMarker(((float) station.getAvailableBikes() / (float) station.getTotalSpaces()) * 120.0f);
@@ -275,8 +248,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     }
 
     @Override
-    public void onInfoWindowClick(Marker marker)
-    {
+    public void onInfoWindowClick(Marker marker) {
         Station s = markerMap.get(marker);
         if (s == null)
             return;
@@ -285,8 +257,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("focusOnStationId", focusStationId);
         mapView.onSaveInstanceState(outState);
@@ -305,20 +276,16 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
             s.setDistance(location);
     }
 
-    public void onEventMainThread(StationDataUpdatedEvent data)
-    {
+    public void onEventMainThread(StationDataUpdatedEvent data) {
         this.stations = data.getStations();
         setupMap();
     }
 
-    public void onEventMainThread(FocusOnStationEvent focusData)
-    {
+    public void onEventMainThread(FocusOnStationEvent focusData) {
         Marker targetMarker = null;
         Station targetStation = null;
-        for (Map.Entry<Marker, Station> s : markerMap.entrySet())
-        {
-            if (s.getValue().getId() == focusData.getId())
-            {
+        for (Map.Entry<Marker, Station> s : markerMap.entrySet()) {
+            if (s.getValue().getId() == focusData.getId()) {
                 targetStation = s.getValue();
                 targetMarker = s.getKey();
                 break;
@@ -334,18 +301,15 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         map.animateCamera(update);
     }
 
-    private final class InformationAdapter implements GoogleMap.InfoWindowAdapter
-    {
+    private final class InformationAdapter implements GoogleMap.InfoWindowAdapter {
 
         @Override
-        public View getInfoWindow(Marker marker)
-        {
+        public View getInfoWindow(Marker marker) {
             return null;
         }
 
         @Override
-        public View getInfoContents(Marker marker)
-        {
+        public View getInfoContents(Marker marker) {
             Context ctx = getActivity() == null ? context : getActivity();
             TextView tv = new TextView(ctx);
             tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -378,17 +342,16 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
             ssb.setSpan(new ForegroundColorSpan(ctx.getResources().getColor(R.color.secondary)), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14.0f, ctx.getResources().getDisplayMetrics())),
+            ssb.setSpan(new AbsoluteSizeSpan((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14.0f, ctx.getResources().getDisplayMetrics())),
                     startOfNumberHint,
                     ssb.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            if (s.getDistance() != null)
-            {
+            if (s.getDistance() != null) {
                 ssb.append("\n");
                 String distanceString = DisplayUtils.formatDistance(s.getDistance());
                 ssb.append(distanceString);
-                ssb.setSpan(new AbsoluteSizeSpan((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 11.0f, ctx.getResources().getDisplayMetrics())),
+                ssb.setSpan(new AbsoluteSizeSpan((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 11.0f, ctx.getResources().getDisplayMetrics())),
                         ssb.length() - distanceString.length(),
                         ssb.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

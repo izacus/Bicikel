@@ -11,15 +11,15 @@ public class FuzzyDateTimeFormatter {
 
     private final static int SECONDS = 1;
     private final static int MINUTES = 60 * SECONDS;
-    private final static int HOURS   = 60 * MINUTES;
-    private final static int DAYS    = 24 * HOURS;
-    private final static int WEEKS   =  7 * DAYS;
-    private final static int MONTHS  =  4 * WEEKS;
-    private final static int YEARS   = 12 * MONTHS;
+    private final static int HOURS = 60 * MINUTES;
+    private final static int DAYS = 24 * HOURS;
+    private final static int WEEKS = 7 * DAYS;
+    private final static int MONTHS = 4 * WEEKS;
+    private final static int YEARS = 12 * MONTHS;
 
     public static String getTimeAgo(Context context, Calendar time) {
         long nowSeconds = System.currentTimeMillis();
-        int timeDifference = (int)(nowSeconds - time.getTimeInMillis()) / 1000;
+        int timeDifference = (int) (nowSeconds - time.getTimeInMillis()) / 1000;
 
         Resources res = context.getResources();
 

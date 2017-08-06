@@ -10,14 +10,12 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import si.virag.bicikelj.R;
 
-public class StationMapActivity extends AppCompatActivity
-{
+public class StationMapActivity extends AppCompatActivity {
 
     private SystemBarTintManager manager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
@@ -54,8 +52,7 @@ public class StationMapActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.slide_out_right);
     }

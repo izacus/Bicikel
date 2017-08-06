@@ -57,7 +57,7 @@ public class CircleLetterView extends View {
         canvas.drawCircle(cx, cy, radius, circlePaint);
 
         int tx = cx;
-        int ty = cy - (int)((textPaint.descent() + textPaint.ascent()) / 2);
+        int ty = cy - (int) ((textPaint.descent() + textPaint.ascent()) / 2);
         canvas.drawText(text, tx, ty, textPaint);
     }
 

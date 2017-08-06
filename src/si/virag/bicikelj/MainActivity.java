@@ -40,10 +40,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient apiClient;
     public SystemBarTintManager tintManager;
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState) 
-    {
+    public void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
@@ -68,8 +69,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         tintManager.setStatusBarTintResource(R.color.primary);
 
         isTablet = (findViewById(R.id.map_container) != null);
-        if (isTablet)
-        {
+        if (isTablet) {
             if (!GPSUtil.checkPlayServices(this))
                 return;
 
@@ -78,15 +78,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public boolean onSearchRequested()
-    {
+    public boolean onSearchRequested() {
         StationListFragment slFragment = (StationListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
         slFragment.searchRequested();
         return super.onSearchRequested();
     }
 
-    private void setupMapFragment()
-    {
+    private void setupMapFragment() {
         if (getSupportFragmentManager().findFragmentByTag("MapFragment") != null)
             return;
 
@@ -94,23 +92,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         getSupportFragmentManager().beginTransaction().add(R.id.map_container, fragment, "MapFragment").commit();
     }
 
-    public boolean isTabletLayout()
-    {
+    public boolean isTabletLayout() {
         return isTablet;
     }
 
     @Override
     protected void onActivityResult(
-            int requestCode, int resultCode, Intent data)
-    {
+            int requestCode, int resultCode, Intent data) {
         // Decide what to do based on the original request code
-        switch (requestCode)
-        {
-            case GPSUtil.GPS_FAIL_DIALOG_REQUEST_CODE :
+        switch (requestCode) {
+            case GPSUtil.GPS_FAIL_DIALOG_REQUEST_CODE:
 
-                switch (resultCode)
-                {
-                    case Activity.RESULT_OK :
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
                         setupMapFragment();
                         break;
                 }
