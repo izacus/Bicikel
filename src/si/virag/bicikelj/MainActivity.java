@@ -78,12 +78,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-	public boolean onSearchRequested() 
-	{
-		StationListFragment slFragment = (StationListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
-		slFragment.searchRequested();
-		return super.onSearchRequested();
-	}
+    public boolean onSearchRequested()
+    {
+        StationListFragment slFragment = (StationListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
+        slFragment.searchRequested();
+        return super.onSearchRequested();
+    }
 
     private void setupMapFragment()
     {

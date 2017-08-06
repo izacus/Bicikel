@@ -45,8 +45,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     buildTypes {
         release {
@@ -68,6 +68,7 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.android.support:appcompat-v7:26.0.0'
     compile 'com.android.support:recyclerview-v7:26.0.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-maps:11.0.4'
     compile 'com.google.android.gms:play-services-location:11.0.4'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.4'
