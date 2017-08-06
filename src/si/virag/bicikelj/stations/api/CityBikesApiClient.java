@@ -22,7 +22,7 @@ public class CityBikesApiClient {
                 .create();
 
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://api.citybik.es")
+                .setEndpoint("https://api.citybik.es")
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setConverter(new GsonConverter(gson))
                 .build();
