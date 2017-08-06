@@ -120,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStart() {
         super.onStart();
-        RxPermissions.getInstance(this)
-                .request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        RxPermissions permissions = new RxPermissions(this);
+        permissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribe(new Subscriber<Boolean>() {
                     @Override
                     public void onCompleted() {
