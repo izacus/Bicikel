@@ -146,10 +146,10 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         final MenuItem searchItem = menu.findItem(R.id.menu_search);
         this.searchActionView = searchItem;
 
-        final EditText searchBox = (EditText) MenuItemCompat.getActionView(searchItem).findViewById(R.id.search_box);
-        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+        final EditText searchBox = searchItem.getActionView().findViewById(R.id.search_box);
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
                 if (StationListFragment.this.data == null)
                     return false;
 
@@ -158,7 +158,7 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
             }
 
             @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 adapter.updateData(data);
                 if (location != null)
                     adapter.updateLocation(location);
@@ -187,10 +187,10 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
     public void searchRequested() {
         if (this.searchActionView != null) {
-            if (MenuItemCompat.isActionViewExpanded(searchActionView)) {
-                MenuItemCompat.collapseActionView(searchActionView);
+            if (searchActionView.isActionViewExpanded()) {
+                searchActionView.collapseActionView();
             } else {
-                MenuItemCompat.expandActionView(searchActionView);
+                searchActionView.expandActionView();
             }
         }
     }
