@@ -67,33 +67,27 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
                 others.add(item);
         }
 
-        Collections.sort(favorites, new Comparator<Station>() {
-            @Override
-            public int compare(Station lhs, Station rhs) {
-                if (lhs == null) return 1;
-                if (rhs == null) return -1;
+        Collections.sort(favorites, (lhs, rhs) -> {
+            if (lhs == null) return 1;
+            if (rhs == null) return -1;
 
-                if (lhs.getDistance() == null)
-                    return 1;
-                if (rhs.getDistance() == null)
-                    return -1;
-                return lhs.getDistance().compareTo(rhs.getDistance());
-            }
+            if (lhs.getDistance() == null)
+                return 1;
+            if (rhs.getDistance() == null)
+                return -1;
+            return lhs.getDistance().compareTo(rhs.getDistance());
         });
 
-        Collections.sort(others, new Comparator<Station>() {
-            @Override
-            public int compare(Station lhs, Station rhs) {
-                if (lhs == null) return 1;
-                if (rhs == null) return -1;
+        Collections.sort(others, (lhs, rhs) -> {
+            if (lhs == null) return 1;
+            if (rhs == null) return -1;
 
-                if (lhs.getDistance() == null)
-                    return 1;
-                if (rhs.getDistance() == null)
-                    return -1;
+            if (lhs.getDistance() == null)
+                return 1;
+            if (rhs.getDistance() == null)
+                return -1;
 
-                return lhs.getDistance().compareTo(rhs.getDistance());
-            }
+            return lhs.getDistance().compareTo(rhs.getDistance());
         });
 
         if (updateTime != null)
@@ -269,7 +263,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         }
     }
 
-    public class StationListStationHolder extends StationListHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
+    public final class StationListStationHolder extends StationListHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
         public final TextView free;
         public final TextView bikes;
         public final TextView stationName;
@@ -293,7 +287,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 
         @Override
         public void onClick(View v) {
-            StationListItem s = items.get(getPosition());
+            StationListItem s = items.get(getAdapterPosition());
             if (s instanceof StationListStation) {
                 EventBus.getDefault().post(new ListItemSelectedEvent(((StationListStation) s).station.getId()));
             }
@@ -301,42 +295,39 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            final StationListItem s = items.get(getPosition());
+            final StationListItem s = items.get(getAdapterPosition());
             if (s instanceof StationListStation) {
                 String text = favManager.isFavorite(s.getId()) ? ctx.getString(R.string.stationlist_menu_add_favorites) : ctx.getString(R.string.stationlist_menu_remove_favorites);
                 MenuItem item = menu.add(text);
 
-                item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (favManager.isFavorite(s.getId()))
-                            favManager.removeFavorite(s.getId());
-                        else
-                            favManager.setFavorite(s.getId());
-                        setItems(stations);
-                        return true;
-                    }
+                item.setOnMenuItemClickListener(item1 -> {
+                    if (favManager.isFavorite(s.getId()))
+                        favManager.removeFavorite(s.getId());
+                    else
+                        favManager.setFavorite(s.getId());
+                    setItems(stations);
+                    return true;
                 });
             }
         }
     }
 
-    public class StationListHeaderHolder extends StationListHolder {
+    public final class StationListHeaderHolder extends StationListHolder {
         public final TextView text;
 
         public StationListHeaderHolder(View itemView) {
             super(itemView);
-            text = (TextView) itemView.findViewById(R.id.stationlist_header_text);
+            text = itemView.findViewById(R.id.stationlist_header_text);
         }
     }
 
-    public class StationListTextHolder extends StationListHolder {
+    public final class StationListTextHolder extends StationListHolder {
         public final TextView text;
 
 
         public StationListTextHolder(View itemView) {
             super(itemView);
-            text = (TextView) itemView.findViewById(R.id.stationlist_text);
+            text = itemView.findViewById(R.id.stationlist_text);
         }
     }
 }

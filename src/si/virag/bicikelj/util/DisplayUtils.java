@@ -38,6 +38,7 @@ public class DisplayUtils {
         DONT_CAPITALIZE.add("cerkev");
         DONT_CAPITALIZE.add("park");
         DONT_CAPITALIZE.add("nabrežje");
+        DONT_CAPITALIZE.add("naselje");
 
         KEEP = new HashSet<>();
         KEEP.add("DDC");

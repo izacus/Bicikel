@@ -26,7 +26,7 @@
         android:layout_gravity="bottom"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/stationlist_bikes_layout"
-        app:layout_constraintEnd_toStartOf="@+id/view"
+        app:layout_constraintEnd_toStartOf="@+id/stationlist_delimiter"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         >
@@ -85,18 +85,17 @@
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:background="#33000000"
-        tools:layout_editor_absoluteY="16dp"
         app:layout_constraintEnd_toStartOf="@+id/stationlist_bikes_layout"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:id="@+id/view" />
+        android:id="@+id/stationlist_delimiter" />
 
     <TextView
         android:id="@+id/stationlist_name"
         android:layout_width="wrap_content"
-        android:layout_height="23dp"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/stationlist_circle"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
@@ -104,7 +103,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintBottom_toTopOf="@+id/stationlist_distance"
         style="@style/StationList.Name"
-        tools:text="Bezigrad"
+        tools:text="Bezigrad\nBoo"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
