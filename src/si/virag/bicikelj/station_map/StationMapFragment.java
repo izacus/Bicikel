@@ -1,8 +1,10 @@
 package si.virag.bicikelj.station_map;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
@@ -12,6 +14,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -28,6 +31,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,6 +47,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.ArrayList;
@@ -75,6 +84,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     @NonNull
     private MapView mapView;
 
+    @Nullable
+    private LocationCallback locationUpdateCallback;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,7 +108,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.map_fragment, container, false);
-        mapView = (MapView) view.findViewById(R.id.map_map);
+        mapView = view.findViewById(R.id.map_map);
         mapView.onCreate(savedInstanceState);
         return view;
     }
@@ -149,21 +160,18 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                if (getActivity() instanceof StationMapActivity) {
-                    SystemBarTintManager manager = ((StationMapActivity) getActivity()).getTintManager();
-                    if (manager != null) {
+        mapView.getMapAsync(googleMap -> {
+            if (getActivity() instanceof StationMapActivity) {
+                SystemBarTintManager manager = ((StationMapActivity) getActivity()).getTintManager();
+                if (manager != null) {
 
-                        SystemBarTintManager.SystemBarConfig config = manager.getConfig();
-                        googleMap.setPadding(0, 0, config.getPixelInsetRight(), config.getPixelInsetBottom());
-                    }
+                    SystemBarTintManager.SystemBarConfig config = manager.getConfig();
+                    googleMap.setPadding(0, 0, config.getPixelInsetRight(), config.getPixelInsetBottom());
                 }
-
-                map = googleMap;
-                setupMap();
             }
+
+            map = googleMap;
+            setupMap();
         });
 
         EventBus.getDefault().registerSticky(this);
@@ -206,25 +214,26 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         } else {
             update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
 
-            map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                @Override
-                public void onMyLocationChange(Location location) {
-                    map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-                    map.setOnMyLocationChangeListener(null);
-                }
-            });
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getContext());
+                LocationRequest request = LocationRequest.create()
+                        .setNumUpdates(1)
+                        .setPriority(LocationRequest.PRIORITY_LOW_POWER);
 
+                locationUpdateCallback = new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+                    }
+                };
+
+                client.requestLocationUpdates(request, locationUpdateCallback, getContext().getMainLooper());
+            }
         }
 
         map.moveCamera(update);
-        getActivity().supportInvalidateOptionsMenu();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                createMarkers();
-            }
-        }, 300);
+        getActivity().invalidateOptionsMenu();
+        new Handler().postDelayed(this::createMarkers, 300);
     }
 
     private void createMarkers() {
@@ -267,6 +276,16 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (locationUpdateCallback != null) {
+            FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getContext());
+            client.removeLocationUpdates(locationUpdateCallback);
+            locationUpdateCallback = null;
+        }
     }
 
     public void onEventMainThread(LocationUpdatedEvent data) {
