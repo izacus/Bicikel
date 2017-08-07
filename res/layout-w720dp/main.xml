@@ -2,14 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal"
-    >
+    android:orientation="horizontal">
 
-	<fragment class="si.virag.bicikelj.stations.StationListFragment"
-	    	   android:id="@+id/fragment_station_list"
-	    	   android:layout_width="380dp"
-	    	   android:layout_height="match_parent"
-        />
+    <fragment
+        android:id="@+id/fragment_station_list"
+        class="si.virag.bicikelj.stations.StationListFragment"
+        android:layout_width="380dp"
+        android:layout_height="match_parent" />
 
     <FrameLayout
         android:id="@+id/map_container"
