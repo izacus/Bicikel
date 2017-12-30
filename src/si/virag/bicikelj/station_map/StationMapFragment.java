@@ -1,6 +1,7 @@
 package si.virag.bicikelj.station_map;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -90,7 +91,11 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getActivity().getApplicationContext();
+
+        Context ctx = getContext();
+        if (ctx != null) {
+            context = ctx.getApplicationContext();
+        }
     }
 
     @Override
@@ -106,7 +111,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.map_fragment, container, false);
         mapView = view.findViewById(R.id.map_map);
         mapView.onCreate(savedInstanceState);
@@ -120,7 +125,12 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                }
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -214,7 +224,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         } else {
             update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
 
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Context context = getContext();
+            if (context != null && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getContext());
                 LocationRequest request = LocationRequest.create()
                         .setNumUpdates(1)
@@ -268,7 +279,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("focusOnStationId", focusStationId);
         mapView.onSaveInstanceState(outState);
@@ -284,9 +295,12 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     public void onStop() {
         super.onStop();
         if (locationUpdateCallback != null) {
-            FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getContext());
-            client.removeLocationUpdates(locationUpdateCallback);
-            locationUpdateCallback = null;
+            Context context = getContext();
+            if (context != null) {
+                FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(context);
+                client.removeLocationUpdates(locationUpdateCallback);
+                locationUpdateCallback = null;
+            }
         }
     }
 

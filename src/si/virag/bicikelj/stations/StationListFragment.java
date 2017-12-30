@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -68,14 +69,17 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         super.onCreate(savedInstanceState);
 
         FavoritesManager fm = new FavoritesManager(getActivity());
-        adapter = new StationListAdapter(getActivity(), fm, new ArrayList<Station>(), null);
+        adapter = new StationListAdapter(getActivity(), fm, new ArrayList<>(), null);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        progressTopOffset = ((MainActivity) getActivity()).tintManager.getConfig().getPixelInsetTop(true) + (int) (4.0f * getResources().getDisplayMetrics().density);
+        MainActivity activity = (MainActivity) getActivity();
+        if (activity == null) return;
+
+        progressTopOffset = activity.tintManager.getConfig().getPixelInsetTop(true) + (int) (4.0f * getResources().getDisplayMetrics().density);
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setProgressViewOffset(false, 0, progressTopOffset);
         isTablet = ((MainActivity) getActivity()).isTabletLayout();
@@ -95,7 +99,7 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.stationlist_fragment, container);
@@ -116,23 +120,21 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
-                    new int[]{android.R.attr.actionBarSize});
-            int actionBarSize = (int) styledAttributes.getDimension(0, 0);
-            styledAttributes.recycle();
+            Context context = getContext();
+            if (context != null) {
+                final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
+                        new int[]{android.R.attr.actionBarSize});
+                int actionBarSize = (int) styledAttributes.getDimension(0, 0);
+                styledAttributes.recycle();
 
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
-            params.topMargin = actionBarSize;
-            swipeRefreshLayout.setLayoutParams(params);
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
+                params.topMargin = actionBarSize;
+                swipeRefreshLayout.setLayoutParams(params);
+            }
         }
 
         emptyView = v.findViewById(R.id.stationlist_emptyview);
-        emptyView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                refresh();
-            }
-        });
+        emptyView.setOnClickListener(v1 -> refresh());
 
         swipeRefreshLayout.setRefreshing(true);
         return v;
@@ -163,8 +165,14 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
                 if (location != null)
                     adapter.updateLocation(location);
 
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
+                Activity activity = getActivity();
+                if (activity != null) {
+                    InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
+                    }
+                }
+
                 return true;
             }
         });
@@ -303,7 +311,11 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
         Intent intent = new Intent(getActivity(), StationMapActivity.class);
         startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.slide_in_right, 0);
+
+        Activity activity = getActivity();
+        if (activity != null) {
+            activity.overridePendingTransition(R.anim.slide_in_right, 0);
+        }
     }
 
 
