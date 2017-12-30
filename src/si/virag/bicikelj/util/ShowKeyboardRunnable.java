@@ -4,9 +4,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-public class ShowKeyboardRunnable implements Runnable {
-    final View view;
-    final Context context;
+public final class ShowKeyboardRunnable implements Runnable {
+    private final View view;
+    private final Context context;
 
     public ShowKeyboardRunnable(Context context, View view) {
         this.context = context;

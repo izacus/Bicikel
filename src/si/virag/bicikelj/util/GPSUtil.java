@@ -5,8 +5,6 @@ import android.app.Dialog;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApi;
 
 public class GPSUtil {
     public static final int GPS_FAIL_DIALOG_REQUEST_CODE = 9584;

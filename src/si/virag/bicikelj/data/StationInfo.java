@@ -20,12 +20,12 @@ public class StationInfo {
         return network.stations.get(0).getUpdated();
     }
 
-    public StationInfo() {
+    private StationInfo() {
         network = new CityBikesNetwork();
         network.stations = new ArrayList<>();
     }
 
-    public void addStation(Station station) {
+    private void addStation(Station station) {
         network.stations.add(station);
     }
 

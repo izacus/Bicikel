@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,7 +35,6 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
-import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.events.FocusOnStationEvent;
 import si.virag.bicikelj.events.ListItemSelectedEvent;
@@ -103,13 +101,13 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
                              ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.stationlist_fragment, container);
-        RecyclerView listView = (RecyclerView) v.findViewById(R.id.stationlist_list);
+        RecyclerView listView = v.findViewById(R.id.stationlist_list);
         listView.setAdapter(adapter);
         listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(getActivity()));
         listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
-        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.stationlist_swipe);
+        swipeRefreshLayout = v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setProgressViewOffset(false, 0, progressTopOffset);
         swipeRefreshLayout.setColorSchemeResources(R.color.primary,
@@ -293,11 +291,11 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
         swipeRefreshLayout.setVisibility(View.INVISIBLE);
         emptyView.setVisibility(View.VISIBLE);
-        TextView text = (TextView) activity.findViewById(R.id.stationlist_loading_error);
+        TextView text = activity.findViewById(R.id.stationlist_loading_error);
         text.setVisibility(View.VISIBLE);
-        TextView loadingText = (TextView) activity.findViewById(R.id.stationlist_loading_text);
+        TextView loadingText = activity.findViewById(R.id.stationlist_loading_text);
         loadingText.setVisibility(View.INVISIBLE);
-        ProgressBar progress = (ProgressBar) activity.findViewById(R.id.stationlist_loading_progress);
+        ProgressBar progress = activity.findViewById(R.id.stationlist_loading_progress);
         progress.setVisibility(View.INVISIBLE);
         text.setText(R.string.stationlist_load_error);
     }
@@ -334,7 +332,11 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
             Intent intent = new Intent(getActivity(), StationMapActivity.class);
             intent.putExtra("focusOnStation", e.stationId);
             startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+            Activity activity = getActivity();
+            if (activity != null) {
+                activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
         }
     }
 

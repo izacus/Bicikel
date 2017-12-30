@@ -13,7 +13,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -26,7 +25,7 @@ import si.virag.bicikelj.util.DisplayUtils;
 import si.virag.bicikelj.util.FavoritesManager;
 import si.virag.bicikelj.util.FuzzyDateTimeFormatter;
 
-public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationListHolder> {
+public final class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.StationListHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_STATION = 1;
     private static final int TYPE_TEXT = 2;
@@ -38,7 +37,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     private List<StationListItem> items;
     private Calendar updateTime;
 
-    public StationListAdapter(Context ctx, FavoritesManager fm, List<Station> items, Calendar updateTime) {
+    StationListAdapter(Context ctx, FavoritesManager fm, List<Station> items, Calendar updateTime) {
         this.ctx = ctx;
         setHasStableIds(true);
         setItems(items);
@@ -141,7 +140,7 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         setItems(stations);
     }
 
-    public void clearData() {
+    private void clearData() {
         this.items.clear();
         this.stations.clear();
         this.notifyDataSetChanged();
@@ -277,12 +276,12 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
             topView.setOnClickListener(this);
             topView.setOnCreateContextMenuListener(this);
 
-            bikes = (TextView) view.findViewById(R.id.stationlist_bikes);
-            free = (TextView) view.findViewById(R.id.stationlist_free);
-            circle = (CircleLetterView) view.findViewById(R.id.stationlist_circle);
+            bikes = view.findViewById(R.id.stationlist_bikes);
+            free = view.findViewById(R.id.stationlist_free);
+            circle = view.findViewById(R.id.stationlist_circle);
 
-            stationName = (TextView) view.findViewById(R.id.stationlist_name);
-            distance = (TextView) view.findViewById(R.id.stationlist_distance);
+            stationName = view.findViewById(R.id.stationlist_name);
+            distance = view.findViewById(R.id.stationlist_distance);
         }
 
         @Override
