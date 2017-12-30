@@ -223,6 +223,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
                 locationUpdateCallback = new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
+                        Location location = locationResult.getLastLocation();
+                        if (location == null) return;
                         map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
                     }
                 };

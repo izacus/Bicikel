@@ -264,13 +264,13 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     }
 
     public final class StationListStationHolder extends StationListHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
-        public final TextView free;
-        public final TextView bikes;
-        public final TextView stationName;
-        public final TextView distance;
-        public final CircleLetterView circle;
+        final TextView free;
+        final TextView bikes;
+        final TextView stationName;
+        final TextView distance;
+        final CircleLetterView circle;
 
-        public StationListStationHolder(View view) {
+        StationListStationHolder(View view) {
             super(view);
 
             View topView = view.findViewById(R.id.stationlist_item);
@@ -287,6 +287,8 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
 
         @Override
         public void onClick(View v) {
+            int pos = getAdapterPosition();
+            if (pos >= items.size()) return;
             StationListItem s = items.get(getAdapterPosition());
             if (s instanceof StationListStation) {
                 EventBus.getDefault().post(new ListItemSelectedEvent(((StationListStation) s).station.getId()));
