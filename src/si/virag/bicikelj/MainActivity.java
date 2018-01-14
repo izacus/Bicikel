@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, request, this);
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalStateException e) {
             Log.w(LOG_TAG, "No permission for location, skipping location updates.");
         }
     }
