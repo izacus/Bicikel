@@ -27,6 +27,8 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
@@ -202,8 +204,6 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     private void filterStations(String text) {
-        Log.d(this.toString(), "Filter: " + text);
-
         if (text.trim().length() > 0) {
             StationInfo filteredInfo = data.getFilteredInfo(text);
 
@@ -216,8 +216,9 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
             adapter.updateData(data);
         }
 
-        if (location != null)
+        if (location != null) {
             adapter.updateLocation(location);
+        }
     }
 
     @Override
@@ -278,6 +279,7 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
             @Override
             public void failure(RetrofitError error) {
+                Crashlytics.logException(error);
                 swipeRefreshLayout.setRefreshing(false);
                 Log.e("Bicikelj", "Load failed.", error.getCause());
                 showError();

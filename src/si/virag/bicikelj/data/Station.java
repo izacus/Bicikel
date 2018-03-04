@@ -50,7 +50,6 @@ public class Station {
         }
 
         distance = getLocation().distanceTo(currentLocation);
-        Log.d(this.toString(), "Distance " + distance);
     }
 
     @Nullable

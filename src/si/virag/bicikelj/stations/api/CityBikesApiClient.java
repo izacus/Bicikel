@@ -12,6 +12,7 @@ import java.util.Calendar;
 
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
+import si.virag.bicikelj.BuildConfig;
 
 public class CityBikesApiClient {
 
@@ -23,7 +24,7 @@ public class CityBikesApiClient {
 
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://api.citybik.es")
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.NONE : RestAdapter.LogLevel.FULL)
                 .setConverter(new GsonConverter(gson))
                 .build();
 
