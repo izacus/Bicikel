@@ -81,6 +81,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             setupMapFragment();
         }
+
+        RxPermissions permissions = new RxPermissions(this);
+        permissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Boolean granted) {
+                        if (!granted) return;
+                        apiClient = new GoogleApiClient.Builder(MainActivity.this)
+                                .addApi(LocationServices.API)
+                                .addConnectionCallbacks(MainActivity.this)
+                                .addOnConnectionFailedListener(MainActivity.this)
+                                .build();
+                        apiClient.connect();
+                    }
+                });
     }
 
     @Override
@@ -115,36 +140,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         break;
                 }
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        RxPermissions permissions = new RxPermissions(this);
-        permissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-                .subscribe(new Subscriber<Boolean>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(Boolean granted) {
-                        if (!granted) return;
-                        apiClient = new GoogleApiClient.Builder(MainActivity.this)
-                                .addApi(LocationServices.API)
-                                .addConnectionCallbacks(MainActivity.this)
-                                .addOnConnectionFailedListener(MainActivity.this)
-                                .build();
-                        apiClient.connect();
-                    }
-                });
-
     }
 
     @Override
