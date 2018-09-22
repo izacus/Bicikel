@@ -1,7 +1,10 @@
 package si.virag.bicikelj.stations;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -16,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import si.virag.bicikelj.BicikeljApplication;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.Station;
 import si.virag.bicikelj.data.StationInfo;
@@ -90,7 +94,7 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
         });
 
         if (updateTime != null)
-            this.items.add(new StationListText(ctx.getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(ctx, updateTime)));
+            this.items.add(new StationListText(ctx.getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(ctx, updateTime), null));
 
         this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_favorites)));
 
@@ -99,7 +103,7 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
                 this.items.add(new StationListStation(s));
             }
         } else {
-            this.items.add(new StationListText(ctx.getString(R.string.stationlist_hint_favorites)));
+            this.items.add(new StationListText(ctx.getString(R.string.stationlist_hint_favorites), null));
         }
 
         this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_other_stations)));
@@ -107,7 +111,9 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
             this.items.add(new StationListStation(s));
         }
 
-        this.items.add(new StationListText(ctx.getString(R.string.source)));
+        this.items.add(new StationListText(ctx.getString(R.string.source), () -> {
+            ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BicikeljApplication.BICIKELJ_PRIVACY_URL)));
+        }));
 
         notifyDataSetChanged();
     }
@@ -245,9 +251,11 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
 
     private static class StationListText implements StationListItem {
         public final CharSequence text;
+        @Nullable public final Runnable onClickEvent;
 
-        private StationListText(CharSequence text) {
+        private StationListText(CharSequence text, @Nullable Runnable onClickEvent) {
             this.text = text;
+            this.onClickEvent = onClickEvent;
         }
 
         @Override
@@ -322,13 +330,27 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
         }
     }
 
-    public final class StationListTextHolder extends StationListHolder {
+    public final class StationListTextHolder extends StationListHolder implements View.OnClickListener {
         public final TextView text;
 
 
         public StationListTextHolder(View itemView) {
             super(itemView);
             text = itemView.findViewById(R.id.stationlist_text);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int pos = getAdapterPosition();
+            if (pos >= items.size()) return;
+            StationListItem s = items.get(getAdapterPosition());
+            if (s instanceof StationListText) {
+                Runnable onClickEvent = ((StationListText) s).onClickEvent;
+                if (onClickEvent != null) {
+                    onClickEvent.run();
+                }
+            }
         }
     }
 }

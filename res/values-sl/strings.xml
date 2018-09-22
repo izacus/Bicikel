@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="source">Vir: CityBike.es</string>
+    <string name="source">Vir: CityBike.es\nIzjava o zasebnosti</string>
     <string name="stationlist_loading">Nalagam&#8230;</string>
     <string name="stationlist_load_error">Trenutnega stanja postaj ni bilo mogoče dobiti.\n\n:(\n\nPoskusite čez trenutek.</string>
     <string name="bikes">koles</string>

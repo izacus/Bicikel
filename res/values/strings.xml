@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Bicikel</string>
-    <string name="source">Source: CityBike.es</string>
+    <string name="source">Source: CityBike.es\nPrivacy policy</string>
     <string name="stationlist_loading">Loading&#8230;</string>
     <string name="stationlist_load_error">Current station status could not be loaded.\n\n:(\n\nTry again in a moment.</string>
     <string name="bikes">bikes</string>
