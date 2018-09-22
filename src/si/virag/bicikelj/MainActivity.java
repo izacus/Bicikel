@@ -23,11 +23,12 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
-import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import de.greenrobot.event.EventBus;
 import io.fabric.sdk.android.Fabric;
-import rx.Subscriber;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
@@ -52,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
-
         ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
@@ -84,15 +83,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         RxPermissions permissions = new RxPermissions(this);
         permissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-                .subscribe(new Subscriber<Boolean>() {
-                    @Override
-                    public void onCompleted() {
 
-                    }
-
+                .subscribe(new Observer<Boolean>() {
                     @Override
-                    public void onError(Throwable e) {
-                        Crashlytics.logException(e);
+                    public void onSubscribe(Disposable d) {
+
                     }
 
                     @Override
@@ -104,6 +99,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                 .addOnConnectionFailedListener(MainActivity.this)
                                 .build();
                         apiClient.connect();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Crashlytics.logException(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }
