@@ -27,8 +27,6 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
@@ -279,7 +277,7 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
             @Override
             public void failure(RetrofitError error) {
-                Crashlytics.logException(error);
+                //Crashlytics.logException(error);
                 swipeRefreshLayout.setRefreshing(false);
                 Log.e("Bicikelj", "Load failed.", error.getCause());
                 showError();

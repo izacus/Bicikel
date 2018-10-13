@@ -16,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -26,7 +25,6 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import de.greenrobot.event.EventBus;
-import io.fabric.sdk.android.Fabric;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     @Override
                     public void onError(Throwable e) {
-                        Crashlytics.logException(e);
+                        //Crashlytics.logException(e);
                     }
 
                     @Override
