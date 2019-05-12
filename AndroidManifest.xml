@@ -36,7 +36,7 @@
             android:logo="@drawable/logo_padded"
             android:theme="@style/Theme.Bicikel"
             android:resizeableActivity="true"
-            tools:targetApi="n">
+            tools:targetApi="q">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

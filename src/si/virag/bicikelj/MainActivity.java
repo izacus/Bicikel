@@ -25,8 +25,6 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import de.greenrobot.event.EventBus;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
@@ -81,33 +79,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         RxPermissions permissions = new RxPermissions(this);
         permissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-
-                .subscribe(new Observer<Boolean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Boolean granted) {
-                        if (!granted) return;
-                        apiClient = new GoogleApiClient.Builder(MainActivity.this)
-                                .addApi(LocationServices.API)
-                                .addConnectionCallbacks(MainActivity.this)
-                                .addOnConnectionFailedListener(MainActivity.this)
-                                .build();
-                        apiClient.connect();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        //Crashlytics.logException(e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
+                .subscribe(granted -> {
+                    if (!granted) return;
+                    apiClient = new GoogleApiClient.Builder(MainActivity.this)
+                            .addApi(LocationServices.API)
+                            .addConnectionCallbacks(MainActivity.this)
+                            .addOnConnectionFailedListener(MainActivity.this)
+                            .build();
+                    apiClient.connect();
                 });
     }
 
