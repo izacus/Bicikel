@@ -1,25 +1,24 @@
 package si.virag.bicikelj;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -30,24 +29,23 @@ import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
 import si.virag.bicikelj.util.GPSUtil;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = "Bicikelj.MainActivity";
 
     private boolean isTablet = false;
 
-    @Nullable
-    private GoogleApiClient apiClient;
     public SystemBarTintManager tintManager;
+
+    @Nullable
+    private FusedLocationProviderClient fusedLocationClient;
 
     /**
      * Called when the activity is first created.
      */
+    @SuppressLint("CheckResult")
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
 
@@ -59,11 +57,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         // Fragments use actionbar to show loading status
         setContentView(R.layout.main);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-            setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon, getResources().getColor(R.color.primary)));
-        }
+        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon, getColor(R.color.primary)));
 
         tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
@@ -81,19 +76,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         permissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribe(granted -> {
                     if (!granted) return;
-                    apiClient = new GoogleApiClient.Builder(MainActivity.this)
-                            .addApi(LocationServices.API)
-                            .addConnectionCallbacks(MainActivity.this)
-                            .addOnConnectionFailedListener(MainActivity.this)
-                            .build();
-                    apiClient.connect();
+                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+                    updateLocation();
                 });
     }
 
     @Override
     public boolean onSearchRequested() {
         StationListFragment slFragment = (StationListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
-        slFragment.searchRequested();
+        if (slFragment != null) {
+            slFragment.searchRequested();
+        }
         return super.onSearchRequested();
     }
 
@@ -113,46 +106,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onActivityResult(
             int requestCode, int resultCode, Intent data) {
         // Decide what to do based on the original request code
-        switch (requestCode) {
-            case GPSUtil.GPS_FAIL_DIALOG_REQUEST_CODE:
-
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        setupMapFragment();
-                        break;
-                }
+        if (requestCode == GPSUtil.GPS_FAIL_DIALOG_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            setupMapFragment();
         }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if (apiClient != null) apiClient.disconnect();
+    protected void onStart() {
+        super.onStart();
+        updateLocation();
     }
 
-    @Override
-    public void onConnected(Bundle info) {
-        LocationRequest request = LocationRequest.create().setPriority(LocationRequest.PRIORITY_LOW_POWER);
+    private void updateLocation() {
+        if (fusedLocationClient == null) {
+            return;
+        }
 
+        LocationRequest request = LocationRequest.create().setPriority(LocationRequest.PRIORITY_LOW_POWER);
         try {
-            LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, request, this);
-        } catch (SecurityException | IllegalStateException e) {
+            fusedLocationClient.requestLocationUpdates(request, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    EventBus.getDefault().postSticky(new LocationUpdatedEvent(locationResult.getLastLocation()));
+                }
+            }, getMainLooper());
+        } catch (SecurityException e) {
             Log.w(LOG_TAG, "No permission for location, skipping location updates.");
         }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(LOG_TAG, "Location unavailable.");
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        EventBus.getDefault().postSticky(new LocationUpdatedEvent(location));
     }
 }

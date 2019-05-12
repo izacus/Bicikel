@@ -39,14 +39,14 @@
 
     </RelativeLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/stationlist_swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"
         >
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/stationlist_list"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
@@ -55,7 +55,7 @@
             android:clipToPadding="false"
             />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 </FrameLayout>

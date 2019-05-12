@@ -1,6 +1,6 @@
 package si.virag.bicikelj.data;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
