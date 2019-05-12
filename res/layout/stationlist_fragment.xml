@@ -1,40 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="0dp"
-    >
+    android:layout_height="match_parent">
 
-    <RelativeLayout android:id="@+id/stationlist_emptyview"
+    <RelativeLayout
+        android:id="@+id/stationlist_emptyview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent">
 
-        >
-
-        <TextView android:id="@+id/stationlist_loading_text"
-            android:layout_centerInParent="true"
+        <TextView
+            android:id="@+id/stationlist_loading_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/stationlist_loading"/>
+            android:layout_centerInParent="true"
+            android:text="@string/stationlist_loading" />
 
         <TextView
             android:id="@+id/stationlist_loading_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/stationlist_load_error"
             android:gravity="center"
-            android:visibility="invisible"
-            />
+            android:text="@string/stationlist_load_error"
+            android:visibility="invisible" />
 
         <ProgressBar
-            android:id = "@+id/stationlist_loading_progress"
-            android:layout_toLeftOf="@id/stationlist_loading_text"
+            android:id="@+id/stationlist_loading_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:indeterminateOnly = "true"
-            android:indeterminate = "true"
-            android:layout_width = "wrap_content"
-            android:layout_height = "wrap_content"
+            android:layout_toLeftOf="@id/stationlist_loading_text"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"
             android:padding="6dp" />
 
     </RelativeLayout>
@@ -43,17 +40,15 @@
         android:id="@+id/stationlist_swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
-        >
+        android:visibility="invisible">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/stationlist_list"
-            android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="@bool/list_fits_system_windows"
             android:clipToPadding="false"
-            />
+            android:fitsSystemWindows="@bool/list_fits_system_windows"
+            android:scrollbars="vertical" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

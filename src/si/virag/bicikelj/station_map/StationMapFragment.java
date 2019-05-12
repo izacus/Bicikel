@@ -47,7 +47,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -169,15 +168,6 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         super.onResume();
         mapView.onResume();
         mapView.getMapAsync(googleMap -> {
-            if (getActivity() instanceof StationMapActivity) {
-                SystemBarTintManager manager = ((StationMapActivity) getActivity()).getTintManager();
-                if (manager != null) {
-
-                    SystemBarTintManager.SystemBarConfig config = manager.getConfig();
-                    googleMap.setPadding(0, 0, config.getPixelInsetRight(), config.getPixelInsetBottom());
-                }
-            }
-
             map = googleMap;
             setupMap();
         });

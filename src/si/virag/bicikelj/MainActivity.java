@@ -20,7 +20,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import de.greenrobot.event.EventBus;
@@ -33,9 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = "Bicikelj.MainActivity";
 
     private boolean isTablet = false;
-
-    public SystemBarTintManager tintManager;
-
+    private FirebaseAnalytics firebaseAnalytics;
     @Nullable
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -45,10 +43,11 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("CheckResult")
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getSupportActionBar();
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayUseLogoEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
@@ -59,10 +58,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main);
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon, getColor(R.color.primary)));
-
-        tintManager = new SystemBarTintManager(this);
-        tintManager.setStatusBarTintEnabled(true);
-        tintManager.setStatusBarTintResource(R.color.primary);
 
         isTablet = (findViewById(R.id.map_container) != null);
         if (isTablet) {

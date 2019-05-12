@@ -60,8 +60,6 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
     private View emptyView;
 
-    private int progressTopOffset;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,10 +74,6 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         setHasOptionsMenu(true);
         MainActivity activity = (MainActivity) getActivity();
         if (activity == null) return;
-
-        progressTopOffset = activity.tintManager.getConfig().getPixelInsetTop(true) + (int) (4.0f * getResources().getDisplayMetrics().density);
-        if (swipeRefreshLayout != null)
-            swipeRefreshLayout.setProgressViewOffset(false, 0, progressTopOffset);
         isTablet = ((MainActivity) getActivity()).isTabletLayout();
         refresh();
     }
@@ -109,7 +103,6 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
         swipeRefreshLayout = v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setProgressViewOffset(false, 0, progressTopOffset);
         swipeRefreshLayout.setColorSchemeResources(R.color.primary,
                 R.color.primary_dark,
                 R.color.secondary,

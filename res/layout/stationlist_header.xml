@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
-    android:background="#EFEFEF"
-    android:clipToPadding="false"
-    >
+    android:background="?android:attr/colorBackgroundFloating"
+    android:clipToPadding="false">
 
     <TextView
         android:id="@+id/stationlist_header_text"
@@ -15,8 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         tools:text="ListHeader"
-        style="@style/StationList.Header"
-        />
-
+        style="@style/StationList.Header"/>
 
 </FrameLayout>
