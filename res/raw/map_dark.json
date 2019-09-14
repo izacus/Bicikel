@@ -1,5 +1,13 @@
 [
   {
+    "featureType": "all",
+    "stylers": [
+      {
+        "color": "#242f3e"
+      }
+    ]
+  },
+  {
     "elementType": "geometry",
     "stylers": [
       {

@@ -231,6 +231,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         map.moveCamera(update);
         getActivity().invalidateOptionsMenu();
         new Handler().postDelayed(this::createMarkers, 300);
+        mapView.postDelayed(() -> mapView.setVisibility(View.VISIBLE), 150);
     }
 
     private void createMarkers() {
