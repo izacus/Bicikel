@@ -14,11 +14,11 @@
     </style>
     
     <style name="StationList.Numbers.Free" parent="@style/StationList.Numbers">
-        <item name="android:textColor">@color/secondary</item>
+        <item name="android:textColor">@color/station_number_free</item>
         <item name="android:textSize">24sp</item>
     </style> 
     <style name="StationList.Numbers.Full" parent="@style/StationList.Numbers">
-        <item name="android:textColor">@color/primary</item>
+        <item name="android:textColor">@color/station_number_full</item>
     </style>
     
     <style name="StationList.Name" parent="@android:style/TextAppearance.Small">

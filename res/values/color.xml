@@ -3,4 +3,6 @@
     <color name="primary">#0a7e07</color>
     <color name="primary_dark">#0d5302</color>
     <color name="secondary">#c41411</color>
+    <color name="station_number_free">@color/secondary</color>
+    <color name="station_number_full">@color/primary</color>
 </resources>

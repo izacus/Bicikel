@@ -6,16 +6,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -32,6 +29,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -45,6 +47,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -66,8 +69,6 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     private static final double MAP_CENTER_LAT = 46.051367;
     private static final double MAP_CENTER_LNG = 14.506542;
 
-    private Context context;
-
     @Nullable
     private GoogleMap map;
 
@@ -86,16 +87,6 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     private LocationCallback locationUpdateCallback;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Context ctx = getContext();
-        if (ctx != null) {
-            context = ctx.getApplicationContext();
-        }
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getArguments() != null && getArguments().containsKey("focusOnStation")) {
@@ -112,6 +103,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         View view = inflater.inflate(R.layout.map_fragment, container, false);
         mapView = view.findViewById(R.id.map_map);
         mapView.onCreate(savedInstanceState);
+        mapView.setFitsSystemWindows(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
         return view;
     }
 
@@ -176,8 +168,12 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     }
 
     private void setupMap() {
-        if (map == null || getActivity() == null) return;
-        MapsInitializer.initialize(getActivity());
+        if (map == null || getContext() == null) return;
+        MapsInitializer.initialize(getContext());
+        map.setPadding(0, 0, 0, getNavigationBarHeight());
+        if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_dark));
+        }
 
         map.clear();
         map.getUiSettings().setCompassEnabled(true);
@@ -292,6 +288,19 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         }
     }
 
+    private int getNavigationBarHeight() {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return 0;
+        }
+
+        int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return getResources().getDimensionPixelSize(resourceId);
+        }
+
+        return 0;
+    }
+
     public void onEventMainThread(LocationUpdatedEvent data) {
         this.location = data.location;
         if (location == null || stations == null) return;
@@ -328,14 +337,10 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
 
         @Override
         public View getInfoWindow(Marker marker) {
-            return null;
-        }
+            marker.setInfoWindowAnchor(0.5f, -0.2f);
 
-        @Override
-        public View getInfoContents(Marker marker) {
-            Context ctx = getActivity() == null ? context : getActivity();
-            TextView tv = new TextView(ctx);
-            tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.map_info, mapView, false);
+            TextView tv = view.findViewById(R.id.map_info_text);
             Station s = markerMap.get(marker);
             if (s == null)
                 return tv;
@@ -349,23 +354,23 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
             int startOfNumberHint = ssb.length();
 
             // Bikes hint text
-            ssb.append(ctx.getString(R.string.map_hint_bikes));
+            ssb.append(getContext().getString(R.string.map_hint_bikes));
             ssb.append(" ");
             String bikesStr = String.valueOf(s.getAvailableBikes());
             ssb.append(bikesStr);
-            ssb.setSpan(new ForegroundColorSpan(ctx.getResources().getColor(R.color.primary_dark)), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new ForegroundColorSpan(getContext().getColor(R.color.station_number_full)), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Free hint text
             ssb.append(" ");
-            ssb.append(ctx.getString(R.string.map_hint_free));
+            ssb.append(getContext().getString(R.string.map_hint_free));
             ssb.append(" ");
             String freeStr = String.valueOf(s.getFreeSpaces());
             ssb.append(freeStr);
-            ssb.setSpan(new ForegroundColorSpan(ctx.getResources().getColor(R.color.secondary)), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new ForegroundColorSpan(getContext().getColor(R.color.station_number_free)), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            ssb.setSpan(new AbsoluteSizeSpan((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14.0f, ctx.getResources().getDisplayMetrics())),
+            ssb.setSpan(new AbsoluteSizeSpan((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14.0f, getContext().getResources().getDisplayMetrics())),
                     startOfNumberHint,
                     ssb.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -374,7 +379,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
                 ssb.append("\n");
                 String distanceString = DisplayUtils.formatDistance(s.getDistance());
                 ssb.append(distanceString);
-                ssb.setSpan(new AbsoluteSizeSpan((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 11.0f, ctx.getResources().getDisplayMetrics())),
+                ssb.setSpan(new AbsoluteSizeSpan((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 11.0f, getContext().getResources().getDisplayMetrics())),
                         ssb.length() - distanceString.length(),
                         ssb.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -384,7 +389,12 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
 
 
             tv.setText(ssb);
-            return tv;
+            return view;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
         }
     }
 }
