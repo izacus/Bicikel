@@ -23,8 +23,9 @@ public class StationMapActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             return;
+        }
 
         StationMapFragment fragment = new StationMapFragment();
         Bundle arguments = new Bundle();

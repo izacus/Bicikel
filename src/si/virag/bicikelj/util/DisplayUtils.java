@@ -35,6 +35,7 @@ public class DisplayUtils {
         DONT_CAPITALIZE.add("trg");
         DONT_CAPITALIZE.add("starejših");
         DONT_CAPITALIZE.add("c.");
+        DONT_CAPITALIZE.add("na");
         DONT_CAPITALIZE.add("cerkev");
         DONT_CAPITALIZE.add("park");
         DONT_CAPITALIZE.add("nabrežje");
@@ -47,6 +48,9 @@ public class DisplayUtils {
         KEEP.add("MDB");
         KEEP.add("OF");
         KEEP.add("FF");
+        KEEP.add("P+R");
+        KEEP.add("BS4");
+        KEEP.add("NUK");
     }
 
     public static String formatDistance(Float distance) {
