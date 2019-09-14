@@ -13,3 +13,4 @@ Thumbs.db
 .gradle
 build
 local.properties
+google-services.json
