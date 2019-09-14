@@ -4,9 +4,12 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -14,6 +17,8 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Fragments use actionbar to show loading status
         setContentView(R.layout.main);
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+        Bitmap icon = getBitmapFromVectorDrawable(this, R.drawable.logo);
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon, getColor(R.color.primary)));
 
         isTablet = (findViewById(R.id.map_container) != null);
@@ -128,5 +133,20 @@ public class MainActivity extends AppCompatActivity {
         } catch (SecurityException e) {
             Log.w(LOG_TAG, "No permission for location, skipping location updates.");
         }
+    }
+
+    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = (DrawableCompat.wrap(drawable)).mutate();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 }
