@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.location.Location;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,9 +31,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.StationInfo;
@@ -233,21 +234,16 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         swipeRefreshLayout.setRefreshing(true);
         this.data = null;
         CityBikesApi api = CityBikesApiClient.getBicikeljApi();
-
-        final long loadStart = System.currentTimeMillis();
-        api.getStationData(new Callback<StationInfo>() {
+        api.getStationData().enqueue(new Callback<StationInfo>() {
             @Override
-            public void success(StationInfo data, Response response) {
-                if (System.currentTimeMillis() - loadStart < 1000) {
-                    try {
-                        Thread.sleep(1000 - (System.currentTimeMillis() - loadStart));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            public void onResponse(Call<StationInfo> call, Response<StationInfo> response) {
+                if (!response.isSuccessful()) {
+                    showRequestFailed(response.message());
+                    return;
                 }
 
                 swipeRefreshLayout.setRefreshing(false);
-                StationListFragment.this.data = data;
+                StationListFragment.this.data = response.body();
                 // Update data in-place when already available
                 adapter.updateData(data);
 
@@ -266,16 +262,20 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
                 EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
                 swipeRefreshLayout.setVisibility(View.VISIBLE);
+
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                //Crashlytics.logException(error);
-                swipeRefreshLayout.setRefreshing(false);
-                Log.e("Bicikelj", "Load failed.", error.getCause());
-                showError();
+            public void onFailure(Call<StationInfo> call, Throwable t) {
+                showRequestFailed(t.getMessage());
             }
         });
+    }
+
+    private void showRequestFailed(String error) {
+        swipeRefreshLayout.setRefreshing(false);
+        Log.e("Bicikelj", "Load failed: " + error);
+        showError();
     }
 
     private void showError() {

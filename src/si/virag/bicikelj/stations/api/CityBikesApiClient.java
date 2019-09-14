@@ -10,8 +10,10 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Calendar;
 
-import retrofit.RestAdapter;
-import retrofit.converter.GsonConverter;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import si.virag.bicikelj.BuildConfig;
 
 public class CityBikesApiClient {
@@ -22,10 +24,14 @@ public class CityBikesApiClient {
                 .registerTypeAdapter(Calendar.class, new CalendarTypeAdapter())
                 .create();
 
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("https://api.citybik.es")
-                .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.NONE : RestAdapter.LogLevel.FULL)
-                .setConverter(new GsonConverter(gson))
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        Retrofit restAdapter = new Retrofit.Builder()
+                .baseUrl("https://api.citybik.es")
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         return restAdapter.create(CityBikesApi.class);
