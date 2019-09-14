@@ -33,12 +33,12 @@
 
         <TextView
             android:id="@+id/stationlist_free"
+            style="@style/StationList.Numbers.Free"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fontFamily="@font/montserrat_alternates_bold"
             android:gravity="center"
-            tools:text="8"
-            style="@style/StationList.Numbers.Free"
-            />
+            tools:text="8" />
 
         <TextView
             android:layout_width="match_parent"
@@ -64,12 +64,12 @@
 
         <TextView
             android:id="@+id/stationlist_bikes"
+            style="@style/StationList.Numbers.Full"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fontFamily="@font/montserrat_alternates_bold"
             android:gravity="center"
-            tools:text = "12"
-            style="@style/StationList.Numbers.Full"
-            />
+            tools:text="12" />
 
         <TextView
             android:layout_width="match_parent"
