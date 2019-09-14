@@ -27,11 +27,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -86,6 +88,9 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     @Nullable
     private LocationCallback locationUpdateCallback;
 
+    private int rightInset = 0;
+    private int bottomInset = 0;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -101,10 +106,19 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.map_fragment, container, false);
+        view.setOnApplyWindowInsetsListener(this::applyWindowInsetsListener);
         mapView = view.findViewById(R.id.map_map);
         mapView.onCreate(savedInstanceState);
-        mapView.setFitsSystemWindows(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
         return view;
+    }
+
+    private WindowInsets applyWindowInsetsListener(View view, WindowInsets windowInsets) {
+        rightInset = windowInsets.getSystemWindowInsetRight();
+        bottomInset = windowInsets.getSystemWindowInsetBottom();
+        if (map != null) {
+            map.setPadding(0, 0, rightInset, bottomInset);
+        }
+        return windowInsets;
     }
 
     @Override
@@ -170,7 +184,7 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     private void setupMap() {
         if (map == null || getContext() == null) return;
         MapsInitializer.initialize(getContext());
-        map.setPadding(0, 0, 0, getNavigationBarHeight());
+        map.setPadding(0, 0, rightInset, bottomInset);
         if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
             map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_dark));
         }
@@ -287,19 +301,6 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
                 locationUpdateCallback = null;
             }
         }
-    }
-
-    private int getNavigationBarHeight() {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return 0;
-        }
-
-        int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            return getResources().getDimensionPixelSize(resourceId);
-        }
-
-        return 0;
     }
 
     public void onEventMainThread(LocationUpdatedEvent data) {

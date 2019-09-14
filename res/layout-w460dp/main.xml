@@ -6,7 +6,7 @@
     <fragment
         android:id="@+id/fragment_station_list"
         class="si.virag.bicikelj.stations.StationListFragment"
-        android:layout_width="400dp"
+        android:layout_width="440dp"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal" />
 
