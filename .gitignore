@@ -1,0 +1,8 @@
+.gradle/
+.idea/
+*.iml
+build/
+
+google-services.json
+local.properties
+res/values/font_certs.xml
