@@ -9,7 +9,7 @@ import io.fabric.sdk.android.Fabric;
 
 public class BicikeljApplication extends Application {
 
-    public static final String BICIKELJ_PRIVACY_URL = "https://mavrik.bitbucket.io/bicikel-privacy-en.html";
+    public static final String BICIKELJ_PRIVACY_URL = "https://izacus.github.io/Bicikel/privacy-en.html";
 
     @Override
     public void onCreate() {
