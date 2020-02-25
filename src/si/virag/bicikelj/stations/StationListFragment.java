@@ -7,12 +7,6 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.location.Location;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -27,6 +21,12 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 
@@ -74,7 +74,9 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
         MainActivity activity = (MainActivity) getActivity();
-        if (activity == null) return;
+        if (activity == null) {
+            return;
+        }
         isTablet = ((MainActivity) getActivity()).isTabletLayout();
         refresh();
     }
@@ -92,30 +94,27 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.stationlist_fragment, container);
         RecyclerView listView = v.findViewById(R.id.stationlist_list);
         listView.setAdapter(adapter);
         listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+        listView.addItemDecoration(
+                new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
         swipeRefreshLayout = v.findViewById(R.id.stationlist_swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(R.color.primary,
-                R.color.primary_dark,
-                R.color.secondary,
-                R.color.primary_dark
-        );
+        swipeRefreshLayout.setColorSchemeResources(R.color.primary, R.color.primary_dark,
+                                                   R.color.secondary, R.color.primary_dark);
 
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Context context = getContext();
             if (context != null) {
-                final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
-                        new int[]{android.R.attr.actionBarSize});
+                final TypedArray styledAttributes = context.getTheme()
+                        .obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
                 int actionBarSize = (int) styledAttributes.getDimension(0, 0);
                 styledAttributes.recycle();
 
@@ -144,8 +143,9 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                if (StationListFragment.this.data == null)
+                if (StationListFragment.this.data == null) {
                     return false;
+                }
 
                 searchBox.post(new ShowKeyboardRunnable(getActivity(), searchBox));
                 return true;
@@ -154,12 +154,14 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 adapter.updateData(data);
-                if (location != null)
+                if (location != null) {
                     adapter.updateLocation(location);
+                }
 
                 Activity activity = getActivity();
                 if (activity != null) {
-                    InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) activity.getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
                     if (imm != null) {
                         imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
                     }
@@ -199,10 +201,11 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         if (text.trim().length() > 0) {
             StationInfo filteredInfo = data.getFilteredInfo(text);
 
-            if (filteredInfo.getStations().size() > 0)
+            if (filteredInfo.getStations().size() > 0) {
                 adapter.updateData(filteredInfo);
-            else
+            } else {
                 adapter.updateData(data);
+            }
 
         } else {
             adapter.updateData(data);
@@ -252,8 +255,9 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
                     activity.findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
                 }
 
-                if (location != null)
+                if (location != null) {
                     adapter.updateLocation(location);
+                }
 
                 if (data == null) {
                     showError();
@@ -280,7 +284,9 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
     private void showError() {
         Activity activity = getActivity();
-        if (activity == null) return;
+        if (activity == null) {
+            return;
+        }
 
         swipeRefreshLayout.setVisibility(View.INVISIBLE);
         emptyView.setVisibility(View.VISIBLE);
@@ -294,11 +300,13 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     private void showFullMap() {
-        if (!GPSUtil.checkPlayServices(getActivity()))
+        if (!GPSUtil.checkPlayServices(getActivity())) {
             return;
+        }
 
-        if (this.data == null)
+        if (this.data == null) {
             return;
+        }
 
         Intent intent = new Intent(getActivity(), StationMapActivity.class);
         startActivity(intent);
@@ -316,8 +324,9 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     public void onEventMainThread(ListItemSelectedEvent e) {
-        if (!GPSUtil.checkPlayServices(getActivity()))
+        if (!GPSUtil.checkPlayServices(getActivity())) {
             return;
+        }
 
         if (isTablet) {
             EventBus.getDefault().post(new FocusOnStationEvent(e.stationId));
@@ -335,6 +344,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
     public void onEventMainThread(LocationUpdatedEvent event) {
         this.location = event.location;
-        if (adapter != null) adapter.updateLocation(location);
+        if (adapter != null) {
+            adapter.updateLocation(location);
+        }
     }
 }

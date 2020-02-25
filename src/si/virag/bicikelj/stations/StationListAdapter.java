@@ -4,14 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,37 +65,54 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
         ArrayList<Station> others = new ArrayList<>();
 
         for (Station item : items) {
-            if (favManager.isFavorite(item.getId()))
+            if (favManager.isFavorite(item.getId())) {
                 favorites.add(item);
-            else
+            } else {
                 others.add(item);
+            }
         }
 
         Collections.sort(favorites, (lhs, rhs) -> {
-            if (lhs == null) return 1;
-            if (rhs == null) return -1;
-
-            if (lhs.getDistance() == null)
+            if (lhs == null) {
                 return 1;
-            if (rhs.getDistance() == null)
+            }
+            if (rhs == null) {
                 return -1;
+            }
+
+            if (lhs.getDistance() == null) {
+                return 1;
+            }
+            if (rhs.getDistance() == null) {
+                return -1;
+            }
             return lhs.getDistance().compareTo(rhs.getDistance());
         });
 
         Collections.sort(others, (lhs, rhs) -> {
-            if (lhs == null) return 1;
-            if (rhs == null) return -1;
-
-            if (lhs.getDistance() == null)
+            if (lhs == null) {
                 return 1;
-            if (rhs.getDistance() == null)
+            }
+            if (rhs == null) {
                 return -1;
+            }
+
+            if (lhs.getDistance() == null) {
+                return 1;
+            }
+            if (rhs.getDistance() == null) {
+                return -1;
+            }
 
             return lhs.getDistance().compareTo(rhs.getDistance());
         });
 
-        if (updateTime != null)
-            this.items.add(new StationListText(ctx.getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(ctx, updateTime), null));
+        if (updateTime != null) {
+            this.items.add(new StationListText(
+                    ctx.getString(R.string.data_is) + " " + FuzzyDateTimeFormatter.getTimeAgo(ctx,
+                                                                                              updateTime),
+                    null));
+        }
 
         this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_favorites)));
 
@@ -103,16 +121,19 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
                 this.items.add(new StationListStation(s));
             }
         } else {
-            this.items.add(new StationListText(ctx.getString(R.string.stationlist_hint_favorites), null));
+            this.items.add(
+                    new StationListText(ctx.getString(R.string.stationlist_hint_favorites), null));
         }
 
-        this.items.add(new StationListHeader(ctx.getString(R.string.stationlist_header_other_stations)));
+        this.items.add(
+                new StationListHeader(ctx.getString(R.string.stationlist_header_other_stations)));
         for (Station s : others) {
             this.items.add(new StationListStation(s));
         }
 
         this.items.add(new StationListText(ctx.getString(R.string.source), () -> {
-            ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BicikeljApplication.BICIKELJ_PRIVACY_URL)));
+            ctx.startActivity(new Intent(Intent.ACTION_VIEW,
+                                         Uri.parse(BicikeljApplication.BICIKELJ_PRIVACY_URL)));
         }));
 
         notifyDataSetChanged();
@@ -136,8 +157,9 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
     }
 
     public void updateLocation(Location location) {
-        if (location == null)
+        if (location == null) {
             return;
+        }
 
         for (Station item : stations) {
             item.setDistance(location);
@@ -155,13 +177,16 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
     @Override
     public StationListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_HEADER) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_header, parent, false);
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.stationlist_header, parent, false);
             return new StationListHeaderHolder(view);
         } else if (viewType == TYPE_TEXT) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_text, parent, false);
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.stationlist_text, parent, false);
             return new StationListTextHolder(view);
         } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.stationlist_item, parent, false);
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.stationlist_item, parent, false);
             return new StationListStationHolder(view);
         }
     }
@@ -251,7 +276,8 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
 
     private static class StationListText implements StationListItem {
         public final CharSequence text;
-        @Nullable public final Runnable onClickEvent;
+        @Nullable
+        public final Runnable onClickEvent;
 
         private StationListText(CharSequence text, @Nullable Runnable onClickEvent) {
             this.text = text;
@@ -295,25 +321,32 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-            if (pos >= items.size()) return;
+            if (pos >= items.size()) {
+                return;
+            }
             StationListItem s = items.get(getAdapterPosition());
             if (s instanceof StationListStation) {
-                EventBus.getDefault().post(new ListItemSelectedEvent(((StationListStation) s).station.getId()));
+                EventBus.getDefault()
+                        .post(new ListItemSelectedEvent(((StationListStation) s).station.getId()));
             }
         }
 
         @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        public void onCreateContextMenu(ContextMenu menu, View v,
+                                        ContextMenu.ContextMenuInfo menuInfo) {
             final StationListItem s = items.get(getAdapterPosition());
             if (s instanceof StationListStation) {
-                String text = favManager.isFavorite(s.getId()) ? ctx.getString(R.string.stationlist_menu_add_favorites) : ctx.getString(R.string.stationlist_menu_remove_favorites);
+                String text = favManager.isFavorite(s.getId()) ? ctx.getString(
+                        R.string.stationlist_menu_add_favorites) : ctx.getString(
+                        R.string.stationlist_menu_remove_favorites);
                 MenuItem item = menu.add(text);
 
                 item.setOnMenuItemClickListener(item1 -> {
-                    if (favManager.isFavorite(s.getId()))
+                    if (favManager.isFavorite(s.getId())) {
                         favManager.removeFavorite(s.getId());
-                    else
+                    } else {
                         favManager.setFavorite(s.getId());
+                    }
                     setItems(stations);
                     return true;
                 });
@@ -343,7 +376,9 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-            if (pos >= items.size()) return;
+            if (pos >= items.size()) {
+                return;
+            }
             StationListItem s = items.get(getAdapterPosition());
             if (s instanceof StationListText) {
                 Runnable onClickEvent = ((StationListText) s).onClickEvent;

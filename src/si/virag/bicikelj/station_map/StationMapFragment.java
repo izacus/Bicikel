@@ -95,15 +95,18 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         super.onActivityCreated(savedInstanceState);
         if (getArguments() != null && getArguments().containsKey("focusOnStation")) {
             this.focusStationId = getArguments().getInt("focusOnStation");
-        } else if (savedInstanceState != null && savedInstanceState.containsKey("focusOnStationId"))
+        } else if (savedInstanceState != null && savedInstanceState.containsKey(
+                "focusOnStationId")) {
             this.focusStationId = savedInstanceState.getInt("focusOnStationId");
+        }
 
         this.stations = new ArrayList<>();
         this.markerMap = new HashMap<>();
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.map_fragment, container, false);
         view.setOnApplyWindowInsetsListener(this::applyWindowInsetsListener);
         mapView = view.findViewById(R.id.map_map);
@@ -130,7 +133,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
 
                 Activity activity = getActivity();
                 if (activity != null) {
-                    activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                    activity.overridePendingTransition(R.anim.slide_in_left,
+                                                       R.anim.slide_out_right);
                 }
 
                 return true;
@@ -143,11 +147,14 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         Uri mapsUri;
 
         if (location == null) {
-            mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&daddr=" + selectedStation.getLocation().getLatitude() + "," + selectedStation.getLocation().getLongitude());
+            mapsUri = Uri.parse(
+                    "http://maps.google.com/maps?dirflg=w&daddr=" + selectedStation.getLocation()
+                            .getLatitude() + "," + selectedStation.getLocation().getLongitude());
         } else {
-            mapsUri = Uri.parse("http://maps.google.com/maps?dirflg=w&saddr=" + location.getLatitude() + ", " +
-                    location.getLongitude() + "&daddr=" + selectedStation.getLocation().getLatitude() + "," +
-                    selectedStation.getLocation().getLongitude());
+            mapsUri = Uri.parse(
+                    "http://maps.google.com/maps?dirflg=w&saddr=" + location.getLatitude() + ", " + location
+                            .getLongitude() + "&daddr=" + selectedStation.getLocation()
+                            .getLatitude() + "," + selectedStation.getLocation().getLongitude());
         }
 
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW, mapsUri);
@@ -181,7 +188,9 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     }
 
     private void setupMap() {
-        if (map == null || getContext() == null) return;
+        if (map == null || getContext() == null) {
+            return;
+        }
         MapsInitializer.initialize(getContext());
         map.setPadding(0, 0, rightInset, bottomInset);
         if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
@@ -214,16 +223,22 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
             }
 
             if (station == null || station.getLocation() == null) {
-                update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
+                update = CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
             } else {
-                update = CameraUpdateFactory.newLatLngZoom(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()), 16.0f);
+                update = CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(station.getLocation().getLatitude(),
+                                   station.getLocation().getLongitude()), 16.0f);
             }
         } else {
-            update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG), 14.0f);
+            update = CameraUpdateFactory.newLatLngZoom(new LatLng(MAP_CENTER_LAT, MAP_CENTER_LNG),
+                                                       14.0f);
 
             Context context = getContext();
-            if (context != null && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getContext());
+            if (context != null && ContextCompat.checkSelfPermission(context,
+                                                                     Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(
+                        getContext());
                 LocationRequest request = LocationRequest.create()
                         .setNumUpdates(1)
                         .setPriority(LocationRequest.PRIORITY_LOW_POWER);
@@ -232,12 +247,16 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         Location location = locationResult.getLastLocation();
-                        if (location == null) return;
-                        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+                        if (location == null) {
+                            return;
+                        }
+                        map.animateCamera(CameraUpdateFactory.newLatLng(
+                                new LatLng(location.getLatitude(), location.getLongitude())));
                     }
                 };
 
-                client.requestLocationUpdates(request, locationUpdateCallback, getContext().getMainLooper());
+                client.requestLocationUpdates(request, locationUpdateCallback,
+                                              getContext().getMainLooper());
             }
         }
 
@@ -248,30 +267,35 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
     }
 
     private void createMarkers() {
-        if (stations == null)
+        if (stations == null) {
             return;
+        }
 
         for (Station station : stations) {
-            if (station.getLocation() == null || map == null) continue;
+            if (station.getLocation() == null || map == null) {
+                continue;
+            }
 
-            BitmapDescriptor marker = BitmapDescriptorFactory.defaultMarker(((float) station.getAvailableBikes() / (float) station.getTotalSpaces()) * 120.0f);
-            Marker m = map.addMarker(new MarkerOptions()
-                    .position(new LatLng(station.getLocation().getLatitude(), station.getLocation().getLongitude()))
-                    .flat(true)
-                    .icon(marker));
+            BitmapDescriptor marker = BitmapDescriptorFactory.defaultMarker(
+                    ((float) station.getAvailableBikes() / (float) station.getTotalSpaces()) * 120.0f);
+            Marker m = map.addMarker(new MarkerOptions().position(
+                    new LatLng(station.getLocation().getLatitude(),
+                               station.getLocation().getLongitude())).flat(true).icon(marker));
 
             markerMap.put(m, station);
 
-            if (station.getId() == focusStationId)
+            if (station.getId() == focusStationId) {
                 m.showInfoWindow();
+            }
         }
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
         Station s = markerMap.get(marker);
-        if (s == null)
+        if (s == null) {
             return;
+        }
 
         showDirections(s);
     }
@@ -295,7 +319,8 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         if (locationUpdateCallback != null) {
             Context context = getContext();
             if (context != null) {
-                FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(context);
+                FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(
+                        context);
                 client.removeLocationUpdates(locationUpdateCallback);
                 locationUpdateCallback = null;
             }
@@ -304,9 +329,12 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
 
     public void onEventMainThread(LocationUpdatedEvent data) {
         this.location = data.location;
-        if (location == null || stations == null) return;
-        for (Station s : stations)
+        if (location == null || stations == null) {
+            return;
+        }
+        for (Station s : stations) {
             s.setDistance(location);
+        }
     }
 
     public void onEventMainThread(StationDataUpdatedEvent data) {
@@ -325,12 +353,17 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
             }
         }
 
-        if (targetStation == null || targetMarker == null)
+        if (targetStation == null || targetMarker == null) {
             return;
+        }
 
         targetMarker.showInfoWindow();
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(targetStation.getLocation().getLatitude(), targetStation.getLocation().getLongitude()), 16.0f);
-        if (map == null) return;
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(
+                new LatLng(targetStation.getLocation().getLatitude(),
+                           targetStation.getLocation().getLongitude()), 16.0f);
+        if (map == null) {
+            return;
+        }
         map.animateCamera(update);
     }
 
@@ -340,16 +373,19 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
         public View getInfoWindow(Marker marker) {
             marker.setInfoWindowAnchor(0.5f, -0.2f);
 
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.map_info, mapView, false);
+            View view = LayoutInflater.from(getContext())
+                    .inflate(R.layout.map_info, mapView, false);
             TextView tv = view.findViewById(R.id.map_info_text);
             Station s = markerMap.get(marker);
-            if (s == null)
+            if (s == null) {
                 return tv;
+            }
 
             tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16.0f);
             SpannableStringBuilder ssb = new SpannableStringBuilder();
             ssb.append(s.getName());
-            ssb.setSpan(new StyleSpan(Typeface.BOLD), 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new StyleSpan(Typeface.BOLD), 0, ssb.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ssb.append("\n");
 
             int startOfNumberHint = ssb.length();
@@ -359,8 +395,11 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
             ssb.append(" ");
             String bikesStr = String.valueOf(s.getAvailableBikes());
             ssb.append(bikesStr);
-            ssb.setSpan(new ForegroundColorSpan(getContext().getColor(R.color.station_number_full)), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - bikesStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new ForegroundColorSpan(getContext().getColor(R.color.station_number_full)),
+                        ssb.length() - bikesStr.length(), ssb.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - bikesStr.length(),
+                        ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Free hint text
             ssb.append(" ");
@@ -368,24 +407,34 @@ public class StationMapFragment extends Fragment implements GoogleMap.OnInfoWind
             ssb.append(" ");
             String freeStr = String.valueOf(s.getFreeSpaces());
             ssb.append(freeStr);
-            ssb.setSpan(new ForegroundColorSpan(getContext().getColor(R.color.station_number_free)), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - freeStr.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new ForegroundColorSpan(getContext().getColor(R.color.station_number_free)),
+                        ssb.length() - freeStr.length(), ssb.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new StyleSpan(Typeface.BOLD), ssb.length() - freeStr.length(), ssb.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            ssb.setSpan(new AbsoluteSizeSpan((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14.0f, getContext().getResources().getDisplayMetrics())),
-                    startOfNumberHint,
-                    ssb.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new AbsoluteSizeSpan(
+                                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14.0f,
+                                                                getContext().getResources()
+                                                                        .getDisplayMetrics())),
+                        startOfNumberHint, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             if (s.getDistance() != null) {
                 ssb.append("\n");
                 String distanceString = DisplayUtils.formatDistance(s.getDistance());
                 ssb.append(distanceString);
-                ssb.setSpan(new AbsoluteSizeSpan((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 11.0f, getContext().getResources().getDisplayMetrics())),
-                        ssb.length() - distanceString.length(),
-                        ssb.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.setSpan(new ForegroundColorSpan(Color.GRAY), ssb.length() - distanceString.length(), ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE), ssb.length() - distanceString.length(), ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new AbsoluteSizeSpan(
+                                    (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 11.0f,
+                                                                    getContext().getResources()
+                                                                            .getDisplayMetrics())),
+                            ssb.length() - distanceString.length(), ssb.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new ForegroundColorSpan(Color.GRAY),
+                            ssb.length() - distanceString.length(), ssb.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE),
+                            ssb.length() - distanceString.length(), ssb.length(),
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
 

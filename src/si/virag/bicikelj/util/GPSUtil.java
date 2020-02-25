@@ -12,8 +12,9 @@ public class GPSUtil {
     private static boolean hasPlayServices = false;
 
     public static boolean checkPlayServices(Activity context) {
-        if (hasPlayServices)
+        if (hasPlayServices) {
             return true;
+        }
 
         GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
         int error = availability.isGooglePlayServicesAvailable(context);
@@ -24,7 +25,8 @@ public class GPSUtil {
         }
 
         if (availability.isUserResolvableError(error)) {
-            Dialog errorDialog = availability.getErrorDialog(context, error, GPS_FAIL_DIALOG_REQUEST_CODE);
+            Dialog errorDialog = availability.getErrorDialog(context, error,
+                                                             GPS_FAIL_DIALOG_REQUEST_CODE);
             errorDialog.show();
             return false;
         }

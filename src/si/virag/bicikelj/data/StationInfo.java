@@ -14,8 +14,9 @@ public class StationInfo {
     private CityBikesNetwork network;
 
     public Calendar getTimeUpdated() {
-        if (network.stations.size() == 0)
+        if (network.stations.size() == 0) {
             return null;
+        }
 
         return network.stations.get(0).getUpdated();
     }

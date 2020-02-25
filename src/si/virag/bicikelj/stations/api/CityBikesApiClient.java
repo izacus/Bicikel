@@ -19,17 +19,16 @@ import si.virag.bicikelj.BuildConfig;
 public class CityBikesApiClient {
 
     public static CityBikesApi getBicikeljApi() {
-        Gson gson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
                 .registerTypeAdapter(Calendar.class, new CalendarTypeAdapter())
                 .create();
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        interceptor.setLevel(
+                BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
-        Retrofit restAdapter = new Retrofit.Builder()
-                .baseUrl("https://api.citybik.es")
+        Retrofit restAdapter = new Retrofit.Builder().baseUrl("https://api.citybik.es")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();

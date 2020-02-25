@@ -1,6 +1,7 @@
 package si.virag.bicikelj.data;
 
 import android.location.Location;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -71,8 +72,9 @@ public class Station {
     }
 
     public String getName() {
-        if (prettyName == null)
+        if (prettyName == null) {
             prettyName = DisplayUtils.getProcessedStationName(name);
+        }
         return prettyName;
     }
 
@@ -107,8 +109,9 @@ public class Station {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Station))
+        if (!(o instanceof Station)) {
             return false;
+        }
 
         Station s = (Station) o;
         return (s.hashCode() == this.hashCode());
@@ -128,8 +131,9 @@ public class Station {
 
     @NonNull
     public String getAbbreviation() {
-        if (abbreviation == null)
+        if (abbreviation == null) {
             this.abbreviation = DisplayUtils.extractLetters(this.name).toUpperCase();
+        }
         return abbreviation;
     }
 

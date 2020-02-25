@@ -34,10 +34,13 @@ public class StationMapActivity extends AppCompatActivity {
         StationMapFragment fragment = new StationMapFragment();
         Bundle arguments = new Bundle();
 
-        if (getIntent().hasExtra("focusOnStation"))
+        if (getIntent().hasExtra("focusOnStation")) {
             arguments.putInt("focusOnStation", getIntent().getIntExtra("focusOnStation", 0));
+        }
         fragment.setArguments(arguments);
-        getSupportFragmentManager().beginTransaction().add(R.id.map_container, fragment, "MapFragment").commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.map_container, fragment, "MapFragment")
+                .commit();
     }
 
     @Override

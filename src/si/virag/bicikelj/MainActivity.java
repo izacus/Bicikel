@@ -69,24 +69,30 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         // Fragments use actionbar to show loading status
         setContentView(R.layout.main);
         Bitmap icon = getBitmapFromVectorDrawable(this, R.drawable.logo);
-        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon, getColor(R.color.primary)));
+        setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name), icon,
+                                                               getColor(R.color.primary)));
 
         isTablet = (findViewById(R.id.map_container) != null);
         if (isTablet) {
-            if (!GPSUtil.checkPlayServices(this))
+            if (!GPSUtil.checkPlayServices(this)) {
                 return;
+            }
 
             setupMapFragment();
         }
 
-        EasyPermissions.requestPermissions(new PermissionRequest.Builder(this, REQUEST_CODE_PERMISSIONS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-                .setRationale("Dostop do lokacije potreben za prikaz vaše lokacije na zemljevidu.")
-                .build());
+        EasyPermissions.requestPermissions(
+                new PermissionRequest.Builder(this, REQUEST_CODE_PERMISSIONS,
+                                              Manifest.permission.ACCESS_FINE_LOCATION,
+                                              Manifest.permission.ACCESS_COARSE_LOCATION).setRationale(
+                        "Dostop do lokacije potreben za prikaz vaše lokacije na zemljevidu.")
+                        .build());
     }
 
     @Override
     public boolean onSearchRequested() {
-        StationListFragment slFragment = (StationListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
+        StationListFragment slFragment = (StationListFragment) getSupportFragmentManager().findFragmentById(
+                R.id.fragment_station_list);
         if (slFragment != null) {
             slFragment.searchRequested();
         }
@@ -94,11 +100,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void setupMapFragment() {
-        if (getSupportFragmentManager().findFragmentByTag("MapFragment") != null)
+        if (getSupportFragmentManager().findFragmentByTag("MapFragment") != null) {
             return;
+        }
 
         StationMapFragment fragment = new StationMapFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.map_container, fragment, "MapFragment").commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.map_container, fragment, "MapFragment")
+                .commit();
     }
 
     public boolean isTabletLayout() {
@@ -106,8 +115,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     @Override
-    protected void onActivityResult(
-            int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Decide what to do based on the original request code
         if (requestCode == GPSUtil.GPS_FAIL_DIALOG_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -122,7 +130,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
@@ -132,12 +141,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             return;
         }
 
-        LocationRequest request = LocationRequest.create().setPriority(LocationRequest.PRIORITY_LOW_POWER);
+        LocationRequest request = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_LOW_POWER);
         try {
             fusedLocationClient.requestLocationUpdates(request, new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
-                    EventBus.getDefault().postSticky(new LocationUpdatedEvent(locationResult.getLastLocation()));
+                    EventBus.getDefault()
+                            .postSticky(new LocationUpdatedEvent(locationResult.getLastLocation()));
                 }
             }, getMainLooper());
         } catch (SecurityException e) {
@@ -152,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
 
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                                            drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
@@ -163,7 +174,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(
+                    MainActivity.this);
             updateLocation();
         }
     }

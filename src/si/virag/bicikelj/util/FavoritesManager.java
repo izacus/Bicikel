@@ -39,14 +39,16 @@ public class FavoritesManager {
 
     private static Set<Long> loadPreferences(Context ctx) {
         SharedPreferences pm = PreferenceManager.getDefaultSharedPreferences(ctx);
-        if (!pm.contains(PREF_FAVORITES))
+        if (!pm.contains(PREF_FAVORITES)) {
             return new HashSet<>();
+        }
 
         try {
             JSONArray arr = new JSONArray(pm.getString(PREF_FAVORITES, "[]"));
             HashSet<Long> results = new HashSet<>();
-            for (int i = 0; i < arr.length(); i++)
+            for (int i = 0; i < arr.length(); i++) {
                 results.add(arr.getLong(i));
+            }
             return results;
         } catch (JSONException e) {
             pm.edit().remove(PREF_FAVORITES).apply();
