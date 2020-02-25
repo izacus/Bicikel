@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,19 +27,25 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.PermissionRequest;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
 import si.virag.bicikelj.util.GPSUtil;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
     private static final String LOG_TAG = "Bicikelj.MainActivity";
+
+    private static final int REQUEST_CODE_PERMISSIONS = 123321;
 
     private boolean isTablet = false;
     private FirebaseAnalytics firebaseAnalytics;
+
     @Nullable
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -72,13 +79,9 @@ public class MainActivity extends AppCompatActivity {
             setupMapFragment();
         }
 
-        RxPermissions permissions = new RxPermissions(this);
-        permissions.request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-                .subscribe(granted -> {
-                    if (!granted) return;
-                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-                    updateLocation();
-                });
+        EasyPermissions.requestPermissions(new PermissionRequest.Builder(this, REQUEST_CODE_PERMISSIONS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .setRationale("Dostop do lokacije potreben za prikaz vaše lokacije na zemljevidu.")
+                .build());
     }
 
     @Override
@@ -105,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(
             int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         // Decide what to do based on the original request code
         if (requestCode == GPSUtil.GPS_FAIL_DIALOG_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             setupMapFragment();
@@ -115,6 +119,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         updateLocation();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     private void updateLocation() {
@@ -148,5 +158,18 @@ public class MainActivity extends AppCompatActivity {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+            updateLocation();
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        // Nothing TBD, lack of permissions is fine.
     }
 }
