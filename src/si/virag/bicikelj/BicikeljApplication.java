@@ -16,6 +16,7 @@ public class BicikeljApplication extends Application {
         super.onCreate();
         Fabric.with(this, new Crashlytics.Builder().core(
                 new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build());
+        BicikeljComponent component = DaggerBicikeljComponent.create();
     }
 }
 
