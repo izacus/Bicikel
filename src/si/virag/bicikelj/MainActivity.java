@@ -9,36 +9,34 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.lifecycle.Observer;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import pub.devrel.easypermissions.EasyPermissions;
 import pub.devrel.easypermissions.PermissionRequest;
 import si.virag.bicikelj.events.LocationUpdatedEvent;
+import si.virag.bicikelj.location.LocationProvider;
 import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
 import si.virag.bicikelj.util.GPSUtil;
 
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks, Observer<Location> {
     private static final String LOG_TAG = "Bicikelj.MainActivity";
 
     private static final int REQUEST_CODE_PERMISSIONS = 123321;
@@ -46,8 +44,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private boolean isTablet = false;
     private FirebaseAnalytics firebaseAnalytics;
 
-    @Nullable
-    private FusedLocationProviderClient fusedLocationClient;
+    @Inject LocationProvider locationProvider;
 
     /**
      * Called when the activity is first created.
@@ -57,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void onCreate(Bundle savedInstanceState) {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         super.onCreate(savedInstanceState);
+        BicikeljApplication.component(this).inject(this);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         ActionBar actionBar = getSupportActionBar();
@@ -87,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                                               Manifest.permission.ACCESS_COARSE_LOCATION).setRationale(
                         "Dostop do lokacije potreben za prikaz vaše lokacije na zemljevidu.")
                         .build());
+        locationProvider.locationLiveData().observe(this, this);
     }
 
     @Override
@@ -124,36 +123,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        updateLocation();
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    private void updateLocation() {
-        if (fusedLocationClient == null) {
-            return;
-        }
-
-        LocationRequest request = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_LOW_POWER);
-        try {
-            fusedLocationClient.requestLocationUpdates(request, new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    EventBus.getDefault()
-                            .postSticky(new LocationUpdatedEvent(locationResult.getLastLocation()));
-                }
-            }, getMainLooper());
-        } catch (SecurityException e) {
-            Log.w(LOG_TAG, "No permission for location, skipping location updates.");
-        }
     }
 
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
@@ -174,14 +147,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(
-                    MainActivity.this);
-            updateLocation();
+            locationProvider.requestNewUpdate();
         }
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         // Nothing TBD, lack of permissions is fine.
+    }
+
+    @Override
+    public void onChanged(Location location) {
+        EventBus.getDefault()
+                .postSticky(new LocationUpdatedEvent(location));
     }
 }
