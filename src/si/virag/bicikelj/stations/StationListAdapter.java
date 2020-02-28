@@ -156,7 +156,7 @@ public final class StationListAdapter extends RecyclerView.Adapter<StationListAd
         setItems(info.getStations());
     }
 
-    public void updateLocation(Location location) {
+    public void updateLocation(@Nullable Location location) {
         if (location == null) {
             return;
         }

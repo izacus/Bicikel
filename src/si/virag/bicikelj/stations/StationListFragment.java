@@ -23,24 +23,29 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import si.virag.bicikelj.BicikeljApplication;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.events.FocusOnStationEvent;
 import si.virag.bicikelj.events.ListItemSelectedEvent;
-import si.virag.bicikelj.events.LocationUpdatedEvent;
 import si.virag.bicikelj.events.StationDataUpdatedEvent;
+import si.virag.bicikelj.location.LocationProvider;
 import si.virag.bicikelj.station_map.StationMapActivity;
 import si.virag.bicikelj.stations.api.CityBikesApi;
 import si.virag.bicikelj.stations.api.CityBikesApiClient;
@@ -49,7 +54,7 @@ import si.virag.bicikelj.util.FavoritesManager;
 import si.virag.bicikelj.util.GPSUtil;
 import si.virag.bicikelj.util.ShowKeyboardRunnable;
 
-public class StationListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class StationListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Observer<Location> {
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private StationListAdapter adapter = null;
@@ -57,14 +62,15 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
     private StationInfo data;
 
     private boolean isTablet;
-    private Location location;
-
     private View emptyView;
+
+    @Inject
+    LocationProvider locationProvider;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        BicikeljApplication.component(getContext()).inject(this);
         FavoritesManager fm = new FavoritesManager(getActivity());
         adapter = new StationListAdapter(getActivity(), fm, new ArrayList<>(), null);
     }
@@ -78,6 +84,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
             return;
         }
         isTablet = ((MainActivity) getActivity()).isTabletLayout();
+        locationProvider.observe(this, this);
+
         refresh();
     }
 
@@ -154,8 +162,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 adapter.updateData(data);
-                if (location != null) {
-                    adapter.updateLocation(location);
+                if (locationProvider.getValue() != null) {
+                    adapter.updateLocation(locationProvider.getValue());
                 }
 
                 Activity activity = getActivity();
@@ -211,8 +219,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
             adapter.updateData(data);
         }
 
-        if (location != null) {
-            adapter.updateLocation(location);
+        if (locationProvider.getValue() != null) {
+            adapter.updateLocation(locationProvider.getValue());
         }
     }
 
@@ -255,8 +263,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
                     activity.findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
                 }
 
-                if (location != null) {
-                    adapter.updateLocation(location);
+                if (locationProvider.getValue() != null) {
+                    adapter.updateLocation(locationProvider.getValue());
                 }
 
                 if (data == null) {
@@ -342,8 +350,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         }
     }
 
-    public void onEventMainThread(LocationUpdatedEvent event) {
-        this.location = event.location;
+    @Override
+    public void onChanged(@Nullable Location location) {
         if (adapter != null) {
             adapter.updateLocation(location);
         }

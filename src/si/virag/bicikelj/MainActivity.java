@@ -36,7 +36,7 @@ import si.virag.bicikelj.station_map.StationMapFragment;
 import si.virag.bicikelj.stations.StationListFragment;
 import si.virag.bicikelj.util.GPSUtil;
 
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks, Observer<Location> {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
     private static final String LOG_TAG = "Bicikelj.MainActivity";
 
     private static final int REQUEST_CODE_PERMISSIONS = 123321;
@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                                               Manifest.permission.ACCESS_COARSE_LOCATION).setRationale(
                         "Dostop do lokacije potreben za prikaz vaše lokacije na zemljevidu.")
                         .build());
-        locationProvider.locationLiveData().observe(this, this);
     }
 
     @Override
@@ -147,18 +146,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            locationProvider.requestNewUpdate();
+            locationProvider.reactivate();
         }
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         // Nothing TBD, lack of permissions is fine.
-    }
-
-    @Override
-    public void onChanged(Location location) {
-        EventBus.getDefault()
-                .postSticky(new LocationUpdatedEvent(location));
     }
 }

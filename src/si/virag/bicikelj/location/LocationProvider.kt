@@ -1,56 +1,50 @@
 package si.virag.bicikelj.location
 
-import android.Manifest
 import android.content.Context
 import android.location.Location
-import android.os.Looper
+import android.os.HandlerThread
 import android.util.Log
-import androidx.annotation.RequiresPermission
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LocationProvider @Inject constructor(context: Context) : LifecycleObserver {
+class LocationProvider @Inject constructor(context: Context) : MutableLiveData<Location?>() {
 
     private val TAG = "LocationProvider"
 
     private val client: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(
             context)
-    private val locationLiveData: MutableLiveData<Location> = MutableLiveData();
-    private val locationCallback: LocationCallback = object : LocationCallback() {
-        override fun onLocationResult(result: LocationResult?) {
-            if (result != null && result.lastLocation != null) {
-                locationLiveData.postValue(result.lastLocation)
-            }
+    private val locationThread = HandlerThread("LocationUpdates")
+    private val callback = Callback()
+
+    override fun onInactive() {
+        Log.d(TAG, "Deactivating updates.")
+        client.removeLocationUpdates(callback)
+    }
+
+    override fun onActive() {
+        Log.d(TAG, "Activating updates.")
+        val request = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+        try {
+            client.lastLocation.addOnCompleteListener { postValue(it.result) }
+            client.requestLocationUpdates(request, callback, locationThread.looper)
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Failed to activate location.", e)
         }
     }
 
-    fun locationLiveData(): LiveData<Location> {
-        try {
-            client.lastLocation.addOnSuccessListener {
-                if (it != null) {
-                    locationLiveData.postValue(it)
-                }
-            }
-        } catch (e: SecurityException) {
-            Log.e(TAG, "No access to location for location update.", e)
-        }
-
-        requestNewUpdate()
-        return locationLiveData
+    /** Called when permissions are requested. */
+    fun reactivate() {
+        onActive()
     }
 
-    fun requestNewUpdate() {
-        try {
-            client.requestLocationUpdates(LocationRequest.create().setNumUpdates(1).setPriority(
-                    LocationRequest.PRIORITY_LOW_POWER).setMaxWaitTime(
-                    10000), locationCallback, Looper.getMainLooper())
-        } catch (e: SecurityException) {
-            Log.e(TAG, "No access to location for location update.", e)
+    inner class Callback : LocationCallback() {
+        override fun onLocationResult(loc: LocationResult?) {
+            Log.d(TAG, "Location: $loc")
+            postValue(loc?.lastLocation)
         }
     }
 }
