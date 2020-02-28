@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,20 +34,14 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import si.virag.bicikelj.BicikeljApplication;
 import si.virag.bicikelj.MainActivity;
 import si.virag.bicikelj.R;
 import si.virag.bicikelj.data.StationInfo;
 import si.virag.bicikelj.events.FocusOnStationEvent;
 import si.virag.bicikelj.events.ListItemSelectedEvent;
-import si.virag.bicikelj.events.StationDataUpdatedEvent;
 import si.virag.bicikelj.location.LocationProvider;
 import si.virag.bicikelj.station_map.StationMapActivity;
-import si.virag.bicikelj.stations.api.CityBikesApi;
-import si.virag.bicikelj.stations.api.CityBikesApiClient;
 import si.virag.bicikelj.util.DividerItemDecoration;
 import si.virag.bicikelj.util.FavoritesManager;
 import si.virag.bicikelj.util.GPSUtil;
@@ -66,6 +59,8 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
     @Inject
     LocationProvider locationProvider;
+    @Inject
+    StationRepository stationRepository;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +80,7 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
         }
         isTablet = ((MainActivity) getActivity()).isTabletLayout();
         locationProvider.observe(this, this);
-
+        stationRepository.getStations().observe(this, this::onStationsLoaded);
         refresh();
     }
 
@@ -243,51 +238,29 @@ public class StationListFragment extends Fragment implements SwipeRefreshLayout.
 
     private void refresh() {
         swipeRefreshLayout.setRefreshing(true);
-        this.data = null;
-        CityBikesApi api = CityBikesApiClient.getBicikeljApi();
-        api.getStationData().enqueue(new Callback<StationInfo>() {
-            @Override
-            public void onResponse(Call<StationInfo> call, Response<StationInfo> response) {
-                if (!response.isSuccessful()) {
-                    showRequestFailed(response.message());
-                    return;
-                }
-
-                swipeRefreshLayout.setRefreshing(false);
-                StationListFragment.this.data = response.body();
-                // Update data in-place when already available
-                adapter.updateData(data);
-
-                MainActivity activity = (MainActivity) getActivity();
-                if (activity != null) {
-                    activity.findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
-                }
-
-                if (locationProvider.getValue() != null) {
-                    adapter.updateLocation(locationProvider.getValue());
-                }
-
-                if (data == null) {
-                    showError();
-                    return;
-                }
-
-                EventBus.getDefault().postSticky(new StationDataUpdatedEvent(data.getStations()));
-                swipeRefreshLayout.setVisibility(View.VISIBLE);
-
-            }
-
-            @Override
-            public void onFailure(Call<StationInfo> call, Throwable t) {
-                showRequestFailed(t.getMessage());
-            }
-        });
+        stationRepository.refresh();
     }
 
-    private void showRequestFailed(String error) {
-        swipeRefreshLayout.setRefreshing(false);
-        Log.e("Bicikelj", "Load failed: " + error);
-        showError();
+    private void onStationsLoaded(StationRepository.Stations stations) {
+        if (stations.getStationInfo() != null) {
+            this.data = stations.getStationInfo();
+            adapter.updateData(data);
+            MainActivity activity = (MainActivity) getActivity();
+            if (activity != null) {
+                activity.findViewById(R.id.stationlist_emptyview).setVisibility(View.INVISIBLE);
+            }
+
+            if (locationProvider.getValue() != null) {
+                adapter.updateLocation(locationProvider.getValue());
+            }
+        }
+
+        if (stations.getStatus().equals(StationRepository.Status.FAILURE)) {
+            swipeRefreshLayout.setRefreshing(false);
+            showError();
+        }
+
+        swipeRefreshLayout.setVisibility(View.VISIBLE);
     }
 
     private void showError() {

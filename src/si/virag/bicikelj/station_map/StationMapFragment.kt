@@ -34,8 +34,8 @@ import si.virag.bicikelj.MainActivity
 import si.virag.bicikelj.R
 import si.virag.bicikelj.data.Station
 import si.virag.bicikelj.events.FocusOnStationEvent
-import si.virag.bicikelj.events.StationDataUpdatedEvent
 import si.virag.bicikelj.location.LocationProvider
+import si.virag.bicikelj.stations.StationRepository
 import si.virag.bicikelj.util.DisplayUtils
 import java.util.*
 import javax.inject.Inject
@@ -54,6 +54,8 @@ class StationMapFragment : Fragment(), OnInfoWindowClickListener, Observer<Locat
 
     @Inject
     lateinit var locationProvider: LocationProvider
+    @Inject
+    lateinit var stationsRepository: StationRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,20 +71,28 @@ class StationMapFragment : Fragment(), OnInfoWindowClickListener, Observer<Locat
 
         markerMap = HashMap()
         locationProvider.observe(this, this)
+        stationsRepository.getStations().observe(this, Observer {
+            if (it.status == StationRepository.Status.SUCCESS) {
+                it.stationInfo?.stations?.let { s ->
+                    stations = s
+                    setupMap()
+                }
+            }
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.map_fragment, container, false)
-        view.setOnApplyWindowInsetsListener { view: View, windowInsets: WindowInsets ->
-            applyWindowInsetsListener(view, windowInsets)
+        view.setOnApplyWindowInsetsListener { _: View, windowInsets: WindowInsets ->
+            applyWindowInsetsListener(windowInsets)
         }
         mapView = view.findViewById(R.id.map_map)
         mapView.onCreate(savedInstanceState)
         return view
     }
 
-    private fun applyWindowInsetsListener(view: View, windowInsets: WindowInsets): WindowInsets {
+    private fun applyWindowInsetsListener(windowInsets: WindowInsets): WindowInsets {
         rightInset = windowInsets.systemWindowInsetRight
         bottomInset = windowInsets.systemWindowInsetBottom
         map?.setPadding(0, 0, rightInset, bottomInset)
@@ -220,11 +230,6 @@ class StationMapFragment : Fragment(), OnInfoWindowClickListener, Observer<Locat
         stations.forEach { it.setDistance(t) }
     }
 
-    fun onEventMainThread(data: StationDataUpdatedEvent) {
-        stations = data.stations
-        setupMap()
-    }
-
     fun onEventMainThread(focusData: FocusOnStationEvent) {
         val entry = markerMap.entries.find { it.value.id == focusData.id }
         val targetMarker = entry?.key
@@ -240,7 +245,7 @@ class StationMapFragment : Fragment(), OnInfoWindowClickListener, Observer<Locat
         map?.animateCamera(update)
     }
 
-    private inner class InformationAdapter : InfoWindowAdapter {
+    inner class InformationAdapter : InfoWindowAdapter {
         override fun getInfoWindow(marker: Marker): View {
             marker.setInfoWindowAnchor(0.5f, -0.2f)
             val view = LayoutInflater.from(context)
