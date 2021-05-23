@@ -35,7 +35,7 @@ import si.virag.bicikelj.util.GPSUtil;
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
     private static final String LOG_TAG = "Bicikelj.MainActivity";
 
-    private static final int REQUEST_CODE_PERMISSIONS = 123321;
+    private static final int REQUEST_CODE_PERMISSIONS = 1221;
 
     private boolean isTablet = false;
     private FirebaseAnalytics firebaseAnalytics;

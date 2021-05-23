@@ -3,10 +3,7 @@ package si.virag.bicikelj;
 import android.app.Application;
 import android.content.Context;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
-
-import io.fabric.sdk.android.Fabric;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 public class BicikeljApplication extends Application {
 
@@ -20,8 +17,8 @@ public class BicikeljApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics.Builder().core(
-                new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build());
+        FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG);
         component = DaggerBicikeljComponent.factory().create(this);
     }
 }
