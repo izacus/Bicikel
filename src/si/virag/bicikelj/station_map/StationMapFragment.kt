@@ -146,15 +146,16 @@ class StationMapFragment : Fragment(), OnInfoWindowClickListener, Observer<Locat
     }
 
     private fun setupMap() {
-        if (map == null || context == null) {
+        val ctx = context
+        if (map == null || ctx == null) {
             return
         }
 
         val map = map!!
-        MapsInitializer.initialize(context)
+        MapsInitializer.initialize(ctx)
         map.setPadding(0, 0, rightInset, bottomInset)
         if (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
-            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.map_dark))
+            map.setMapStyle(MapStyleOptions.loadRawResourceStyle(ctx, R.raw.map_dark))
         }
         map.clear()
         map.uiSettings.isCompassEnabled = true
@@ -185,7 +186,7 @@ class StationMapFragment : Fragment(), OnInfoWindowClickListener, Observer<Locat
         }
 
         map.moveCamera(update)
-        activity!!.invalidateOptionsMenu()
+        requireActivity().invalidateOptionsMenu()
         Handler().postDelayed({ createMarkers() }, 300)
         mapView.postDelayed({ mapView.visibility = View.VISIBLE }, 150)
     }
@@ -199,9 +200,11 @@ class StationMapFragment : Fragment(), OnInfoWindowClickListener, Observer<Locat
                         val m = map.addMarker(MarkerOptions().position(
                                 LatLng(station.location.latitude,
                                         station.location.longitude)).flat(true).icon(marker))
-                        markerMap[m] = station
-                        if (station.id == focusStationId) {
-                            m.showInfoWindow()
+                        m?.let {
+                            markerMap[it] = station
+                            if (station.id == focusStationId) {
+                                it.showInfoWindow()
+                            }
                         }
                     }
         }

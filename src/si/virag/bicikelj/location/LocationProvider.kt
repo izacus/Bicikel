@@ -42,7 +42,7 @@ class LocationProvider @Inject constructor(context: Context) : MutableLiveData<L
     }
 
     inner class Callback : LocationCallback() {
-        override fun onLocationResult(loc: LocationResult?) {
+        override fun onLocationResult(loc: LocationResult) {
             Log.d(TAG, "Location: $loc")
             postValue(loc?.lastLocation)
         }
