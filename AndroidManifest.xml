@@ -36,6 +36,7 @@
             android:logo="@drawable/logo_padded"
             android:theme="@style/Theme.Bicikel"
             android:resizeableActivity="true"
+            android:exported="true"
             tools:targetApi="q">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
