@@ -1,5 +1,6 @@
 package si.virag.bicikelj.stations
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import retrofit2.Call
@@ -50,6 +51,7 @@ class StationRepository @Inject constructor() : Callback<StationInfo> {
     }
 
     override fun onFailure(call: Call<StationInfo>, t: Throwable) {
+        Log.e("StationRepository", "Load failed", t)
         stations.postValue(Stations(stations.value?.stationInfo, Status.FAILURE))
     }
 }

@@ -1,5 +1,7 @@
 package si.virag.bicikelj.stations.api;
 
+import android.util.Log;
+
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,7 +10,11 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -37,6 +43,13 @@ public class CityBikesApiClient {
     }
 
     private static class CalendarTypeAdapter extends TypeAdapter<Calendar> {
+        private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        private final TimeZone tz = TimeZone.getTimeZone("UTC");
+
+        public CalendarTypeAdapter() {
+            dateFormat.setTimeZone(tz);
+        }
+
         @Override
         public void write(JsonWriter out, Calendar value) throws IOException {
             throw new RuntimeException("Not implemented.");
@@ -44,10 +57,23 @@ public class CityBikesApiClient {
 
         @Override
         public Calendar read(JsonReader in) throws IOException {
-            long epochTime = in.nextLong();
-            Calendar c = Calendar.getInstance();
-            c.setTimeInMillis(epochTime);
-            return c;
+            String timeStamp = in.nextString();
+            try {
+                Date date = dateFormat.parse(timeStamp);
+                if (date == null) {
+                    throw new IOException("Date is null");
+                }
+
+                Calendar c = Calendar.getInstance();
+                // This converts from UTC to local timezone.
+                c.setTimeZone(tz);
+                c.setTime(date);
+                c.setTimeZone(TimeZone.getDefault());
+                return c;
+            } catch (ParseException e) {
+                Log.e("ApiClient", "Failed to parse date", e);
+                throw new IOException("Failed to parse date");
+            }
         }
     }
 }
