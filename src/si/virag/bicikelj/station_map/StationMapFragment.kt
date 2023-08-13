@@ -28,6 +28,7 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener
 import com.google.android.gms.maps.model.*
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.greenrobot.event.EventBus
 import si.virag.bicikelj.BicikeljApplication
 import si.virag.bicikelj.MainActivity
@@ -125,6 +126,7 @@ class StationMapFragment : Fragment(), OnInfoWindowClickListener, Observer<Locat
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
+            FirebaseCrashlytics.getInstance().recordException(e)
             Log.e("Bicikelj", "Google maps is not installed!")
         }
     }

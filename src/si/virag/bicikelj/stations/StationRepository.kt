@@ -3,6 +3,7 @@ package si.virag.bicikelj.stations
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,7 +52,7 @@ class StationRepository @Inject constructor() : Callback<StationInfo> {
     }
 
     override fun onFailure(call: Call<StationInfo>, t: Throwable) {
-        Log.e("StationRepository", "Load failed", t)
+        FirebaseCrashlytics.getInstance().recordException(t)
         stations.postValue(Stations(stations.value?.stationInfo, Status.FAILURE))
     }
 }

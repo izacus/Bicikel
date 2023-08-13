@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -51,6 +53,7 @@ public class FavoritesManager {
             }
             return results;
         } catch (JSONException e) {
+            FirebaseCrashlytics.getInstance().recordException(e);
             pm.edit().remove(PREF_FAVORITES).apply();
             return new HashSet<>();
         }

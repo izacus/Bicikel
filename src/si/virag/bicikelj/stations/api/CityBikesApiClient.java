@@ -2,6 +2,7 @@ package si.virag.bicikelj.stations.api;
 
 import android.util.Log;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import okhttp3.OkHttpClient;
@@ -43,7 +45,7 @@ public class CityBikesApiClient {
     }
 
     private static class CalendarTypeAdapter extends TypeAdapter<Calendar> {
-        private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         private final TimeZone tz = TimeZone.getTimeZone("UTC");
 
         public CalendarTypeAdapter() {
@@ -71,6 +73,7 @@ public class CityBikesApiClient {
                 c.setTimeZone(TimeZone.getDefault());
                 return c;
             } catch (ParseException e) {
+                FirebaseCrashlytics.getInstance().recordException(e);
                 Log.e("ApiClient", "Failed to parse date", e);
                 throw new IOException("Failed to parse date");
             }

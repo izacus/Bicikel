@@ -26,8 +26,7 @@ class LocationProvider @Inject constructor(context: Context) : MutableLiveData<L
 
     override fun onActive() {
         Log.d(TAG, "Activating updates.")
-        val request = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+        val request = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 60000).build()
         try {
             client.lastLocation.addOnCompleteListener { postValue(it.result) }
             client.requestLocationUpdates(request, callback, locationThread.looper)
